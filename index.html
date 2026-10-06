@@ -122,6 +122,23 @@ footer{color:var(--muted);font-size:13px;text-align:center;padding:20px 16px 30p
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 16px;border-radius:5px;font-size:14px;z-index:60;max-width:calc(100% - 32px)}
 .spin{display:inline-block;width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--navy);border-radius:50%;animation:s .8s linear infinite;vertical-align:-3px;margin-right:8px}
 @keyframes s{to{transform:rotate(360deg)}}
+
+/* Club Support */
+.pillar-nav{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 6px}
+.pillar-chip{border:1px solid var(--line);border-left:5px solid var(--c);background:#fff;border-radius:6px;padding:7px 12px;font-weight:700;font-size:14px;color:var(--navy)}
+.pillar-chip:hover{background:var(--navy-3)}
+.pillar{margin-top:26px;scroll-margin-top:16px}
+.pillar-head{display:flex;align-items:center;gap:12px}
+.pillar-n{flex:0 0 auto;width:40px;height:40px;border-radius:8px;background:var(--c);color:#fff;display:grid;place-items:center;font-family:var(--cond);font-size:24px;font-weight:700}
+.pillar h2{font-family:var(--cond);font-size:27px;color:var(--navy);margin:0;line-height:1.05}
+.pillar-tag{margin:2px 0 0;color:var(--c);font-weight:700;font-size:14.5px}
+.pillar-intro{margin:10px 0 8px;max-width:75ch}
+.pillar-areas{list-style:none;display:flex;flex-wrap:wrap;gap:6px;padding:0;margin:0 0 14px}
+.pillar-areas li{font-size:13px;font-weight:600;color:var(--muted);background:var(--navy-3);border-radius:12px;padding:3px 10px}
+.card.offer{border-top:4px solid var(--c);display:flex;flex-direction:column}
+.card.offer .btn-row{margin-top:auto;padding-top:12px}
+.offer-kind{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--c)}
+.offer-head{font-weight:700;color:var(--ink);margin:2px 0 4px!important}
 </style>
 </head>
 <body>
@@ -483,7 +500,7 @@ function demoAdmin(){
 /* =====================================================================
    SCREENS
    ===================================================================== */
-const TABS = [['overview','Overview'], ['licences','Licences'], ['orders','Orders'], ['reservations','Reservations'], ['club','Club']];
+const TABS = [['overview','Overview'], ['licences','Licences'], ['orders','Orders'], ['reservations','Reservations'], ['support','Club Support'], ['club','Club']];
 function setChrome(signedIn){
   $('#tabs').classList.toggle('hidden', !signedIn);
   $('#who').classList.toggle('hidden', !signedIn);
@@ -499,7 +516,7 @@ function render(){
   const v = $('#view');
   const demo = PREVIEW ? '<div class="demo">Preview mode: sample data for SAADI Gymnastics. Nothing is saved.</div>' : '';
   if(!S.club && S.isAdmin && S.tab !== 'admin') S.tab = 'admin';
-  const screens = {overview:screenOverview, licences:screenLicences, orders:screenOrders, reservations:screenReservations, club:screenClub, admin:screenAdmin};
+  const screens = {overview:screenOverview, licences:screenLicences, orders:screenOrders, reservations:screenReservations, support:screenSupport, club:screenClub, admin:screenAdmin};
   v.innerHTML = demo + (screens[S.tab] || screenOverview)();
   if(S.tab === 'admin') loadAdmin();
 }
@@ -530,8 +547,102 @@ function screenOverview(){
     </div>
     <h2 class="sec">Your programmes</h2>
     <div class="grid g2">${licenceCard('schools', true)}${licenceCard('recreational', true)}</div>
-    <div class="btn-row" style="margin-top:16px"><a class="btn ghost" href="${LINKS.reserve}" target="_blank" rel="noopener">Reserve 2027 competition places</a><a class="btn ghost" href="${LINKS.website}" target="_blank" rel="noopener">NGL website</a></div>`;
+    <div class="btn-row" style="margin-top:16px"><a class="btn ghost" href="${LINKS.reserve}" target="_blank" rel="noopener">Reserve 2027 competition places</a><button class="btn ghost" data-tab="support">Club Support offers</button><a class="btn ghost" href="${LINKS.website}" target="_blank" rel="noopener">NGL website</a></div>`;
 }
+
+/* ----- Club Support (the 5 pillars and partner offers) ----- */
+const IMPACT_HR_PACK = 'https://www.nationalgymnasticsleague.co.uk/s/National-Gymnastics-League-ImpactHR.pdf';
+const SUPPORT = [
+  {id:'operate', name:'Operate Better', c:'#223a70', tag:'Strong foundations that reduce pressure and risk',
+   intro:'Running a club is complex, and most clubs build their systems alone. Operate Better is about shared systems, common approaches and proven best practice, so you spend less time on admin and more on gymnastics.',
+   areas:['Finance and pricing','Club management systems','Governance templates','Admin processes'],
+   offers:[
+     {name:'JustGo', kind:'NGL sponsor', headline:'The class management system that links to British Gymnastics membership',
+      text:'JustGo is the club management system British Gymnastics uses, and the official sponsor of the NGL. Set up recurring classes, track attendance, take payments and subscriptions, manage waiting lists and send automatic reminders.',
+      actions:[{l:'Book a JustGo demo', href:'https://justgo.com/book-a-demo/'}]},
+     {name:'NGL Rotation Planner', kind:'Free NGL tool', headline:'Free for every NGL club',
+      text:'Build your weekly session plan once, then show it live on any screen in your gym. It follows the clock, so coaches and gymnasts always know which apparatus they should be on.',
+      actions:[{l:'Open the planner', href:'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/NGL_Rotation_Planner.html'},{l:'How to use it', href:'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/NGL_Rotation_Planner_Guide.html', ghost:true}]}
+   ]},
+  {id:'coach', name:'Coach Better', c:'#c8202f', tag:'Our coaches are our business',
+   intro:'Great clubs are built by great coaches. Coach Better makes development more accessible and more connected, from young leaders and club CPD to high-performance expertise, so knowledge stays in your club and coaches stay in the sport.',
+   areas:['Club CPD and mentoring','British Gymnastics qualifications','Young leaders and volunteers','Coach recruitment','Coach consultancy pool'],
+   offers:[
+     {name:'Matt Jackson Gymnastics Consultancy', kind:'Partner', headline:'High-performance coaching support for your club',
+      text:'Matt is a Level 5 High Performance Coach with 27 years’ experience, who has coached multiple British champions and at the 2018 Commonwealth Games. He helps clubs develop more confident coaches, stronger technical programmes and clearer gymnast pathways.',
+      actions:[{l:'Contact Matt', mail:'infoatjgc@gmail.com', subject:'NGL referral'}]},
+     {name:'Elevate Volunteering', kind:'Partner offer', headline:'£50 off a course for 15 people',
+      text:'Founded by Gemma Wright, coach since 2008 and former National Judge. Introductory courses in health, safety and wellbeing, Recreational gymnastics and judging, followed by a mentored Young Leaders programme with termly reviews.',
+      actions:[{l:'Ask NGL for your £50 code', mail:CONTACT_EMAIL, subject:'Elevate £50 discount code', body:'Please send our Elevate Volunteering £50 discount code.'}]},
+     {name:'Growth Club', kind:'Partner', headline:'Mentoring for athletes, current and retired',
+      text:'Founded by Reiss Beckford after 23 years competing internationally for Great Britain and Jamaica. Helps athletes and coaches build a personal brand and business that lasts beyond their competitive career.',
+      actions:[{l:'Visit Growth Club', href:'https://www.growth-club.org/'}]}
+   ]},
+  {id:'care', name:'Care Better', c:'#1a7a43', tag:'People first. Always.',
+   intro:'Gymnasts, parents, coaches and volunteers all need to feel safe, supported and listened to. Care Better is about safeguarding-led cultures and clear people practices, built into everyday club life rather than treated as paperwork.',
+   areas:['HR for small and medium clubs','Safeguarding','Parent and gymnast support','Culture and environment'],
+   offers:[
+     {name:'Impact HR', kind:'Partner offer', headline:'Free HR benchmark assessment for NGL clubs',
+      text:'Working with British Gymnastics clubs for over 5 years. Retained HR support for a fixed monthly fee, on-demand advice with no contract, contracts and handbooks, and specialist projects such as restructures and investigations.',
+      actions:[{l:'Claim your free assessment', mail:CONTACT_EMAIL, subject:'Impact HR free benchmark assessment', body:'We would like our free Impact HR benchmark assessment.'},{l:'NGL offer pack (PDF)', href:IMPACT_HR_PACK, ghost:true}]},
+     {name:'Working With Parents in Sport', kind:'Partner offer', headline:'12 months’ free membership for your families',
+      text:'WWPIS works with British Gymnastics, Premier League academies and many other sports to help organisations, coaches and parents work together. Members get blogs, videos, podcasts, webinars and expert guidance for parents of children in competitive sport.',
+      actions:[{l:'Ask NGL for your WWPIS code', mail:CONTACT_EMAIL, subject:'WWPIS free membership code', body:'Please send our Working With Parents in Sport code for 12 months’ free membership.'}]}
+   ]},
+  {id:'grow', name:'Grow Better', c:'#b8860b', tag:'Building sustainable, future-ready clubs',
+   intro:'Growth works best when it’s planned and based on real information. Grow Better helps clubs with sales, marketing and programme decisions, using shared data and national visibility instead of guesswork.',
+   areas:['Enquiries, trials and conversion','Data and benchmarking','Social media','National campaigns'],
+   offers:[],
+   soon:'Partner offers for Grow Better are on their way. If there’s a marketing or social media business you trust, tell us.'},
+  {id:'connect', name:'Connect Better', c:'#01808a', tag:'Stronger clubs through collaboration',
+   intro:'Clubs often solve the same problems on their own. Connect Better brings clubs, people and trusted partners together, so you can learn from each other and reach opportunities you couldn’t on your own.',
+   areas:['Club-to-club collaboration','Shared learning and templates','Trusted partners','Community'],
+   offers:[
+     {name:'Talk to the NGL team', kind:'NGL', headline:'Stuck on something? Another club has probably solved it',
+      text:'Tell us what you’re working on and we’ll put you in touch with clubs and partners who can help.',
+      actions:[{l:'Email the NGL team', mail:CONTACT_EMAIL, subject:'Club support request'}]}
+   ]}
+];
+const PARTNERS_WANTED = ['Legal support','Accounting advice','Social media support','Branded clothing'];
+
+function supportAction(a){
+  if(a.mail){
+    const club = S.club ? S.club.name : '';
+    const subject = a.subject + (club ? ' – ' + club : '');
+    const body = (a.body ? a.body + '\n\n' : '') + (club ? 'Club: ' + club + '\n' : '') + (S.club && S.club.email ? 'Email: ' + S.club.email + '\n' : '');
+    const href = `mailto:${a.mail}?subject=${encodeURIComponent(subject)}${body ? '&body=' + encodeURIComponent(body) : ''}`;
+    return `<a class="btn${a.ghost ? ' ghost' : ''} small" href="${esc(href)}">${esc(a.l)}</a>`;
+  }
+  return `<a class="btn${a.ghost ? ' ghost' : ''} small" href="${esc(a.href)}" target="_blank" rel="noopener">${esc(a.l)}</a>`;
+}
+function screenSupport(){
+  const nav = SUPPORT.map(p => `<button type="button" class="pillar-chip" data-jump="sp-${p.id}" style="--c:${p.c}">${esc(p.name)}</button>`).join('');
+  const sections = SUPPORT.map((p, i) => `
+    <section class="pillar" id="sp-${p.id}" style="--c:${p.c}">
+      <div class="pillar-head"><span class="pillar-n">${i + 1}</span><div><h2>${esc(p.name)}</h2><p class="pillar-tag">${esc(p.tag)}</p></div></div>
+      <p class="pillar-intro">${esc(p.intro)}</p>
+      <ul class="pillar-areas">${p.areas.map(a => `<li>${esc(a)}</li>`).join('')}</ul>
+      ${p.offers.length ? `<div class="grid g2">${p.offers.map(o => `
+        <div class="card offer">
+          <div class="offer-kind">${esc(o.kind)}</div>
+          <h3>${esc(o.name)}</h3>
+          <p class="offer-head">${esc(o.headline)}</p>
+          <p class="small muted">${esc(o.text)}</p>
+          <div class="btn-row">${o.actions.map(supportAction).join('')}</div>
+        </div>`).join('')}</div>` : ''}
+      ${p.soon ? `<div class="note">${esc(p.soon)} <a href="${esc(`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Partner suggestion for ' + p.name)}`)}">Suggest a partner</a></div>` : ''}
+    </section>`).join('');
+  return `<h1 class="page">Club Support</h1>
+    <p class="lead">Five pillars to make clubs better. NGL pools the experience and scale of the whole network, so every club gets trusted partners, tools and offers without sourcing them alone.</p>
+    <nav class="pillar-nav" aria-label="Pillars">${nav}</nav>
+    ${sections}
+    <div class="card" style="margin-top:22px">
+      <h3>Know a business that could help NGL clubs?</h3>
+      <p class="small muted">We're looking for trusted partners in: ${PARTNERS_WANTED.map(esc).join(' · ')}.</p>
+      <div class="btn-row"><a class="btn ghost small" href="${esc(`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('NGL partner suggestion')}`)}">Suggest a partner</a></div>
+    </div>`;
+}
+
 
 /* ----- Licences ----- */
 function licenceCard(k, compact){
@@ -714,6 +825,8 @@ function screenAuth(mode, msg){
    EVENTS
    ===================================================================== */
 document.addEventListener('click', async e => {
+  const j = e.target.closest('[data-jump]');
+  if(j){ const el = document.getElementById(j.dataset.jump); if(el) el.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'}); return; }
   const t = e.target.closest('[data-tab],[data-of],[data-rf],[data-act],[data-ics],[data-auth],[data-rm-email]');
   if(!t) return;
   if(t.dataset.tab){ e.preventDefault(); if(S.club || S.isAdmin) go(t.dataset.tab); return; }
