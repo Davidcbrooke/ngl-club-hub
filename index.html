@@ -110,6 +110,19 @@ table.list tr.past td{color:var(--muted)}
 .date span{font-size:12.5px;font-weight:700;color:var(--muted);text-transform:uppercase}
 .res h4{margin:0 0 3px;font-size:16.5px;color:var(--navy)}
 .res .meta{font-size:13.5px;color:var(--muted)}
+
+/* Floor music */
+.mbar{display:flex;align-items:center;gap:12px;margin:10px 0 2px}
+.mbar .track{flex:1;height:10px;background:var(--navy-3);border-radius:5px;overflow:hidden}
+.mbar .track i{display:block;height:100%;background:var(--ok)}
+.mlevel{font-family:var(--cond);font-size:20px;color:var(--navy);margin:18px 0 6px}
+.mrow{display:grid;grid-template-columns:12px 1fr auto;gap:4px 12px;align-items:center;background:#fff;border:1px solid var(--line);border-left:5px solid var(--bad);border-radius:6px;padding:10px 12px;margin-bottom:6px}
+.mrow.done{border-left-color:var(--ok)}
+.mrow .fl{width:12px;height:12px;border-radius:3px;background:var(--bad)}.mrow.done .fl{background:var(--ok)}
+.mrow .n{font-weight:600}.mrow .s{font-size:13px;color:var(--bad)}.mrow.done .s{color:var(--ok)}
+.mrow audio{grid-column:2/-1;width:100%;height:34px;margin-top:4px}
+.mrow progress{grid-column:2/-1;width:100%;height:6px}
+.mrow input[type=file]{display:none}
 @media (max-width:620px){ .res{grid-template-columns:62px 1fr} .res .act{grid-column:1/-1} .who{display:none} }
 
 /* Forms */
@@ -264,7 +277,7 @@ function newAccessCode(name){ const r = new Uint32Array(4); crypto.getRandomValu
 /* =====================================================================
    STATE
    ===================================================================== */
-const S = {uid:null, isAdmin:false, club:null, schoolsOrders:[], recOrders:[], bookings:[], comps:{}, bookingsError:'', extraEmails:[], tab:'overview', orderFilter:'all', resFilter:'upcoming', admin:null};
+const S = {music:[], uid:null, isAdmin:false, club:null, schoolsOrders:[], recOrders:[], bookings:[], comps:{}, bookingsError:'', extraEmails:[], tab:'overview', orderFilter:'all', resFilter:'upcoming', admin:null};
 const season = currentSeason();
 
 /* ---------- Licence status ---------- */
@@ -346,7 +359,7 @@ async function fb(){
   ]);
   const a = app.initializeApp(FIREBASE_CONFIG);
   const b = app.initializeApp(BOOKINGS_CONFIG, 'bookings');
-  FB = {auth, fs, A:auth.getAuth(a), D:fs.getFirestore(a), B:fs.getFirestore(b)};
+  FB = {auth, fs, app:a, A:auth.getAuth(a), D:fs.getFirestore(a), B:fs.getFirestore(b)};
   return FB;
 }
 async function loadClub(uid){
@@ -363,6 +376,7 @@ async function loadClub(uid){
   S.schoolsOrders = sch.docs.map(d => ({id:d.id, ...d.data()}));
   S.recOrders = rec.docs.map(d => ({id:d.id, ...d.data()}));
   loadBookings();   // in the background, so the hub opens straight away
+  loadMusic();
 }
 async function loadBookings(){
   S.bookingsLoading = true; S.bookingsError = '';
@@ -376,6 +390,53 @@ async function loadBookings(){
   }catch(e){ console.error(e); S.bookingsError = 'We couldn’t load your reservations just now.'; }
   S.bookingsLoading = false;
   if(S.club) render();
+}
+
+/* ---------- Floor music (musicEvents + musicUploads, ngl-schools project) ----------
+   NGL admin publishes each competition's entries to musicEvents/{id}. A club sees its
+   gymnasts when its BG club number matches the competition's club list, or NGL has
+   linked the club by hand. Files go to Storage at music/{event}/{club uid}/{gymnast}.mp3. */
+const MUSIC_MAX_MB = 15;
+function musicMatch(ev){
+  const links = ev.links || {}, bg = String((S.club && S.club.bgNumber) || '').trim();
+  const hit = Object.entries(ev.clubs || {}).find(([k, c]) => links[k] === S.uid || (bg && String(c.bg || '').trim() === bg));
+  if(!hit) return null;
+  const [key, club] = hit, mine = [];
+  (ev.levels || []).forEach(L => (L.gymnasts || []).forEach(g => { if(g.club === key) mine.push({...g, level:L.id, levelName:L.name, session:L.session || ''}); }));
+  return mine.length ? {key, club, mine} : null;
+}
+async function loadMusic(){
+  if(PREVIEW) return;
+  try{
+    const {fs, D} = await fb();
+    const evs = await fs.getDocs(fs.query(fs.collection(D, 'musicEvents'), fs.where('status', '==', 'open')));
+    const out = [];
+    for(const d of evs.docs){
+      const ev = {id:d.id, ...d.data()}, m = musicMatch(ev);
+      if(!m) continue;
+      const ups = await fs.getDocs(fs.query(fs.collection(D, 'musicUploads'), fs.where('clubId', '==', S.uid), fs.where('compKey', '==', ev.id))).catch(e => { console.warn(e); return {docs:[]}; });
+      out.push({ev, ...m, up:Object.fromEntries(ups.docs.map(u => [u.data().gymnastId, u.data()]))});
+    }
+    out.sort((a, b) => String(a.ev.date).localeCompare(String(b.ev.date)));
+    S.music = out;
+  }catch(e){ console.warn('Floor music not loaded', e); S.music = []; }
+  if(S.club) render();
+}
+const musicMissing = () => S.music.reduce((n, m) => n + m.mine.filter(g => !m.up[g.id]).length, 0);
+async function uploadMusic(evId, gymId, file, onProgress){
+  const m = S.music.find(x => x.ev.id === evId), g = m && m.mine.find(x => x.id === gymId);
+  if(!g) throw new Error('not-yours');
+  if(PREVIEW){ m.up[gymId] = {gymnastId:gymId, fileName:file.name, url:URL.createObjectURL(file)}; return; }
+  const {fs, D, app} = await fb();
+  const st = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js');
+  const path = `music/${evId}/${S.uid}/${gymId}.mp3`, ref = st.ref(st.getStorage(app), path);
+  const task = st.uploadBytesResumable(ref, file, {contentType:'audio/mpeg', customMetadata:{club:m.club.name || '', gymnast:g.name}});
+  await new Promise((res, rej) => task.on('state_changed', s => onProgress(s.bytesTransferred / s.totalBytes), rej, res));
+  const url = await st.getDownloadURL(ref);
+  const rec = {compKey:evId, gymnastId:gymId, gymnastName:g.name, level:g.level, clubKey:m.key, clubName:(S.club && S.club.name) || '', clubId:S.uid,
+               fileName:file.name, size:file.size, path, url, uploadedAt:fs.serverTimestamp()};
+  await fs.setDoc(fs.doc(D, 'musicUploads', `${evId}_${gymId}`), rec);
+  m.up[gymId] = rec;
 }
 
 const api = {
@@ -460,6 +521,10 @@ const api = {
 function demoData(){
   const now = Date.now(), day = 86400000, y = new Date().getFullYear() + 1;
   S.uid = 'demo'; S.isAdmin = true;
+  S.music = [{ev:{id:'finals2026', title:'NGL National Finals 2026', date:'2026-11-22', deadline:'Friday 13 November 2026'}, key:'saadi', club:{name:'SAADI Gymnastics'},
+    mine:[['158937','Zoe Schoombee','A'],['158943','Laura Mills','A'],['158941','Edith Davis','A'],['158987','Mathilda Clinch','B'],['158980','Alma Peters','B'],['159013','Isobel Davies','C']]
+      .map(([id, name, lv]) => ({id, name, level:lv, levelName:'Level ' + lv, session: lv === 'A' ? 'Morning' : 'Afternoon'})),
+    up:{'158937':{fileName:'Zoe floor 2026.mp3'}, '158987':{fileName:'Mathilda floor.mp3'}}}];
   S.club = {name:'SAADI Gymnastics', bgNumber:'BG123456', contact:'Dave Brooke', email:'bookingoffice@saadigymnastics.co.uk', accessCode:'SAADI-7K4P', codeActive:true,
             bands:{[season]:20}, rec:{status:'active', band:'m', season, expires:new Date(now + 128 * day)}, recCode:'SAADI-R9TQ', bookingEmails:[]};
   S.schoolsOrders = [
@@ -511,8 +576,10 @@ function setChrome(signedIn){
   $('#signOutBtn').classList.toggle('hidden', !signedIn);
   if(!signedIn) return;
   const owed = unpaid().length;
-  const tabs = S.isAdmin ? [...TABS, ['admin','All clubs']] : TABS;
-  $('#tabs .wrap').innerHTML = tabs.map(([k, l]) => `<button role="tab" data-tab="${k}" aria-selected="${S.tab === k}">${l}${k === 'orders' && owed ? `<span class="count">${owed}</span>` : ''}</button>`).join('');
+  const base = S.music.length ? [...TABS.slice(0, 4), ['music','Floor music'], ...TABS.slice(4)] : TABS;
+  const tabs = S.isAdmin ? [...base, ['admin','All clubs']] : base;
+  const missing = musicMissing();
+  $('#tabs .wrap').innerHTML = tabs.map(([k, l]) => `<button role="tab" data-tab="${k}" aria-selected="${S.tab === k}">${l}${k === 'orders' && owed ? `<span class="count">${owed}</span>` : ''}${k === 'music' && missing ? `<span class="count">${missing}</span>` : ''}</button>`).join('');
   $('#who').innerHTML = `<b>${esc(S.club ? S.club.name : 'NGL admin')}</b>${esc(S.club ? S.club.email : '')}`;
 }
 function render(){
@@ -520,7 +587,7 @@ function render(){
   const v = $('#view');
   const demo = PREVIEW ? '<div class="demo">Preview mode: sample data for SAADI Gymnastics. Nothing is saved.</div>' : '';
   if(!S.club && S.isAdmin && S.tab !== 'admin') S.tab = 'admin';
-  const screens = {overview:screenOverview, licences:screenLicences, orders:screenOrders, reservations:screenReservations, support:screenSupport, club:screenClub, admin:screenAdmin};
+  const screens = {music:screenMusic, overview:screenOverview, licences:screenLicences, orders:screenOrders, reservations:screenReservations, support:screenSupport, club:screenClub, admin:screenAdmin};
   v.innerHTML = demo + (screens[S.tab] || screenOverview)();
   if(S.tab === 'admin') loadAdmin();
 }
@@ -539,6 +606,8 @@ function screenOverview(){
   if(rec.key === 'expired') actions.push(`Your Recreational licence ended on <b>${fmt(rec.exp)}</b>. Lesson plans and ordering are locked until you <a href="${LINKS.recHub}" target="_blank" rel="noopener">renew</a>.`);
   if(owed.length) actions.push(`You have <b>${owed.length} order${owed.length === 1 ? '' : 's'}</b> awaiting payment (${gbp(owedTotal)}). <button class="linkbtn" data-tab="orders">See payment details</button>`);
   const dueSoon = res.filter(r => !r.waitlist && r.due && r.due - new Date() < 30 * 86400000);
+  const mm = musicMissing();
+  if(mm) actions.push(`<b>${mm} gymnast${mm === 1 ? '' : 's'}</b> still need floor music uploading for ${esc(S.music.filter(m => m.mine.some(g => !m.up[g.id])).map(m => m.ev.title).join(' and '))}. <button class="linkbtn" data-tab="music">Upload music</button>`);
   if(dueSoon.length) actions.push(`Entries for <b>${esc(dueSoon[0].compName)}</b>${dueSoon.length > 1 ? ` and ${dueSoon.length - 1} more` : ''} should be completed on JustGo soon. <button class="linkbtn" data-tab="reservations">View reservations</button>`);
   return `<h1 class="page">Welcome, ${esc(S.club.name)}</h1>
     <p class="lead">Everything your club has with NGL, in one place.</p>
@@ -708,6 +777,40 @@ function screenOrders(){
 }
 
 /* ----- Reservations ----- */
+function screenMusic(){
+  if(!S.music.length) return `<h1 class="page">Floor music</h1><div class="empty"><b>Nothing to upload right now</b>When your gymnasts are entered in an NGL competition that needs floor music, they'll appear here.</div>`;
+  return `<h1 class="page">Floor music</h1><p class="lead">Upload an MP3 for each gymnast. We'll play it in the floor running order on the day.</p>` +
+    S.music.map(m => {
+      const done = m.mine.filter(g => m.up[g.id]).length, total = m.mine.length;
+      const levels = [...new Set(m.mine.map(g => g.level))];
+      return `<div class="card accent" style="--c:${done === total ? 'var(--ok)' : 'var(--red)'};margin-bottom:16px">
+        <h3>${esc(m.ev.title)}</h3>
+        <p class="muted small">${esc(fmtLong(dayDate(m.ev.date)))}${m.ev.deadline ? ` · Please upload by <b>${esc(m.ev.deadline)}</b>` : ''}</p>
+        <div class="mbar"><div class="track"><i style="width:${total ? done / total * 100 : 0}%"></i></div><b>${done} of ${total} uploaded</b></div>
+        <p class="small muted">MP3 only, up to ${MUSIC_MAX_MB}MB, no voice-over or lyrics. Uploading again replaces the old file.</p>
+        ${levels.map(lv => { const gs = m.mine.filter(g => g.level === lv);
+          return `<div class="mlevel">${esc(gs[0].levelName)}${gs[0].session ? ` <span class="small muted" style="font-family:var(--body)">${esc(gs[0].session)}</span>` : ''}</div>` +
+            gs.map(g => { const u = m.up[g.id];
+              return `<div class="mrow${u ? ' done' : ''}" data-mrow="${esc(m.ev.id)}|${esc(g.id)}"><span class="fl" aria-hidden="true"></span>
+                <span><span class="n">${esc(g.name)}</span><br><span class="s">${u ? 'Uploaded: ' + esc(u.fileName) : 'Music needed'}</span></span>
+                <label class="btn small${u ? ' ghost' : ''}" style="margin:0">${u ? 'Replace' : 'Upload'}<input type="file" accept=".mp3,audio/mpeg" data-music="${esc(m.ev.id)}|${esc(g.id)}"></label>
+                ${u && u.url ? `<audio controls preload="none" src="${esc(u.url)}"></audio>` : ''}</div>`; }).join(''); }).join('')}
+      </div>`;
+    }).join('');
+}
+document.addEventListener('change', async e => {
+  const inp = e.target; if(!inp.dataset || !inp.dataset.music) return;
+  const f = inp.files[0]; inp.value = ''; if(!f) return;
+  const [evId, gymId] = inp.dataset.music.split('|'), row = inp.closest('.mrow');
+  if(!/\.mp3$/i.test(f.name) && f.type !== 'audio/mpeg'){ toast('Please upload an MP3 file.'); return; }
+  if(f.size > MUSIC_MAX_MB * 1048576){ toast(`That file is over ${MUSIC_MAX_MB}MB. Please export a smaller MP3.`); return; }
+  const bar = document.createElement('progress'); bar.max = 1; bar.value = 0; row.appendChild(bar);
+  row.querySelector('label').style.pointerEvents = 'none';
+  try{ await uploadMusic(evId, gymId, f, p => { bar.value = p; }); toast('Music uploaded'); render(); }
+  catch(err){ console.error(err); bar.remove(); row.querySelector('label').style.pointerEvents = '';
+    toast(String(err && err.code).includes('unauthorized') ? 'Upload was blocked. Please contact the NGL.' : 'Upload failed. Check your connection and try again.'); }
+});
+
 function screenReservations(){
   if(S.bookingsLoading && !S.bookings.length) return `<h1 class="page">Competition reservations</h1><p class="muted"><span class="spin"></span>Loading your reservations…</p>`;
   const all = myReservations(), f = S.resFilter;
@@ -906,7 +1009,7 @@ function downloadIcs(list, file){
    ===================================================================== */
 async function start(){
   const h = (location.hash || '').slice(1);
-  if(h && [...TABS.map(t => t[0]), 'admin'].includes(h)) S.tab = h;
+  if(h && [...TABS.map(t => t[0]), 'admin', 'music'].includes(h)) S.tab = h;
   render();
 }
 (async () => {
