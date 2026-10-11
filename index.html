@@ -233,6 +233,9 @@ const CONTACT_EMAIL = 'admin@nationalgymnasticsleague.co.uk';
 const BANK = { accountName:'National Gymnastics League', sortCode:'60-84-64', accountNumber:'93416867' };
 const PAYMENT_DUE_MONTHS = 4;   // matches the booking system's payment reminder
 
+/* Schools Club Licence bands (must match nglschools.co.uk/club) */
+const SCHOOLS_BANDS = { xs:{short:'1–24', price:150}, sm:{short:'25–49', price:250}, s:{short:'50–99', price:400}, m:{short:'100–249', price:750},
+                        m2:{short:'250–399', price:1000}, l:{short:'400–599', price:1250}, xl:{short:'600+', price:1500} };
 /* Recreational Club Licence bands (must match nglrecreational.co.uk) */
 const REC_BANDS = { xs:{short:'1–24', price:200}, sm:{short:'25–49', price:300}, s:{short:'50–99', price:500}, m:{short:'100–249', price:1000},
                     m2:{short:'250–399', price:1250}, l:{short:'400–599', price:1500}, xl:{short:'600+', price:2000} };
@@ -292,15 +295,16 @@ const season = currentSeason();
 /* ---------- Licence status ---------- */
 const isLicenceOrder = o => (o.type || 'licence') === 'licence';
 function schoolsStatus(){
-  const c = S.club || {};
-  const yearOrders = S.schoolsOrders.filter(o => o.season === season && isLicenceOrder(o));
-  const paid = yearOrders.filter(o => o.status === 'paid').reduce((a, o) => a + (o.qty || 0), 0);
-  const waiting = yearOrders.filter(o => o.status !== 'paid').reduce((a, o) => a + (o.qty || 0), 0);
-  const price = c.bands && c.bands[season];
-  if(c.codeActive && (paid || price)) return {key:'active', label:'Active ' + season, cls:'ok', paid, waiting, price};
-  if(waiting) return {key:'awaiting', label:'Awaiting payment', cls:'warn', paid, waiting, price};
-  if(S.schoolsOrders.length) return {key:'lapsed', label:'Not renewed for ' + season, cls:'bad', paid, waiting, price};
-  return {key:'none', label:'Not started', cls:'off', paid, waiting, price};
+  // Oct 2026: one yearly Schools Club Licence on clubs/{uid}.schools (set by NGL when paid)
+  const s = (S.club && S.club.schools) || null;
+  const pending = S.schoolsOrders.find(o => o.type === 'club-licence' && (o.kind === 'start' || o.kind === 'renew') && o.status !== 'paid');
+  if(s && s.status === 'active' && s.expires){
+    const exp = toDate(s.expires), days = Math.ceil((exp - new Date()) / 86400000);
+    if(days > 0) return {key:'active', label: days <= 45 ? 'Renew soon' : 'Active', cls: days <= 45 ? 'warn' : 'ok', band:SCHOOLS_BANDS[s.band], exp, days, pending};
+    return {key:'expired', label:'Expired', cls:'bad', band:SCHOOLS_BANDS[s.band], exp, days, pending};
+  }
+  if(pending) return {key:'awaiting', label:'Awaiting payment', cls:'warn', pending};
+  return {key:'none', label:'Not started', cls:'off'};
 }
 function recStatus(){
   const r = (S.club && S.club.rec) || null;
@@ -320,8 +324,10 @@ function allOrders(){
   const sch = S.schoolsOrders.map(o => ({
     ref:o.id, pathway:'schools', date:toDate(o.createdAt), status:o.status || 'awaiting-payment', paidAt:toDate(o.paidAt),
     desc: o.type === 'graduation' ? `Graduation: ${o.qty} graduate${o.qty === 1 ? '' : 's'}${o.eventTitle ? ' (' + o.eventTitle + ')' : ''}`
-                                  : `${o.qty} Schools licence${o.qty === 1 ? '' : 's'}${o.schoolName ? ': ' + o.schoolName : ''}`,
-    total:(o.qty || 0) * (o.price || 0), season:o.season, hub:LINKS.schoolsHub
+        : o.type === 'club-licence' ? (o.kind === 'renew' ? 'Schools licence renewal' : 'New Schools Club Licence') + (SCHOOLS_BANDS[o.band] ? ` (${SCHOOLS_BANDS[o.band].short} gymnasts)` : '')
+        : o.type === 'supplies' ? ['book','cert','tshirt'].map(k => { const n = (o.lines || []).filter(l => l.kind === k).reduce((a, l) => a + l.qty, 0); return n ? `${n} ${k === 'book' ? 'book' : k === 'cert' ? 'certificate' : 't-shirt'}${n === 1 ? '' : 's'}` : ''; }).filter(Boolean).join(', ') + (o.upgradeTo ? ' + band upgrade' : '')
+        : `${o.qty} Schools licence${o.qty === 1 ? '' : 's'}${o.schoolName ? ': ' + o.schoolName : ''} (old per-gymnast)`,
+    total: o.lines ? o.lines.reduce((a, l) => a + (l.qty || 0) * (l.unit || 0), 0) : (o.qty || 0) * (o.price || 0), season:o.season, hub:LINKS.schoolsHub
   }));
   const rec = S.recOrders.map(o => {
     const lines = o.lines || [];
@@ -534,12 +540,11 @@ function demoData(){
     mine:[['158937','Zoe Schoombee','A'],['158943','Laura Mills','A'],['158941','Edith Davis','A'],['158987','Mathilda Clinch','B'],['158980','Alma Peters','B'],['159013','Isobel Davies','C']]
       .map(([id, name, lv]) => ({id, name, level:lv, levelName:'Level ' + lv, session: lv === 'A' ? 'Morning' : 'Afternoon'})),
     up:{'158937':{fileName:'Zoe floor 2026.mp3'}, '158987':{fileName:'Mathilda floor.mp3'}}}];
-  S.club = {name:'SAADI Gymnastics', bgNumber:'BG123456', contact:'Dave Brooke', email:'bookingoffice@saadigymnastics.co.uk', accessCode:'SAADI-7K4P', codeActive:true,
+  S.club = {name:'SAADI Gymnastics', bgNumber:'BG123456', contact:'Dave Brooke', email:'bookingoffice@saadigymnastics.co.uk', accessCode:'SAADI-7K4P', codeActive:true, schools:{status:'active', band:'m2', season, expires:new Date(now + 334 * day)},
             bands:{[season]:20}, rec:{status:'active', band:'m', season, expires:new Date(now + 128 * day)}, recCode:'SAADI-R9TQ', bookingEmails:[]};
   S.schoolsOrders = [
-    {id:'ORD-K3M7Q', type:'licence', schoolName:'Brookfield Primary', qty:183, price:20, season, status:'paid', createdAt:new Date(now - 30 * day), paidAt:new Date(now - 26 * day)},
-    {id:'ORD-P8W2D', type:'licence', schoolName:'St Mary’s C of E Primary', qty:126, price:20, season, status:'paid', createdAt:new Date(now - 29 * day), paidAt:new Date(now - 26 * day)},
-    {id:'ORD-T6H4N', type:'licence', schoolName:'Oakwood Junior School', qty:207, price:20, season, status:'awaiting-payment', createdAt:new Date(now - 5 * day)},
+    {id:'ORD-K3M7Q', type:'club-licence', kind:'start', band:'m2', season, status:'paid', createdAt:new Date(now - 30 * day), paidAt:new Date(now - 26 * day), lines:[{kind:'club', qty:1, unit:1000}, {kind:'discount', qty:1, unit:-50}]},
+    {id:'ORD-P8W2D', type:'supplies', season, status:'awaiting-payment', createdAt:new Date(now - 5 * day), lines:[{kind:'book', qty:120, unit:5}, {kind:'cert', qty:300, unit:0.1}, {kind:'postage', qty:1, unit:12}]},
     {id:'ORD-G2X9B', type:'graduation', eventTitle:'NGL Schools Graduation', qty:64, price:5, season, status:'awaiting-payment', createdAt:new Date(now - 2 * day)}
   ];
   S.recOrders = [
@@ -749,14 +754,13 @@ function licenceCard(k, compact){
     return `<div class="card accent" style="--c:var(--schools)"><img class="logo" src="${LOGOS.schools}" alt="NGL Schools">
       <span class="pill ${s.cls}">${esc(s.label)}</span>
       <dl class="kv">
-        <dt>School year</dt><dd>${season}</dd>
-        <dt>Licences paid</dt><dd>${s.paid || 0}</dd>
-        ${s.waiting ? `<dt>Awaiting payment</dt><dd>${s.waiting}</dd>` : ''}
-        ${s.price ? `<dt>Your price</dt><dd>${gbp(s.price)} per gymnast</dd>` : ''}
+        ${s.band ? `<dt>Club Licence</dt><dd>${esc(s.band.short)} gymnasts</dd>` : ''}
+        ${s.exp ? `<dt>${s.key === 'expired' ? 'Ended' : 'Renews'}</dt><dd>${fmt(s.exp)}${s.key === 'active' ? ` <span class="muted small">(${s.days} day${s.days === 1 ? '' : 's'})</span>` : ''}</dd>` : ''}
+        ${s.pending ? `<dt>Awaiting payment</dt><dd class="mono">${esc(s.pending.id)}</dd>` : ''}
         ${compact ? '' : `<dt>Family code</dt><dd class="mono">${esc(S.club.accessCode || '–')} ${S.club.codeActive ? '<span class="pill ok">Live</span>' : '<span class="pill off">Off</span>'}</dd>`}
       </dl>
-      ${compact ? '' : '<p class="small muted">Licences are ordered per school. Your band is set for the whole school year and reviewed each September.</p>'}
-      <div class="btn-row"><a class="btn" href="${LINKS.schoolsHub}" target="_blank" rel="noopener">${s.key === 'none' ? 'Start NGL Schools' : 'Open Schools Club Hub'}</a></div></div>`;
+      ${compact ? '' : '<p class="small muted">Your Schools Club Licence switches on your family code and lets you order Awards Books, certificates and t-shirts. It runs for 12 months from activation.</p>'}
+      <div class="btn-row"><a class="btn" href="${LINKS.schoolsHub}" target="_blank" rel="noopener">${s.key === 'none' ? 'Start NGL Schools' : s.key === 'expired' || (s.key === 'active' && s.days <= 45) ? 'Renew in the Schools Club Hub' : 'Open Schools Club Hub'}</a></div></div>`;
   }
   const r = recStatus();
   return `<div class="card accent" style="--c:var(--rec)"><img class="logo" src="${LOGOS.recreational}" alt="NGL Recreational">
@@ -895,11 +899,12 @@ function screenClub(){
 function screenAdmin(){
   if(!S.admin) return `<h1 class="page">All clubs</h1><p class="muted"><span class="spin"></span>Loading every club…</p>`;
   const {clubs, orders, recOrders} = S.admin, now = new Date();
-  const owed = id => [...orders.filter(o => o.clubId === id && o.status !== 'paid').map(o => (o.qty || 0) * (o.price || 0)),
+  const owed = id => [...orders.filter(o => o.clubId === id && o.status !== 'paid').map(o => o.lines ? o.lines.reduce((a, l) => a + l.qty * l.unit, 0) : (o.qty || 0) * (o.price || 0)),
                       ...recOrders.filter(o => o.clubId === id && o.status !== 'paid').map(o => (o.lines || []).reduce((a, l) => a + l.qty * l.unit, 0))].reduce((a, b) => a + b, 0);
   const rows = clubs.slice().sort((a, b) => String(a.name).localeCompare(String(b.name))).map(c => {
     const r = c.rec, exp = r && toDate(r.expires), recOn = r && r.status === 'active' && exp > now;
-    return {c, recOn, exp, schOn: !!c.codeActive, owed: owed(c.id)};
+    const sl = c.schools, sexp = sl && toDate(sl.expires), schOn = !!(sl && sl.status === 'active' && sexp > now);
+    return {c, recOn, exp, schOn, sexp, owed: owed(c.id)};
   });
   const total = rows.reduce((a, r) => a + r.owed, 0);
   return `<h1 class="page">All clubs</h1>
@@ -911,8 +916,8 @@ function screenAdmin(){
       <div class="card stat ${total ? 'alert' : ''}"><div class="v">${gbp(total)}</div><div class="l">Awaiting payment</div></div>
     </div>
     <div class="tablewrap"><table class="list"><thead><tr><th>Club</th><th>Contact</th><th>Schools</th><th>Recreational</th><th class="num">Awaiting payment</th></tr></thead><tbody>
-    ${rows.map(({c, recOn, exp, schOn, owed}) => `<tr><td><b>${esc(c.name || 'Unnamed')}</b><div class="small muted">${esc(c.bgNumber || '')}</div></td><td>${esc(c.contact || '')}<div class="small muted">${esc(c.email || '')}</div></td>
-      <td>${schOn ? '<span class="pill ok">Active</span>' : '<span class="pill off">–</span>'}</td>
+    ${rows.map(({c, recOn, exp, schOn, sexp, owed}) => `<tr><td><b>${esc(c.name || 'Unnamed')}</b><div class="small muted">${esc(c.bgNumber || '')}</div></td><td>${esc(c.contact || '')}<div class="small muted">${esc(c.email || '')}</div></td>
+      <td>${schOn ? `<span class="pill ok">${esc((SCHOOLS_BANDS[c.schools.band] || {}).short || 'Active')}</span><div class="small muted">to ${fmt(sexp)}</div>` : (c.schools ? '<span class="pill bad">Lapsed</span>' : '<span class="pill off">–</span>')}</td>
       <td>${recOn ? `<span class="pill ok">${esc((REC_BANDS[c.rec.band] || {}).short || 'Active')}</span><div class="small muted">to ${fmt(exp)}</div>` : (c.rec ? '<span class="pill bad">Lapsed</span>' : '<span class="pill off">–</span>')}</td>
       <td class="num">${owed ? `<b style="color:var(--bad)">${gbp(owed)}</b>` : '–'}</td></tr>`).join('')}
     </tbody></table></div>`;
