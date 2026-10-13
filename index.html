@@ -180,8 +180,14 @@ footer{color:var(--muted);font-size:13px;text-align:center;padding:20px 16px 30p
 .pw .who{font-size:13px;font-weight:700;color:var(--c2,var(--c));margin:0 0 6px}
 .pw ul{margin:6px 0 0;padding-left:18px}.pw li{margin:3px 0}
 .pw .btn-row{margin-top:auto;padding-top:12px}
-.pw.soon{opacity:.7}
+.pw.soon>*{opacity:.6}
 .disc-talk{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;border-top:5px solid var(--red)}
+.pw .logo{display:block;align-self:flex-start;height:auto;width:auto;max-width:100%;max-height:64px;object-fit:contain;margin:0 0 10px}
+body.disc-on{background:linear-gradient(180deg,#14254a 0,#1e1a4c 900px,#1e1a4c 100%)}
+body.disc-on h2.sec{color:#fff}
+body.disc-on .disc-hero{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14)}
+body.disc-on footer{color:#b9bbdc}body.disc-on footer a{color:#fff}
+body.disc-on .card{border-color:transparent;box-shadow:0 6px 18px rgba(0,0,0,.18)}
 @media (max-width:760px){.disc-hero{grid-template-columns:1fr;padding:20px}.disc-hero h1{font-size:28px}}
 </style>
 </head>
@@ -633,6 +639,7 @@ function render(){
   if(!S.club && S.isAdmin && S.tab !== 'admin') S.tab = 'admin';
   if(S.club && !S.discoverChecked){ S.discoverChecked = true; if(isNewClub() && S.tab === 'overview' && !location.hash) S.tab = 'discover'; }
   const screens = {discover:screenDiscover, music:screenMusic, overview:screenOverview, licences:screenLicences, orders:screenOrders, reservations:screenReservations, support:screenSupport, club:screenClub, admin:screenAdmin};
+  document.body.classList.toggle('disc-on', S.tab === 'discover');
   v.innerHTML = demo + (screens[S.tab] || screenOverview)();
   if(S.tab === 'admin') loadAdmin();
 }
