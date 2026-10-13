@@ -164,6 +164,25 @@ footer{color:var(--muted);font-size:13px;text-align:center;padding:20px 16px 30p
 .app b{font-family:var(--cond);font-size:20px;color:var(--navy);line-height:1.15}
 .app span{font-size:13.5px;color:var(--muted)}
 .app em{font-style:normal;font-size:12.5px;font-weight:700;color:var(--c,var(--navy));margin-top:auto;padding-top:6px}
+
+/* ---------- Discover NGL (new clubs) ---------- */
+.disc-hero{display:grid;grid-template-columns:1.2fr 1fr;gap:22px;align-items:center;background:linear-gradient(135deg,#1e1a4c,#2a2560);color:#fff;border-radius:10px;padding:26px 26px}
+.disc-hero h1{font-family:var(--cond);font-size:34px;line-height:1.08;margin:0 0 10px;color:#fff}
+.disc-hero p{color:#d9daf2;margin:8px 0}
+.disc-hero .eyebrow{font-size:12.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#4fd3da}
+.disc-hero .dots{display:flex;gap:7px;margin:12px 0 4px}.disc-hero .dots i{width:13px;height:13px;border-radius:50%;display:block}
+.disc-anim{width:100%;max-width:340px;justify-self:center;aspect-ratio:4/5;border:0;border-radius:10px;box-shadow:0 14px 30px rgba(0,0,0,.35);background:#1e1a4c}
+.disc-hero .btn{background:#fff;color:var(--navy);border-color:#fff}.disc-hero .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.55)}
+.prob{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.prob .card .was{font-size:13px;color:#8a879f;text-decoration:line-through;margin:0 0 4px}
+.prob .card .now{font-weight:700;color:var(--navy);margin:0}
+.pw{border-left:6px solid var(--c);display:flex;flex-direction:column}
+.pw .who{font-size:13px;font-weight:700;color:var(--c2,var(--c));margin:0 0 6px}
+.pw ul{margin:6px 0 0;padding-left:18px}.pw li{margin:3px 0}
+.pw .btn-row{margin-top:auto;padding-top:12px}
+.pw.soon{opacity:.7}
+.disc-talk{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;border-top:5px solid var(--red)}
+@media (max-width:760px){.disc-hero{grid-template-columns:1fr;padding:20px}.disc-hero h1{font-size:28px}}
 </style>
 </head>
 <body>
@@ -594,7 +613,7 @@ function demoAdmin(){
 /* =====================================================================
    SCREENS
    ===================================================================== */
-const TABS = [['overview','Overview'], ['licences','Licences'], ['orders','Orders'], ['reservations','Reservations'], ['support','Club Support'], ['club','Club']];
+const TABS = [['discover','Discover NGL'], ['overview','Overview'], ['licences','Licences'], ['orders','Orders'], ['reservations','Reservations'], ['support','Club Support'], ['club','Club']];
 function setChrome(signedIn){
   $('#tabs').classList.toggle('hidden', !signedIn);
   $('#who').classList.toggle('hidden', !signedIn);
@@ -612,7 +631,8 @@ function render(){
   const v = $('#view');
   const demo = PREVIEW ? '<div class="demo">Preview mode: sample data for SAADI Gymnastics. Nothing is saved.</div>' : '';
   if(!S.club && S.isAdmin && S.tab !== 'admin') S.tab = 'admin';
-  const screens = {music:screenMusic, overview:screenOverview, licences:screenLicences, orders:screenOrders, reservations:screenReservations, support:screenSupport, club:screenClub, admin:screenAdmin};
+  if(S.club && !S.discoverChecked){ S.discoverChecked = true; if(isNewClub() && S.tab === 'overview' && !location.hash) S.tab = 'discover'; }
+  const screens = {discover:screenDiscover, music:screenMusic, overview:screenOverview, licences:screenLicences, orders:screenOrders, reservations:screenReservations, support:screenSupport, club:screenClub, admin:screenAdmin};
   v.innerHTML = demo + (screens[S.tab] || screenOverview)();
   if(S.tab === 'admin') loadAdmin();
 }
@@ -620,6 +640,70 @@ function go(tab){ S.tab = tab; render(); window.scrollTo(0, 0); try{ history.rep
 
 function pathTag(k){ const p = PATHWAYS[k] || PATHWAYS.general; return `<span class="ptag${p.dark ? ' dark' : ''}" style="--c:${p.c}">${esc(p.short)}</span>`; }
 function statusPill(s){ return s === 'paid' ? '<span class="pill ok">Paid</span>' : '<span class="pill warn">Awaiting payment</span>'; }
+
+
+/* ----- Discover NGL: what a club gets, shown first to clubs that haven't started yet ----- */
+const ANIM_URL = 'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-its-all-connected.html';
+function isNewClub(){
+  const sch = schoolsStatus(), rec = recStatus();
+  return !!S.club && sch.key === 'none' && rec.key === 'none' && !allOrders().length;
+}
+function screenDiscover(){
+  const club = S.club ? S.club.name : 'your club';
+  const talk = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('NGL: a quick call for ' + club)}&body=${encodeURIComponent('Hi Dave,\n\nWe’d like to hear more about the NGL. A good time to call is:\n\nClub: ' + club + '\n')}`;
+  const dots = Object.values(PATHWAYS).map(p => `<i style="background:${p.c}"></i>`).join('');
+  const prob = (was, now) => `<div class="card"><p class="was">${esc(was)}</p><p class="now">${esc(now)}</p></div>`;
+  const pw = (k, who, points, cta) => { const p = PATHWAYS[k]; return `<div class="card pw${cta ? '' : ' soon'}" style="--c:${p.c};--c2:${p.dark ? '#8a6d00' : p.c}">
+      ${LOGOS[k] ? `<img class="logo" src="${LOGOS[k]}" alt="${esc(p.label)}">` : `<h3>${esc(p.label)}</h3>`}
+      <p class="who">${esc(who)}</p><ul>${points.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+      <div class="btn-row">${cta || '<span class="pill off">Coming soon</span>'}</div></div>`; };
+  const ext = (href, label, ghost) => `<a class="btn${ghost ? ' ghost' : ''}" href="${esc(href)}" target="_blank" rel="noopener">${esc(label)}</a>`;
+  return `
+    <section class="disc-hero">
+      <div>
+        <p class="eyebrow">Welcome to the NGL${S.club ? ', ' + esc(S.club.name) : ''}</p>
+        <h1>One connected framework for British Gymnastics clubs</h1>
+        <div class="dots" aria-hidden="true">${dots}</div>
+        <p>Training, awards, competitions and club support, across seven pathways for every age and ability. Built by a British Gymnastics club, for every club.</p>
+        <p>This year we launched our first competition league. Next season is almost fully booked and twice the size. This is the bigger picture.</p>
+        <div class="btn-row"><a class="btn" href="#pathways" data-scroll="pathways">See what’s inside</a><a class="btn ghost" href="${talk}">Talk to Dave</a></div>
+      </div>
+      <iframe class="disc-anim" src="${ANIM_URL}" title="NGL: It's All Connected" loading="lazy"></iframe>
+    </section>
+
+    <h2 class="sec">The problems we’re solving</h2>
+    <div class="prob">
+      ${prob('Lesson plans that don’t link to the awards', 'Plans that teach exactly what each award book assesses')}
+      ${prob('Awards that don’t link to competitions', 'Competitions built from the same skills, level for level')}
+      ${prob('Parents asking what their child is working on', 'A family app showing this fortnight’s skills and where they lead')}
+      ${prob('Judges that are hard to find', 'Live-scored competitions with paid, trained judges')}
+      ${prob('A plan that doesn’t fit your hall', 'Term plans built around your apparatus and term length')}
+      ${prob('Five logins and a pile of spreadsheets', 'One club account for licences, orders and bookings')}
+    </div>
+
+    <h2 class="sec" id="pathways">Seven pathways, one framework</h2>
+    <div class="grid g2">
+      ${pw('recreational', 'Ages 4–18 · recreational classes', ['Tailor the term programme to your club: plans built from your apparatus and term length', 'Tailor every class to your gymnasts: Ruby, Pink, Teal and Indigo versions of every station', 'Four award books, 16 levels, assessed in the last two weeks of term', 'Club competitions where every gymnast medals', 'A family app so parents follow the journey'], ext(LINKS.recHub, 'Explore the sample') + ext(LINKS.recHub + '#licence', 'Licence & pricing', true))}
+      ${pw('schools', 'Ages 5–11 · delivered in local schools', ['Run gymnastics in your local schools under the NGL name', 'Awards books and routine videos for every level', 'A family code so parents can see progress', 'A graduation performance to finish each programme'], ext(LINKS.schoolsHub, 'Explore NGL Schools'))}
+      ${pw('general', '2–10 hours a week', ['Skills books, assessments and competitions', 'WAG Levels 1–4 and MAG Levels 1–3', '24 clubs across four locations in 2027', 'Builds to the NGL National Finals'], ext(LINKS.reserve, 'Reserve competition places'))}
+      ${pw('performance', '10+ hours a week', ['Six levels with set work options', 'Extra preparation before British Gymnastics events', 'A place to compete when the usual route doesn’t fit', 'Skills books, assessments and competitions'], ext(LINKS.reserve, 'Reserve competition places'))}
+      ${pw('preschool', 'Ages 3–4', ['Award passports, with a country medal for every level', 'Themed training plans', 'A graduation to celebrate moving on'], `<a class="btn" href="mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('NGL Pre-School')}">Ask about Pre-School</a>`)}
+      ${pw('university', 'Students and adults', ['University League and Masters are on the way', 'The same connected approach for older gymnasts'], '')}
+    </div>
+
+    <h2 class="sec">Free to use today</h2>
+    <div class="apps">
+      <a class="app" style="--c:var(--perf)" href="https://davidcbrooke.github.io/GYMNASTICS-RESULTS/NGL_Rotation_Planner.html" target="_blank" rel="noopener"><b>Rotation Planner</b><span>Build your weekly session plan and show it live on a gym screen.</span><em>Open planner ↗</em></a>
+      <button type="button" class="app" style="--c:var(--red);text-align:left;font:inherit;cursor:pointer" data-tab="support"><b>Club Support offers</b><span>Partner offers for NGL clubs: HR, coaching, volunteering, JustGo and more.</span><em>See offers →</em></button>
+      <a class="app" style="--c:var(--general)" href="${esc(LINKS.reserve)}" target="_blank" rel="noopener"><b>Competition places</b><span>Reserve places at NGL competitions for your gymnasts.</span><em>Reserve places ↗</em></a>
+      <a class="app" style="--c:var(--navy-2)" href="https://www.nationalgymnasticsleague.co.uk/register-to-become-a-remote-judge" target="_blank" rel="noopener"><b>Judging Pathway</b><span>Paid judging and real experience for your coaches and volunteers.</span><em>Share with your judges ↗</em></a>
+    </div>
+
+    <div class="card disc-talk" style="margin-top:22px">
+      <div><h3>Want to talk it through?</h3><p class="muted" style="margin:0">We’re a British Gymnastics club too, and happy to show you how it would work for yours.</p></div>
+      <a class="btn red" href="${talk}">Talk to Dave</a>
+    </div>`;
+}
 
 /* ----- Overview ----- */
 function screenOverview(){
@@ -636,6 +720,7 @@ function screenOverview(){
   if(dueSoon.length) actions.push(`Entries for <b>${esc(dueSoon[0].compName)}</b>${dueSoon.length > 1 ? ` and ${dueSoon.length - 1} more` : ''} should be completed on JustGo soon. <button class="linkbtn" data-tab="reservations">View reservations</button>`);
   return `<h1 class="page">Welcome, ${esc(S.club.name)}</h1>
     <p class="lead">Everything your club has with NGL, in one place.</p>
+    ${isNewClub() ? `<div class="card" style="border-left:5px solid var(--rec);margin-bottom:16px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap"><div><h3 style="margin:0">New to the NGL?</h3><p class="muted" style="margin:2px 0 0">See what’s inside every pathway, with samples, before you start.</p></div><button class="btn" data-tab="discover">Discover NGL →</button></div>` : ''}
     ${actions.length ? `<div class="card" style="border-left:5px solid var(--red);margin-bottom:16px"><h3>Needs your attention</h3>${actions.map(a => `<p>${a}</p>`).join('')}</div>` : ''}
     <div class="grid g4">
       <div class="card stat"><div class="v">${[sch, rec].filter(s => s.key === 'active').length}</div><div class="l">Active licences</div><div class="s">${[sch.key === 'active' ? 'Schools' : '', rec.key === 'active' ? 'Recreational' : ''].filter(Boolean).join(' and ') || 'None yet'}</div></div>
