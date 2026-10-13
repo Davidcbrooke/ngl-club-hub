@@ -199,8 +199,8 @@ footer{color:var(--muted);font-size:13px;text-align:center;padding:20px 16px 30p
    Data:
      ngl-schools project   clubs/{uid}, admins/{uid}, orders (Schools),
                            recOrders (Recreational)  — signed-in club only
-     saadi-rotation project ngl_competitions, ngl_bookings (public read),
-                           matched to the club by booking email
+     saadi-rotation project ngl_competitions, ngl_bookings (public read, no
+                           contact details), matched to the club by emailHash
 
    PREVIEW: add ?demo to the address to see sample data (nothing saved).
    ===================================================================== */
@@ -347,9 +347,20 @@ function bookingEmails(){
   const list = [S.club && S.club.email, ...((S.club && S.club.bookingEmails) || []), ...S.extraEmails].map(lc).filter(Boolean);
   return [...new Set(list)];
 }
+// Bookings no longer carry contact emails (those are admin-only); each holds a
+// SHA-256 emailHash of the booking email, which we compare against the club's emails.
+const EMAIL_HASH = {};
+async function ensureHashes(){
+  for(const e of bookingEmails()){
+    if(EMAIL_HASH[e] || !(window.crypto && crypto.subtle)) continue;
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(e));
+    EMAIL_HASH[e] = Array.from(new Uint8Array(buf)).map(x => x.toString(16).padStart(2, '0')).join('');
+  }
+}
 function myReservations(){
   const emails = bookingEmails();
-  return S.bookings.filter(b => emails.includes(lc(b.email)))
+  const hashes = emails.map(e => EMAIL_HASH[e]).filter(Boolean);
+  return S.bookings.filter(b => (b.emailHash && hashes.includes(b.emailHash)) || (b.email && emails.includes(lc(b.email))))
     .map(b => {
       const c = S.comps[b.compId] || {};
       const date = dayDate(b.compDate || c.date);
@@ -397,9 +408,9 @@ async function loadBookings(){
   S.bookingsLoading = true; S.bookingsError = '';
   try{
     const {fs, B} = await fb();
-    // Reservations are matched on the email used to book. The booking database is
-    // public-read today; when its rules are tightened, switch this to a where('email','in',…) query.
-    const [comps, books] = await Promise.all([fs.getDocs(fs.collection(B, 'ngl_competitions')), fs.getDocs(fs.collection(B, 'ngl_bookings'))]);
+    // Reservations are matched on the email used to book, via the emailHash on each
+    // booking (contact details themselves are admin-only in ngl_booking_contacts).
+    const [comps, books] = await Promise.all([fs.getDocs(fs.collection(B, 'ngl_competitions')), fs.getDocs(fs.collection(B, 'ngl_bookings')), ensureHashes()]);
     S.comps = Object.fromEntries(comps.docs.map(d => [d.id, d.data()]));
     S.bookings = books.docs.map(d => ({id:d.id, ...d.data()}));
   }catch(e){ console.error(e); S.bookingsError = 'We couldn’t load your reservations just now.'; }
@@ -1003,6 +1014,7 @@ document.addEventListener('submit', async e => {
       if(!email.includes('@')) return;
       if(bookingEmails().includes(email)){ $('#emailMsg').innerHTML = '<div class="err">That email is already on the list.</div>'; return; }
       const saved = await api.addBookingEmail(email);
+      await ensureHashes();
       render();
       if(!saved) $('#emailMsg').innerHTML = '<div class="err">Added for now, but we couldn’t save it to your account. Please email us so we can add it.</div>';
     }
