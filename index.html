@@ -646,7 +646,7 @@ function render(){
   const screens = {discover:screenDiscover, music:screenMusic, overview:screenOverview, licences:screenLicences, orders:screenOrders, reservations:screenReservations, support:screenSupport, club:screenClub, admin:screenAdmin};
   document.body.classList.toggle('disc-on', S.tab === 'discover');
   v.innerHTML = demo + (screens[S.tab] || screenOverview)();
-  if(S.tab === 'admin') loadAdmin();
+  if(S.tab === 'admin' && S.isAdmin) loadAdmin();
 }
 function go(tab){ S.tab = tab; render(); window.scrollTo(0, 0); try{ history.replaceState(null, '', '#' + tab); }catch(_){} }
 
@@ -1010,6 +1010,7 @@ function screenClub(){
 /* ----- Admin: all clubs ----- */
 const CAMPAIGN_START = new Date('2026-10-15T17:30:00Z');
 function screenAdmin(){
+  if(!S.isAdmin) return `<h1 class="page">All clubs</h1><div class="card"><p style="margin:0 0 8px"><b>This page is for NGL admins only.</b></p><p class="muted" style="margin:0">You're logged in as ${esc(S.club ? S.club.email || S.club.name : 'a club')}, which is a club account. Log out, then log in with your NGL admin account to see every club that has registered.</p></div>`;
   if(!S.admin) return `<h1 class="page">All clubs</h1><p class="muted"><span class="spin"></span>Loading every club…</p>`;
   const {clubs, orders, recOrders} = S.admin, now = new Date();
   const owed = id => [...orders.filter(o => o.clubId === id && o.status !== 'paid').map(o => o.lines ? o.lines.reduce((a, l) => a + l.qty * l.unit, 0) : (o.qty || 0) * (o.price || 0)),
