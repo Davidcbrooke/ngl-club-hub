@@ -533,7 +533,7 @@ const api = {
           code = c;
         }
       }catch(e){ console.warn('Schools code not created', e); }
-      await fs.setDoc(fs.doc(D, 'clubs', uid), {name:d.name, bgNumber:d.bgNumber, contact:d.contact, email:d.email, accessCode:code, source:'clubhub', createdAt:fs.serverTimestamp()});
+      await fs.setDoc(fs.doc(D, 'clubs', uid), {name:d.name, bgNumber:d.bgNumber, contact:d.contact, email:d.email, accessCode:code, source:location.hash === '#discover' ? 'email-campaign' : 'clubhub', createdAt:fs.serverTimestamp()});
       await loadClub(uid);
       return {ok:true};
     }catch(e){ return {ok:false, reason:friendlyAuthError(e)}; }
@@ -614,7 +614,7 @@ function demoAdmin(){
       {id:'demo', ...S.club},
       {id:'c2', name:'Northgate Gymnastics Club', email:'info@northgate.example', contact:'Sam Patel', rec:{status:'active', band:'s', expires:new Date(now + 300 * day)}},
       {id:'c3', name:'Riverside Gym Academy', email:'office@riverside.example', contact:'Jo Evans', codeActive:true, bands:{[season]:22}},
-      {id:'c4', name:'Elite Gymnastics', email:'hello@elite.example', contact:'Chris Hughes'}
+      {id:'c4', name:'Elite Gymnastics', email:'hello@elite.example', contact:'Chris Hughes', source:'email-campaign', createdAt:new Date(now - 0.3 * day)}
     ],
     orders:[...S.schoolsOrders.map(o => ({...o, clubId:'demo'})), {id:'ORD-AAAA1', clubId:'c3', qty:140, price:22, season, status:'awaiting-payment', createdAt:new Date(now - 3 * day)}],
     recOrders:[...S.recOrders.map(o => ({...o, clubId:'demo'})), {id:'ORD-BBBB2', clubId:'c2', kind:'start', band:'s', status:'paid', createdAt:new Date(now - 65 * day), lines:[{kind:'licence', qty:1, unit:500}]}]
@@ -1008,6 +1008,7 @@ function screenClub(){
 }
 
 /* ----- Admin: all clubs ----- */
+const CAMPAIGN_START = new Date('2026-10-15T17:30:00Z');
 function screenAdmin(){
   if(!S.admin) return `<h1 class="page">All clubs</h1><p class="muted"><span class="spin"></span>Loading every club…</p>`;
   const {clubs, orders, recOrders} = S.admin, now = new Date();
@@ -1016,9 +1017,14 @@ function screenAdmin(){
   const rows = clubs.slice().sort((a, b) => String(a.name).localeCompare(String(b.name))).map(c => {
     const r = c.rec, exp = r && toDate(r.expires), recOn = r && r.status === 'active' && exp > now;
     const sl = c.schools, sexp = sl && toDate(sl.expires), schOn = !!(sl && sl.status === 'active' && sexp > now);
-    return {c, recOn, exp, schOn, sexp, owed: owed(c.id)};
-  });
+    return {c, recOn, exp, schOn, sexp, owed: owed(c.id), joined: c.createdAt ? toDate(c.createdAt) : null};
+  }).sort((a, b) => (b.joined || 0) - (a.joined || 0));
   const total = rows.reduce((a, r) => a + r.owed, 0);
+  const week = rows.filter(r => r.joined && now - r.joined < 7 * 864e5).length;
+  const sinceCampaign = rows.filter(r => r.joined && r.joined >= CAMPAIGN_START).length;
+  const viaEmail = rows.filter(r => r.c.source === 'email-campaign').length;
+  const SRC = {'email-campaign':['Email campaign','ok'], clubhub:['Club Hub','off'], recreational:['Recreational Hub','off'], schools:['Schools Hub','off']};
+  const srcPill = s => { const x = SRC[s] || [s || 'Earlier', 'off']; return `<span class="pill ${x[1]}">${esc(x[0])}</span>`; };
   return `<h1 class="page">All clubs</h1>
     <p class="lead">NGL admin view. Approve payments in the Schools and Recreational hubs.</p>
     <div class="grid g4" style="margin-bottom:16px">
@@ -1027,8 +1033,14 @@ function screenAdmin(){
       <div class="card stat"><div class="v">${rows.filter(r => r.recOn).length}</div><div class="l">Recreational active</div></div>
       <div class="card stat ${total ? 'alert' : ''}"><div class="v">${gbp(total)}</div><div class="l">Awaiting payment</div></div>
     </div>
-    <div class="tablewrap"><table class="list"><thead><tr><th>Club</th><th>Contact</th><th>Schools</th><th>Recreational</th><th class="num">Awaiting payment</th></tr></thead><tbody>
-    ${rows.map(({c, recOn, exp, schOn, sexp, owed}) => `<tr><td><b>${esc(c.name || 'Unnamed')}</b><div class="small muted">${esc(c.bgNumber || '')}</div></td><td>${esc(c.contact || '')}<div class="small muted">${esc(c.email || '')}</div></td>
+    <div class="grid g4" style="margin-bottom:16px">
+      <div class="card stat"><div class="v">${week}</div><div class="l">Joined in the last 7 days</div></div>
+      <div class="card stat"><div class="v">${sinceCampaign}</div><div class="l">Joined since the email campaign (15 Oct)</div></div>
+      <div class="card stat"><div class="v">${viaEmail}</div><div class="l">Came in from an email link</div></div>
+    </div>
+    <p class="small muted" style="margin:-4px 0 12px">Newest first. “Email campaign” means the club registered straight after clicking a link in an NGL email.</p>
+    <div class="tablewrap"><table class="list"><thead><tr><th>Club</th><th>Joined</th><th>Contact</th><th>Schools</th><th>Recreational</th><th class="num">Awaiting payment</th></tr></thead><tbody>
+    ${rows.map(({c, recOn, exp, schOn, sexp, owed, joined}) => `<tr><td><b>${esc(c.name || 'Unnamed')}</b><div class="small muted">${esc(c.bgNumber || '')}</div></td><td>${joined ? fmt(joined) : '<span class="muted">–</span>'}<div style="margin-top:4px">${srcPill(c.source)}</div></td><td>${esc(c.contact || '')}<div class="small muted">${esc(c.email || '')}</div></td>
       <td>${schOn ? `<span class="pill ok">${esc((SCHOOLS_BANDS[c.schools.band] || {}).short || 'Active')}</span><div class="small muted">to ${fmt(sexp)}</div>` : (c.schools ? '<span class="pill bad">Lapsed</span>' : '<span class="pill off">–</span>')}</td>
       <td>${recOn ? `<span class="pill ok">${esc((REC_BANDS[c.rec.band] || {}).short || 'Active')}</span><div class="small muted">to ${fmt(exp)}</div>` : (c.rec ? '<span class="pill bad">Lapsed</span>' : '<span class="pill off">–</span>')}</td>
       <td class="num">${owed ? `<b style="color:var(--bad)">${gbp(owed)}</b>` : '–'}</td></tr>`).join('')}
