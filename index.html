@@ -1047,7 +1047,7 @@ function screenAuth(mode, msg){
   setChrome(false);
   const v = $('#view');
   if(mode === 'register'){
-    v.innerHTML = `<div class="auth"><h1 class="page">Register your club</h1><p class="lead">One NGL account for every programme: Schools, Recreational and competitions.</p>
+    v.innerHTML = `<div class="auth"><h1 class="page">Register your club</h1><p class="lead">${location.hash === '#discover' ? 'Create your free club account to explore Discover NGL: every pathway, the Recreational lesson planner, award books and parent app. It takes about two minutes.' : 'One NGL account for every programme: Schools, Recreational and competitions.'}</p>
       <div class="card"><form id="regForm">
         <label class="f" for="rName">Club name</label><input class="f" id="rName" required autocomplete="organization">
         <label class="f" for="rBg">British Gymnastics club number</label><input class="f" id="rBg" required>
@@ -1158,7 +1158,7 @@ async function start(){
 (async () => {
   try{
     const ok = await api.restore();
-    if(ok) start(); else screenAuth((location.hash || '') === '#register' ? 'register' : 'login');
+    if(ok) start(); else screenAuth(['#register', '#discover'].includes(location.hash || '') ? 'register' : 'login');
   }catch(e){
     console.error(e);
     $('#view').innerHTML = '<div class="empty"><b>We couldn’t open the Club Hub</b>Please check your internet connection and refresh the page.</div>';
