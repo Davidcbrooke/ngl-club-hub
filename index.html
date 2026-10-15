@@ -940,6 +940,7 @@ function screenMusic(){
     }).join('');
 }
 document.addEventListener('change', async e => {
+  if(e.target.id === 'admFilter'){ S.adminFilter = e.target.value; render(); return; }
   const inp = e.target; if(!inp.dataset || !inp.dataset.music) return;
   const f = inp.files[0]; inp.value = ''; if(!f) return;
   const [evId, gymId] = inp.dataset.music.split('|'), row = inp.closest('.mrow');
@@ -1009,6 +1010,29 @@ function screenClub(){
 
 /* ----- Admin: all clubs ----- */
 const CAMPAIGN_START = new Date('2026-10-15T17:30:00Z');
+const ADMIN_FILTERS = [['all','All clubs'], ['week','Joined in the last 7 days'], ['campaign','Joined since the email campaign'], ['nolicence','No licence yet'], ['rec','Recreational active'], ['schools','Schools active']];
+function adminRows(rows){
+  const f = S.adminFilter || 'all', now = new Date();
+  return rows.filter(r => f === 'all' || (f === 'week' && r.joined && now - r.joined < 7 * 864e5) || (f === 'campaign' && r.joined && r.joined >= CAMPAIGN_START)
+    || (f === 'nolicence' && !r.recOn && !r.schOn) || (f === 'rec' && r.recOn) || (f === 'schools' && r.schOn));
+}
+function adminEmails(rows){ return [...new Set(adminRows(rows).map(r => lc(r.c.email || '')).filter(e => e.includes('@')))]; }
+function mailBar(rows){
+  const list = adminEmails(rows), n = list.length;
+  S.adminMailList = list; S.adminMailRows = adminRows(rows);
+  return `<div class="card" style="margin-bottom:16px;padding:16px 18px">
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+      <label class="small" for="admFilter" style="font-weight:600">Show</label>
+      <select id="admFilter" class="f" style="width:auto;margin:0">${ADMIN_FILTERS.map(([v, l]) => `<option value="${v}" ${v === (S.adminFilter || 'all') ? 'selected' : ''}>${l}</option>`).join('')}</select>
+      <span class="small muted">${n} email address${n === 1 ? '' : 'es'}</span>
+      <span style="flex:1"></span>
+      <button class="btn" data-act="adm-mail" ${n ? '' : 'disabled'}>Email these clubs</button>
+      <button class="btn ghost" data-act="adm-copy" ${n ? '' : 'disabled'}>Copy addresses</button>
+      <button class="btn ghost" data-act="adm-csv" ${n ? '' : 'disabled'}>Download CSV</button>
+    </div>
+    <p class="small muted" style="margin:10px 0 0">“Email these clubs” opens a new email from your mail app with every club in BCC, so no club sees the others’ addresses. For large mail-outs, use the CSV in Brevo instead.</p>
+  </div>`;
+}
 function screenAdmin(){
   if(!S.isAdmin) return `<h1 class="page">All clubs</h1><div class="card"><p style="margin:0 0 8px"><b>This page is for NGL admins only.</b></p><p class="muted" style="margin:0">You're logged in as ${esc(S.club ? S.club.email || S.club.name : 'a club')}, which is a club account. Log out, then log in with your NGL admin account to see every club that has registered.</p></div>`;
   if(!S.admin) return `<h1 class="page">All clubs</h1><p class="muted"><span class="spin"></span>Loading every club…</p>`;
@@ -1039,9 +1063,10 @@ function screenAdmin(){
       <div class="card stat"><div class="v">${sinceCampaign}</div><div class="l">Joined since the email campaign (15 Oct)</div></div>
       <div class="card stat"><div class="v">${viaEmail}</div><div class="l">Came in from an email link</div></div>
     </div>
+    ${mailBar(rows)}
     <p class="small muted" style="margin:-4px 0 12px">Newest first. “Email campaign” means the club registered straight after clicking a link in an NGL email.</p>
     <div class="tablewrap"><table class="list"><thead><tr><th>Club</th><th>Joined</th><th>Contact</th><th>Schools</th><th>Recreational</th><th class="num">Awaiting payment</th></tr></thead><tbody>
-    ${rows.map(({c, recOn, exp, schOn, sexp, owed, joined}) => `<tr><td><b>${esc(c.name || 'Unnamed')}</b><div class="small muted">${esc(c.bgNumber || '')}</div></td><td>${joined ? fmt(joined) : '<span class="muted">–</span>'}<div style="margin-top:4px">${srcPill(c.source)}</div></td><td>${esc(c.contact || '')}<div class="small muted">${esc(c.email || '')}</div></td>
+    ${adminRows(rows).map(({c, recOn, exp, schOn, sexp, owed, joined}) => `<tr><td><b>${esc(c.name || 'Unnamed')}</b><div class="small muted">${esc(c.bgNumber || '')}</div></td><td>${joined ? fmt(joined) : '<span class="muted">–</span>'}<div style="margin-top:4px">${srcPill(c.source)}</div></td><td>${esc(c.contact || '')}<div class="small muted">${esc(c.email || '')}</div></td>
       <td>${schOn ? `<span class="pill ok">${esc((SCHOOLS_BANDS[c.schools.band] || {}).short || 'Active')}</span><div class="small muted">to ${fmt(sexp)}</div>` : (c.schools ? '<span class="pill bad">Lapsed</span>' : '<span class="pill off">–</span>')}</td>
       <td>${recOn ? `<span class="pill ok">${esc((REC_BANDS[c.rec.band] || {}).short || 'Active')}</span><div class="small muted">to ${fmt(exp)}</div>` : (c.rec ? '<span class="pill bad">Lapsed</span>' : '<span class="pill off">–</span>')}</td>
       <td class="num">${owed ? `<b style="color:var(--bad)">${gbp(owed)}</b>` : '–'}</td></tr>`).join('')}
@@ -1105,6 +1130,19 @@ document.addEventListener('click', async e => {
     err.className = r.ok ? 'ok-msg' : 'err'; err.textContent = r.ok ? 'If that email has an NGL account, a reset link is on its way.' : r.reason; return;
   }
   const a = t.dataset.act;
+  if(a === 'adm-mail'){
+    const list = S.adminMailList || [];
+    const url = `mailto:${CONTACT_EMAIL || ''}?bcc=${list.map(encodeURIComponent).join(',')}&subject=${encodeURIComponent('NGL Club Hub')}`;
+    if(url.length > 1900){ try{ await navigator.clipboard.writeText(list.join(', ')); }catch(_){}; toast('Too many addresses for one email link. They are copied: paste them into BCC.'); location.href = `mailto:${CONTACT_EMAIL || ''}?subject=${encodeURIComponent('NGL Club Hub')}`; }
+    else location.href = url;
+  }
+  if(a === 'adm-copy'){ try{ await navigator.clipboard.writeText((S.adminMailList || []).join(', ')); toast(`${(S.adminMailList || []).length} addresses copied. Paste them into BCC.`); }catch(_){ toast('Couldn’t copy. Use Download CSV instead.'); } }
+  if(a === 'adm-csv'){
+    const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+    const lines = [['EMAIL','CLUB_NAME','CONTACT','BG_NUMBER','JOINED','SOURCE','SCHOOLS','RECREATIONAL'].join(',')]
+      .concat((S.adminMailRows || []).filter(r => (r.c.email || '').includes('@')).map(r => [lc(r.c.email), r.c.name, r.c.contact, r.c.bgNumber, r.joined ? r.joined.toISOString().slice(0, 10) : '', r.c.source || '', r.schOn ? 'active' : '', r.recOn ? 'active' : ''].map(q).join(',')));
+    const el = document.createElement('a'); el.href = URL.createObjectURL(new Blob([lines.join('\r\n')], {type:'text/csv'})); el.download = 'NGL-Club-Hub-clubs-' + new Date().toISOString().slice(0, 10) + '.csv'; el.click();
+  }
   if(a === 'ics-all'){ const list = myReservations().filter(r => !r.past); if(list.length) downloadIcs(list, 'NGL-My-Reservations'); else toast('No upcoming reservations to add.'); }
   if(a === 'retry-bookings'){ await loadBookings(); }
   if(a === 'reset-me'){ const r = await api.resetPassword(S.club.email); $('#resetMsg').innerHTML = `<div class="${r.ok ? 'ok-msg' : 'err'}">${r.ok ? 'Reset link sent. Check your inbox.' : esc(r.reason)}</div>`; }
