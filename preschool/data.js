@@ -26,78 +26,90 @@
   ];
 
   // Lesson plan themes. home = moves families can try at home.
+  // 40 core lesson plans: plan n = programme week n. Week n teaches Book 1 skills and Book 2 skills side by side.
   const THEMES = [
-    {n:1, name:'Alphabet', home:['Make the letter “O” with a skipping rope and jump in and out','Make shapes that look like letters: can you be an “X”?','A for arabesque, B for back support, C for crab']},
-    {n:2, name:'Space', home:['Rocket: count down 5, 4, 3, 2, 1… blast off!','Spaceman: big moon-walk steps','Planet: the tightest tuck shape you can make']},
-    {n:3, name:'Pirates', home:['Row the boat: sit in pike and row','Walk the plank on tiptoes along a line','Roll up the treasure map: log roll']},
-    {n:4, name:'Under the Sea', home:['Crab: move sideways with nipper hands','Starfish: lie flat in a star','Pufferfish: sit in a tuck, then explode!']},
-    {n:5, name:'Visiting the Zoo', home:['Flamingo: balance on one leg','Giraffe: up on your toes in a stretch shape','Penguin: waddle like a penguin']},
-    {n:6, name:'Bean Bags', home:['Balance a bean bag (or a pair of socks) on your head and walk','Hold it in your feet and lift your legs','Throw it up and catch it']},
-    {n:7, name:'Jungle', home:['Tree frog: frog jumps with hands on the floor','Crocodile: lie on your tummy in an arch and snap','Gorilla: walk low down on your knuckles']},
-    {n:8, name:'Circus', home:['Tightrope walker: tiptoe along a line','Strong man: show your muscles!','Ringmaster: take a bow']},
-    {n:9, name:'Explorer', home:['Bear walk on straight legs','Kangaroo jumps','Caterpillar walks from front support']},
-    {n:10, name:'Transport', home:['Green = run, amber = jog on the spot, red = landing shape','Be a bridge: front support shape','Roundabout: spin around']},
-    {n:11, name:'Dinosaurs', home:['Stegosaurus: walk with straight legs and straight arms','Pterodactyl: wings out, balance on one leg','T-Rex: stomp and roar!']},
-    {n:12, name:'Farmyard', home:['Duck walks: 10 steps in a circle','Tuck rolls like a tractor wheel','Scarecrow: tuck, then jump to a star']},
-    {n:13, name:'Food', home:['Popcorn: tuck small, then explode to a star','Sausage roll: log roll','Banana: arch, then roll to a dish shape']},
-    {n:14, name:'Flight', home:['Aeroplane: run with your arms out','Hot air balloon: spin on your toes, arms above your head','Skydiver: lie on your tummy in a star arch']},
-    {n:15, name:'Mini Beasts', home:['Snail: tuck, then stretch out of your shell','Spider: from straddle, walk out to front support','Beetle: wave your arms and legs, then flip over!']},
-    {n:16, name:'Christmas', home:['Bauble: rock in a tuck shape','Snow angels on the floor','Walk around like Santa']},
-    {n:17, name:'Easter', home:['Bunny hops round the room','Roll an egg (ball) down your legs in pike','Knee press-up: touch your nose to the egg']},
-    {n:18, name:'Weather', home:['Tornado: spin on the spot, then the other way','Snow angels on the floor','Rain: tuck jumps in the puddles']},
-    {n:19, name:'Colours', home:['Find something red, blue and yellow and stand on it','Rise onto your toes and hold for 3','Straddle sit and reach for a colour in the middle']},
-    {n:20, name:'Summer', home:['Surfing: from your tummy, push up and jump to your feet','Sun: star jump!','Sunbathing: hold a dish shape']},
-    {n:21, name:'Halloween', home:['Pumpkin: tuck rocks with a silly face','Bat: shoulder stand, hanging upside down','Black cat: cat stretch on all fours']},
-    {n:22, name:'Shapes', home:['Make a circle with a rope and jump in and out','Show a tuck, straddle and pike shape','Balance a soft toy on your head and walk']},
-    {n:23, name:'Teddy Bears’ Picnic', home:['Lift teddy above your head and walk on tiptoes','Pass teddy round your waist 3 times','Press-up to give teddy a hug']},
-    {n:24, name:'Superhero', home:['Super jumps: tuck, star and straight','Superhero arch shape','Count down from 5 and blast off!']},
-    {n:25, name:'Topsy Turvy', home:['Walk backwards, then sideways','Crab walk backwards','Find the opposite: tall and small, fast and slow']},
-    {n:26, name:'Sports', home:['Long jumps from spot to spot','Egg and spoon walk','Roll a ball down your legs in pike']},
-    {n:27, name:'Seaside', home:['Crab walks','Starfish: rock side to side in a star','Hermit crab: hide in a tuck, then pop out!']},
-    {n:28, name:'People Who Help Us', home:['Firefighter: stop, drop and roll','Helicopter: spin around with arms out','Build a tower from blocks']},
-    {n:29, name:'Numbers', home:['Count down from 10 with stretches','Balance on one foot and count how long','Roll a dice and do that many jumps']},
-    {n:30, name:'Nature', home:['Hedgehog: tuck balance on your bottom','Plant a seed: stretch, then crouch small and grow tall','Walk along a log (a line) on tiptoes']},
-    {n:31, name:'Music', home:['Musical statues','Copy a clapping rhythm','Star shape: tap one side, then the other']},
-    {n:32, name:'Harvest', home:['Scarecrow: jump up into a star','Stamp in the muddy puddles','Bat swing: lie on your back, lift your toes to the sky']},
-    {n:33, name:'Magic', home:['Phoenix jump: crouch, then explode','Make your toes point with a magic wand','Cat leaps like a galloping unicorn']},
-    {n:34, name:'Fantasy', home:['Troll: half-turn jumps','Dragon: hide your egg in a tuck','King and queen: walk with a crown on your head']},
-    {n:35, name:'Bonfire Night', home:['Rocket: stretch jump','Explode: tuck to star','Catherine wheel: spin around']}
+    {n:1, name:"Alphabet", file:'01_Alphabet', home:["Make the letter “O” with a skipping rope and jump in and out", "Make shapes that look like letters: can you be an “X”?", "A for arabesque, B for back support, C for crab"]},
+    {n:2, name:"Space", file:'02_Space', home:["Rocket: count down 5, 4, 3, 2, 1… blast off!", "Spaceman: big moon-walk steps", "Planet: the tightest tuck shape you can make"]},
+    {n:3, name:"Pirates", file:'03_Pirates', home:["Row the boat: sit in pike and row", "Walk the plank on tiptoes along a line", "Roll up the treasure map: log roll"]},
+    {n:4, name:"Under the Sea", file:'04_Under_the_Sea', home:["Crab: move sideways with nipper hands", "Starfish: lie flat in a star", "Pufferfish: sit in a tuck, then explode!"]},
+    {n:5, name:"Visiting the Zoo", file:'05_Visiting_the_Zoo', home:["Flamingo: balance on one leg", "Giraffe: up on your toes in a stretch shape", "Penguin: waddle like a penguin"]},
+    {n:6, name:"Bean Bags", file:'06_Bean_Bags', home:["Balance a bean bag (or a pair of socks) on your head and walk", "Hold it in your feet and lift your legs", "Throw it up and catch it"]},
+    {n:7, name:"Jungle", file:'07_Jungle', home:["Tree frog: frog jumps with hands on the floor", "Crocodile: lie on your tummy in an arch and snap", "Gorilla: walk low down on your knuckles"]},
+    {n:8, name:"Circus", file:'08_Circus', home:["Tightrope walker: tiptoe along a line", "Strong man: show your muscles!", "Ringmaster: take a bow"]},
+    {n:9, name:"Explorer", file:'09_Explorer', home:["Bear walk on straight legs", "Kangaroo jumps", "Caterpillar walks from front support"]},
+    {n:10, name:"Transport", file:'10_Transport', home:["Green = run, amber = jog on the spot, red = landing shape", "Be a bridge: front support shape", "Roundabout: spin around"]},
+    {n:11, name:"Dinosaurs", file:'11_Dinosaurs', home:["Stegosaurus: walk with straight legs and straight arms", "Pterodactyl: wings out, balance on one leg", "T-Rex: stomp and roar!"]},
+    {n:12, name:"Farmyard", file:'12_Farmyard', home:["Duck walks: 10 steps in a circle", "Tuck rolls like a tractor wheel", "Scarecrow: tuck, then jump to a star"]},
+    {n:13, name:"Food", file:'13_Food', home:["Popcorn: tuck small, then explode to a star", "Sausage roll: log roll", "Banana: arch, then roll to a dish shape"]},
+    {n:14, name:"Flight", file:'14_Flight', home:["Aeroplane: run with your arms out", "Hot air balloon: spin on your toes, arms above your head", "Skydiver: lie on your tummy in a star arch"]},
+    {n:15, name:"Mini Beasts", file:'15_Mini_Beasts', home:["Snail: tuck, then stretch out of your shell", "Spider: from straddle, walk out to front support", "Beetle: wave your arms and legs, then flip over!"]},
+    {n:16, name:"Weather", file:'16_Weather', home:["Tornado: spin on the spot, then the other way", "Snow angels on the floor", "Rain: tuck jumps in the puddles"]},
+    {n:17, name:"Colours", file:'17_Colours', home:["Find something red, blue and yellow and stand on it", "Rise onto your toes and hold for 3", "Straddle sit and reach for a colour in the middle"]},
+    {n:18, name:"Shapes", file:'18_Shapes', home:["Make a circle with a rope and jump in and out", "Show a tuck, straddle and pike shape", "Balance a soft toy on your head and walk"]},
+    {n:19, name:"Teddy Bears’ Picnic", file:'19_Teddy_Bears_Picnic', home:["Lift teddy above your head and walk on tiptoes", "Pass teddy round your waist 3 times", "Press-up to give teddy a hug"]},
+    {n:20, name:"Superhero", file:'20_Superhero', home:["Super jumps: tuck, star and straight", "Superhero arch shape", "Count down from 5 and blast off!"]},
+    {n:21, name:"Topsy Turvy", file:'21_Topsy_Turvy', home:["Walk backwards, then sideways", "Crab walk backwards", "Find the opposite: tall and small, fast and slow"]},
+    {n:22, name:"Sports", file:'22_Sports', home:["Long jumps from spot to spot", "Egg and spoon walk", "Roll a ball down your legs in pike"]},
+    {n:23, name:"Seaside", file:'23_Seaside', home:["Crab walks", "Starfish: rock side to side in a star", "Hermit crab: hide in a tuck, then pop out!"]},
+    {n:24, name:"People Who Help Us", file:'24_People_Who_Help_Us', home:["Firefighter: stop, drop and roll", "Helicopter: spin around with arms out", "Build a tower from blocks"]},
+    {n:25, name:"Numbers", file:'25_Numbers', home:["Count down from 10 with stretches", "Balance on one foot and count how long", "Roll a dice and do that many jumps"]},
+    {n:26, name:"Nature", file:'26_Nature', home:["Hedgehog: tuck balance on your bottom", "Plant a seed: stretch, then crouch small and grow tall", "Walk along a log (a line) on tiptoes"]},
+    {n:27, name:"Garden", file:'27_Garden', home:["Seed to sunflower: curl up small, then grow tall", "Wriggle like a worm on your tummy", "Buzz around on tiptoes like a bee"]},
+    {n:28, name:"Magic", file:'28_Magic', home:["Phoenix jump: crouch, then explode", "Make your toes point with a magic wand", "Cat leaps like a galloping unicorn"]},
+    {n:29, name:"Fantasy", file:'29_Fantasy', home:["Troll: half-turn jumps", "Dragon: hide your egg in a tuck", "King and queen: walk with a crown on your head"]},
+    {n:30, name:"Robots", file:'30_Robots', home:["Robot walk with stiff arms and legs", "Freeze in a robot shape when someone says “pause”", "Low battery: sink to the floor, then recharge into a star!"]},
+    {n:31, name:"Building Site", file:'31_Building_Site', home:["Dumper truck: push your bottom up and tip", "Build a tower of soft toys", "Steamroller: log roll"]},
+    {n:32, name:"Camping", file:'32_Camping', home:["Hike with high knees", "Put up the tent: pike shape", "Bedtime: lie straight in your sleeping bag, then jump up!"]},
+    {n:33, name:"Arctic", file:'33_Arctic', home:["Penguin waddle", "Polar bear walk on straight legs", "Snowstorm: spin, then freeze"]},
+    {n:34, name:"Music", file:'34_Music', home:["Musical statues", "Copy a clapping rhythm", "Star shape: tap one side, then the other"]},
+    {n:35, name:"Castles & Knights", file:'35_Castles_Knights', home:["Gallop like a knight’s horse", "Walk tall wearing a crown", "Drawbridge down: lie flat. Up: stand tall!"]},
+    {n:36, name:"Bakery", file:'36_Bakery', home:["Rising bread: crouch small, then grow tall", "Pop the popcorn: tuck jump!", "Pancake flip: half-turn jump"]},
+    {n:37, name:"Toy Shop", file:'37_Toy_Shop', home:["Jack-in-the-box: crouch, then jump up into a star", "Toy soldier march", "Spinning top: spin round"]},
+    {n:38, name:"Rainbow", file:'38_Rainbow', home:["Draw a rainbow in the sky with your arms", "Star shape like the sun", "Hop like a green frog"]},
+    {n:39, name:"Birthday Party", file:'39_Birthday_Party', home:["Musical statues", "Balloon pop: crouch, then POP into a star", "Blow out the candles on your toes in pike"]},
+    {n:40, name:"Woodland Animals", file:'40_Woodland_Animals', home:["Bunny hops", "Hedgehog: curl into a tight ball", "Owl: flap your wings and look around"]}
   ];
-  const SEASONAL = {16:'autumn', 17:'spring', 20:'summer'};   // last week of that term
-  const DATED = {21:['10-17','10-31'], 35:['10-30','11-08'], 32:['09-20','10-12']};  // Halloween, Bonfire Night, Harvest
+  // Seasonal Pack: swapped in on the right weeks; the passport journey pauses for that week.
+  const SEASONAL = [
+    {id:'S1', name:"Christmas", file:'Seasonal_1_Christmas', seasonal:true, last:'autumn', home:["Bauble: rock in a tuck shape", "Snow angels on the floor", "Walk around like Santa"]},
+    {id:'S2', name:"Easter", file:'Seasonal_2_Easter', seasonal:true, last:'spring', home:["Bunny hops round the room", "Roll an egg (ball) down your legs in pike", "Knee press-up: touch your nose to the egg"]},
+    {id:'S3', name:"Summer", file:'Seasonal_3_Summer', seasonal:true, last:'summer', home:["Surfing: from your tummy, push up and jump to your feet", "Sun: star jump!", "Sunbathing: hold a dish shape"]},
+    {id:'S4', name:"Halloween", file:'Seasonal_4_Halloween', seasonal:true, from:'10-17', to:'10-31', home:["Pumpkin: tuck rocks with a silly face", "Bat: shoulder stand, hanging upside down", "Black cat: cat stretch on all fours"]},
+    {id:'S5', name:"Bonfire Night", file:'Seasonal_5_Bonfire_Night', seasonal:true, from:'10-30', to:'11-08', home:["Rocket: stretch jump", "Explode: tuck to star", "Catherine wheel: spin around"]},
+    {id:'S6', name:"Harvest", file:'Seasonal_6_Harvest', seasonal:true, from:'09-20', to:'10-12', home:["Scarecrow: jump up into a star", "Stamp in the muddy puddles", "Bat swing: lie on your back, lift your toes to the sky"]}
+  ];
 
   const DAY = 864e5;
   const iso = d => d.toISOString().slice(0, 10);
   const parse = s => { const [y, m, d] = s.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d)); };
   function season(start){ const m = parse(start).getUTCMonth(); return m >= 7 ? 'autumn' : m <= 2 ? 'spring' : 'summer'; }
 
-  /* config: {club, pack (10|20), startLevel (1-20), startWeek (0-3), startTheme (index into the rotation),
+  /* config: {club, startWeek (1-40 programme week), packs: highest core plan owned (10/20/30/40), seasonal: bool,
               terms:[{name, start:'YYYY-MM-DD', weeks, half (weeks before half-term, 0 = none)}]}
-     Returns one row per week across all terms, continuing from term to term. */
+     One row per teaching week. Seasonal weeks pause the passport journey; each term carries on from the last. */
+  function weekInfo(w){
+    const c = Math.floor((w - 1) / 4), k = (w - 1) % 4;
+    const mk = ci => ({country:COUNTRIES[ci], skills:[COUNTRIES[ci].skills[k * 2], COUNTRIES[ci].skills[k * 2 + 1]], nos:[k * 2 + 1, k * 2 + 2]});
+    return {w, levelWeek:k + 1, newLevel:k === 0, b1:mk(c), b2:mk(c + 10), theme:THEMES[w - 1]};
+  }
   function plan(cfg){
-    const maxN = cfg.pack >= 35 ? 99 : cfg.pack >= 20 ? 20 : 10;
-    const avail = THEMES.filter(t => t.n <= maxN);
-    const rotation = avail.filter(t => !SEASONAL[t.n] && !DATED[t.n]);
-    const usedDated = {};
-    let g = ((cfg.startLevel || 1) - 1) * 4 + (cfg.startWeek || 0);
-    let tp = cfg.startTheme || 0;
-    const rows = [];
+    let g = Math.max(0, (cfg.startWeek || 1) - 1);
+    const used = {}, rows = [];
     (cfg.terms || []).filter(t => t.start && t.weeks > 0).forEach((t, ti) => {
       const s = parse(t.start), seas = season(t.start);
       for(let i = 0; i < t.weeks; i++){
         const date = new Date(s.getTime() + (i + (t.half && i >= t.half ? 1 : 0)) * 7 * DAY);
-        const lap = Math.floor(g / 80), gg = g % 80;
-        const level = Math.floor(gg / 4) + 1, wk = gg % 4;
-        let theme = null;
-        if(i === t.weeks - 1) theme = avail.find(x => SEASONAL[x.n] === seas) || null;
-        if(!theme){ const md = iso(date).slice(5); const y = iso(date).slice(0, 4);
-          theme = avail.find(x => DATED[x.n] && md >= DATED[x.n][0] && md <= DATED[x.n][1] && !usedDated[x.n + y]) || null;
-          if(theme) usedDated[theme.n + y] = 1; }
-        if(!theme){ theme = rotation[tp % rotation.length]; tp++; }
-        const c = COUNTRIES[level - 1];
-        rows.push({term:t.name || ('Term ' + (ti + 1)), termIndex:ti, week:i + 1, date:iso(date), level, country:c,
-          levelWeek:wk + 1, skills:[c.skills[wk * 2], c.skills[wk * 2 + 1]], skillNos:[wk * 2 + 1, wk * 2 + 2],
-          newLevel:wk === 0, lap, theme});
+        const d = iso(date), md = d.slice(5), y = d.slice(0, 4);
+        let sp = null;
+        if(cfg.seasonal){
+          if(i === t.weeks - 1) sp = SEASONAL.find(x => x.last === seas) || null;
+          if(!sp) sp = SEASONAL.find(x => x.from && md >= x.from && md <= x.to && !used[x.id + y]) || null;
+          if(sp) used[sp.id + y] = 1;
+        }
+        const base = {term:t.name || ('Term ' + (ti + 1)), termIndex:ti, week:i + 1, date:d};
+        if(sp){ rows.push(Object.assign(base, {seasonal:true, theme:sp})); continue; }
+        const w = (g % 40) + 1, lap = Math.floor(g / 40);
+        rows.push(Object.assign(base, weekInfo(w), {lap}));
         g++;
       }
     });
@@ -106,5 +118,5 @@
   function encode(cfg){ return btoa(unescape(encodeURIComponent(JSON.stringify(cfg)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
   function decode(s){ try{ s = s.replace(/-/g, '+').replace(/_/g, '/'); return JSON.parse(decodeURIComponent(escape(atob(s)))); }catch(e){ return null; } }
 
-  root.NGLPS = {COUNTRIES, THEMES, plan, encode, decode, iso, parse};
+  root.NGLPS = {COUNTRIES, THEMES, SEASONAL, plan, weekInfo, encode, decode, iso, parse};
 })(typeof window !== 'undefined' ? window : globalThis);

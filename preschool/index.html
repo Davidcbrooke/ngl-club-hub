@@ -71,6 +71,7 @@ h3{font:700 19px/1.15 'Barlow Condensed';letter-spacing:.04em;text-transform:upp
 .btn{display:inline-block;background:var(--pink);color:#fff;text-decoration:none;font:700 15px 'Barlow Condensed';letter-spacing:.08em;text-transform:uppercase;padding:12px 18px;border-radius:30px;border:0;cursor:pointer}
 footer{text-align:center;font-size:12px;color:var(--muted);padding:10px 16px 30px}
 footer a{color:var(--pink-d)}
+.bk{display:flex;gap:6px;background:var(--pink-l);border-radius:30px;padding:4px;margin-bottom:14px}.bk button{flex:1;border:0;background:transparent;padding:8px;border-radius:24px;font:700 15px 'Barlow Condensed';letter-spacing:.06em;text-transform:uppercase;color:var(--pink-d);cursor:pointer}.bk button.on{background:var(--pink);color:#fff}
 .demo{background:#fff6d6;color:#6b5400;font-size:13px;text-align:center;padding:8px 12px;border-radius:12px;margin-bottom:12px}
 </style>
 </head>
@@ -91,7 +92,7 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>'
 const pad = n => String(n).padStart(2, '0');
 const STAR = '<svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.9l-6.4 3.5 1.4-7.1-5.3-5 7.2-.9z" fill="currentColor"/></svg>';
 const fmt = (s, o) => P.parse(s).toLocaleDateString('en-GB', Object.assign({timeZone:'UTC'}, o || {day:'numeric', month:'short'}));
-const SAMPLE = {club:'Sample Club', pack:20, startLevel:1, terms:[{name:'Autumn Term', start:'2026-09-07', weeks:14, half:7}, {name:'Spring Term', start:'2027-01-04', weeks:12, half:6}, {name:'Summer Term', start:'2027-04-19', weeks:13, half:6}]};
+const SAMPLE = {club:'Sample Club', startWeek:1, seasonal:true, terms:[{name:'Autumn Term', start:'2026-09-07', weeks:14, half:7}, {name:'Spring Term', start:'2027-01-04', weeks:12, half:6}, {name:'Summer Term', start:'2027-04-19', weeks:13, half:6}]};
 
 let cfg = null, rows = [], idx = 0, demo = false;
 function load(){
@@ -109,44 +110,57 @@ function load(){
   render();
 }
 function empty(){
-  $('#app').innerHTML = `<div class="card empty"><img src="img/theme01.jpg" alt="" style="width:100%;border-radius:14px">
+  $('#app').innerHTML = `<div class="card empty"><img src="img/post_01_Alphabet.jpg" alt="" style="width:100%;border-radius:14px">
     <h2>Welcome to Around the World</h2>
     <p>Your club shares a family link that shows your child's theme of the week, the passport skills they're working on and how far round the world they've travelled.</p>
     <p class="note">Ask your club for their NGL Pre-School family link, or have a look at a sample class.</p>
     <p style="margin-top:16px"><a class="btn" href="#demo" onclick="setTimeout(load)">See a sample</a></p></div>`;
 }
+let book = 1; try{ book = +localStorage.getItem('ngl-ps-book') || 1; }catch(_){}
+function setBook(b){ book = b; try{ localStorage.setItem('ngl-ps-book', b); }catch(_){}; render(); }
 function render(){
-  const r = rows[idx], t = r.theme, c = r.country;
+  const r = rows[idx], t = r.theme;
   const end = P.iso(new Date(P.parse(r.date).getTime() + 6 * 864e5));
-  const levelsDone = r.level - 1 + (r.levelWeek - 1) / 4;
   const termRows = rows.filter(x => x.termIndex === r.termIndex);
+  const bk = r.seasonal ? null : (book === 2 ? r.b2 : r.b1), c = bk && bk.country;
+  // last non-seasonal week at or before this one, for the journey
+  let ref = r; for(let i = idx; i >= 0 && ref.seasonal; i--) ref = rows[i];
+  const rc = ref.seasonal ? null : (book === 2 ? ref.b2 : ref.b1).country;
+  const levelsDone = rc ? ((rc.n - 1) % 10) + (ref.seasonal ? 0 : (ref.levelWeek - 1) / 4) : 0;
+  const range = book === 2 ? P.COUNTRIES.slice(10) : P.COUNTRIES.slice(0, 10);
+  const skillsCard = r.seasonal ? `<div class="card"><div class="country"><img src="img/post_${t.file}.jpg" alt="" style="border-radius:12px;width:92px;height:auto">
+      <div><div class="lv">Seasonal week</div><div class="nm">${esc(t.name)} week!</div><div class="sub">No new passport skills this week – just lots of ${esc(t.name.toLowerCase())} fun. The journey carries on next week.</div></div></div></div>`
+    : `<div class="card">
+      <div class="bk"><button class="${book === 1 ? 'on' : ''}" data-b="1">Book 1</button><button class="${book === 2 ? 'on' : ''}" data-b="2">Book 2</button></div>
+      <div class="country"><img src="img/medal${pad(c.n)}.png" alt="${esc(c.name)} medal">
+        <div><div class="lv">Book ${book} · Country ${((c.n - 1) % 10) + 1} of 10 · Week ${r.levelWeek} of 4</div><div class="nm">Welcome to ${esc(c.name)}!</div>
+        <div class="sub">${r.levelWeek === 4 ? `Last week in ${esc(c.name)}: the ${esc(c.name)} medal is next!` : `While we’re in ${esc(c.city)}, let’s learn some new skills.`}</div></div></div>
+      <p class="note" style="margin:12px 0 0;font-weight:700;color:var(--pink-d)">Today’s sticker skills</p>
+      <ul class="skills">${bk.skills.map((s, i) => `<li><span class="star">${STAR}${bk.nos[i]}</span>${esc(s)}</li>`).join('')}</ul>
+      <p class="note">Two passport stickers to earn this week. Choose the book your child has: Book 1 (countries 1–10) or Book 2 (countries 11–20).</p>
+    </div>`;
   $('#app').innerHTML = `
     ${demo ? '<div class="demo">Sample class: your club’s link will show your child’s own class.</div>' : ''}
     <div class="card">
       <div class="nav"><button id="prev" aria-label="Previous week" ${idx ? '' : 'disabled'}>‹</button>
         <div class="when"><b>${esc(r.term)} · Week ${r.week}</b><span>${fmt(r.date)} – ${fmt(end, {day:'numeric', month:'short', year:'numeric'})}</span></div>
         <button id="next" aria-label="Next week" ${idx < rows.length - 1 ? '' : 'disabled'}>›</button></div>
-      <div class="tt"><span class="chip">This week’s theme</span><h2>${esc(t.name)}</h2></div><div class="theme" style="background-image:url(img/post${pad(t.n)}.jpg)"></div>
+      <div class="tt"><span class="chip">This week’s theme</span><h2>${esc(t.name)}</h2></div><div class="theme" style="background-image:url(img/post_${t.file}.jpg)"></div>
     </div>
-    <div class="card">
-      <div class="country"><img src="img/medal${pad(c.n)}.png" alt="${esc(c.name)} medal">
-        <div><div class="lv">Level ${c.n} of 20 · Week ${r.levelWeek} of 4</div><div class="nm">Welcome to ${esc(c.name)}!</div>
-        <div class="sub">${r.levelWeek === 4 ? `Last week in ${esc(c.name)}: the ${esc(c.name)} medal is next!` : `While we’re in ${esc(c.city)}, let’s learn some new skills.`}</div></div></div>
-      <ul class="skills">${r.skills.map((s, i) => `<li><span class="star">${STAR}${r.skillNos[i]}</span>${esc(s)}</li>`).join('')}</ul>
-      <p class="note">Two passport stickers to earn this week. Every 4 weeks your child completes a country and moves on to the next one.</p>
-    </div>
+    ${skillsCard}
     <div class="card"><h3>Try at home</h3><ul class="home">${t.home.map(h => `<li>${esc(h)}</li>`).join('')}</ul>
       <p class="note">Ask them to show you their favourite ${esc(t.name.toLowerCase())} move from class!</p></div>
-    <div class="card"><h3>The journey so far</h3>
-      <div class="bar"><i style="width:${Math.round(levelsDone / 20 * 100)}%"></i></div>
-      <div class="journey">${P.COUNTRIES.map(x => `<div class="${x.n < r.level ? 'done' : x.n === r.level ? 'now' : 'todo'}"><img src="img/medal${pad(x.n)}.png" alt="">${esc(x.name)}</div>`).join('')}</div>
-      <p class="note">Shows where the class is if your child comes every week. Book 1 covers countries 1–10 and Book 2 covers 11–20.</p></div>
-    <div class="card"><h3>${esc(r.term)}</h3><ul class="term">${termRows.map(x => { const i = rows.indexOf(x); return `<li data-i="${i}" class="${i === idx ? 'cur' : ''}">
+    <div class="card"><h3>The journey so far · Book ${book}</h3>
+      <div class="bar"><i style="width:${Math.round(levelsDone / 10 * 100)}%"></i></div>
+      <div class="journey">${range.map(x => `<div class="${rc && x.n < rc.n ? 'done' : rc && x.n === rc.n ? 'now' : 'todo'}"><img src="img/medal${pad(x.n)}.png" alt="">${esc(x.name)}</div>`).join('')}</div>
+      <p class="note">Shows where the class is if your child comes every week.</p></div>
+    <div class="card"><h3>${esc(r.term)}</h3><ul class="term">${termRows.map(x => { const i = rows.indexOf(x); const xb = x.seasonal ? null : (book === 2 ? x.b2 : x.b1); return `<li data-i="${i}" class="${i === idx ? 'cur' : ''}">
         <span class="d">${fmt(x.date, {day:'numeric'})}<small>${fmt(x.date, {month:'short'})}</small></span>
-        <span class="t"><b>${esc(x.theme.name)}</b><span>${esc(x.country.name)} · skills ${x.skillNos.join(' & ')}</span></span>
-        <img src="img/medal${pad(x.country.n)}.png" alt=""></li>`; }).join('')}</ul></div>`;
+        <span class="t"><b>${esc(x.theme.name)}</b><span>${xb ? `${esc(xb.country.name)} · skills ${xb.nos.join(' & ')}` : 'Seasonal week'}</span></span>
+        ${xb ? `<img src="img/medal${pad(xb.country.n)}.png" alt="">` : '<span></span>'}</li>`; }).join('')}</ul></div>`;
   $('#prev').onclick = () => { idx--; render(); scrollTo(0, 0); };
   $('#next').onclick = () => { idx++; render(); scrollTo(0, 0); };
+  document.querySelectorAll('.bk button').forEach(b => b.onclick = () => setBook(+b.dataset.b));
   document.querySelectorAll('.term li').forEach(li => li.onclick = () => { idx = +li.dataset.i; render(); scrollTo(0, 0); });
 }
 addEventListener('hashchange', load);
