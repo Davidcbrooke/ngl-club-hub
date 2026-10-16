@@ -43,21 +43,42 @@
     {n:14, name:'Flight', home:['Aeroplane: run with your arms out','Hot air balloon: spin on your toes, arms above your head','Skydiver: lie on your tummy in a star arch']},
     {n:15, name:'Mini Beasts', home:['Snail: tuck, then stretch out of your shell','Spider: from straddle, walk out to front support','Beetle: wave your arms and legs, then flip over!']},
     {n:16, name:'Christmas', home:['Bauble: rock in a tuck shape','Snow angels on the floor','Walk around like Santa']},
-    {n:17, name:'Easter', home:['Bunny hops round the room','Roll an egg (ball) down your legs in pike','Knee press-up: touch your nose to the egg']}
+    {n:17, name:'Easter', home:['Bunny hops round the room','Roll an egg (ball) down your legs in pike','Knee press-up: touch your nose to the egg']},
+    {n:18, name:'Weather', home:['Tornado: spin on the spot, then the other way','Snow angels on the floor','Rain: tuck jumps in the puddles']},
+    {n:19, name:'Colours', home:['Find something red, blue and yellow and stand on it','Rise onto your toes and hold for 3','Straddle sit and reach for a colour in the middle']},
+    {n:20, name:'Summer', home:['Surfing: from your tummy, push up and jump to your feet','Sun: star jump!','Sunbathing: hold a dish shape']},
+    {n:21, name:'Halloween', home:['Pumpkin: tuck rocks with a silly face','Bat: shoulder stand, hanging upside down','Black cat: cat stretch on all fours']},
+    {n:22, name:'Shapes', home:['Make a circle with a rope and jump in and out','Show a tuck, straddle and pike shape','Balance a soft toy on your head and walk']},
+    {n:23, name:'Teddy Bears’ Picnic', home:['Lift teddy above your head and walk on tiptoes','Pass teddy round your waist 3 times','Press-up to give teddy a hug']},
+    {n:24, name:'Superhero', home:['Super jumps: tuck, star and straight','Superhero arch shape','Count down from 5 and blast off!']},
+    {n:25, name:'Topsy Turvy', home:['Walk backwards, then sideways','Crab walk backwards','Find the opposite: tall and small, fast and slow']},
+    {n:26, name:'Sports', home:['Long jumps from spot to spot','Egg and spoon walk','Roll a ball down your legs in pike']},
+    {n:27, name:'Seaside', home:['Crab walks','Starfish: rock side to side in a star','Hermit crab: hide in a tuck, then pop out!']},
+    {n:28, name:'People Who Help Us', home:['Firefighter: stop, drop and roll','Helicopter: spin around with arms out','Build a tower from blocks']},
+    {n:29, name:'Numbers', home:['Count down from 10 with stretches','Balance on one foot and count how long','Roll a dice and do that many jumps']},
+    {n:30, name:'Nature', home:['Hedgehog: tuck balance on your bottom','Plant a seed: stretch, then crouch small and grow tall','Walk along a log (a line) on tiptoes']},
+    {n:31, name:'Music', home:['Musical statues','Copy a clapping rhythm','Star shape: tap one side, then the other']},
+    {n:32, name:'Harvest', home:['Scarecrow: jump up into a star','Stamp in the muddy puddles','Bat swing: lie on your back, lift your toes to the sky']},
+    {n:33, name:'Magic', home:['Phoenix jump: crouch, then explode','Make your toes point with a magic wand','Cat leaps like a galloping unicorn']},
+    {n:34, name:'Fantasy', home:['Troll: half-turn jumps','Dragon: hide your egg in a tuck','King and queen: walk with a crown on your head']},
+    {n:35, name:'Bonfire Night', home:['Rocket: stretch jump','Explode: tuck to star','Catherine wheel: spin around']}
   ];
-  const SEASONAL = {16:'autumn', 17:'spring'};
+  const SEASONAL = {16:'autumn', 17:'spring', 20:'summer'};   // last week of that term
+  const DATED = {21:['10-17','10-31'], 35:['10-30','11-08'], 32:['09-20','10-12']};  // Halloween, Bonfire Night, Harvest
 
   const DAY = 864e5;
   const iso = d => d.toISOString().slice(0, 10);
   const parse = s => { const [y, m, d] = s.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d)); };
-  function season(start){ const m = parse(start).getUTCMonth(); return m >= 7 ? 'autumn' : m <= 3 ? 'spring' : 'summer'; }
+  function season(start){ const m = parse(start).getUTCMonth(); return m >= 7 ? 'autumn' : m <= 2 ? 'spring' : 'summer'; }
 
   /* config: {club, pack (10|20), startLevel (1-20), startWeek (0-3), startTheme (index into the rotation),
               terms:[{name, start:'YYYY-MM-DD', weeks, half (weeks before half-term, 0 = none)}]}
      Returns one row per week across all terms, continuing from term to term. */
   function plan(cfg){
-    const avail = THEMES.filter(t => t.n <= (cfg.pack >= 20 ? 20 : 10));
-    const rotation = avail.filter(t => !SEASONAL[t.n]);
+    const maxN = cfg.pack >= 35 ? 99 : cfg.pack >= 20 ? 20 : 10;
+    const avail = THEMES.filter(t => t.n <= maxN);
+    const rotation = avail.filter(t => !SEASONAL[t.n] && !DATED[t.n]);
+    const usedDated = {};
     let g = ((cfg.startLevel || 1) - 1) * 4 + (cfg.startWeek || 0);
     let tp = cfg.startTheme || 0;
     const rows = [];
@@ -69,6 +90,9 @@
         const level = Math.floor(gg / 4) + 1, wk = gg % 4;
         let theme = null;
         if(i === t.weeks - 1) theme = avail.find(x => SEASONAL[x.n] === seas) || null;
+        if(!theme){ const md = iso(date).slice(5); const y = iso(date).slice(0, 4);
+          theme = avail.find(x => DATED[x.n] && md >= DATED[x.n][0] && md <= DATED[x.n][1] && !usedDated[x.n + y]) || null;
+          if(theme) usedDated[theme.n + y] = 1; }
         if(!theme){ theme = rotation[tp % rotation.length]; tp++; }
         const c = COUNTRIES[level - 1];
         rows.push({term:t.name || ('Term ' + (ti + 1)), termIndex:ti, week:i + 1, date:iso(date), level, country:c,

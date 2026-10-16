@@ -769,7 +769,7 @@ function screenDiscover(){
 /* ----- NGL Pre-School: showcase, licence, lesson plans and the term planner ----- */
 const PS = {dir:'preschool/', plans:'preschool/plans/1Qes3TzvJrYQ/', family:'https://club.nationalgymnasticsleague.co.uk/preschool/'};
 const PS_FREE = 10, PS_PACK = 100;
-function psLicence(){ const p = (S.club && S.club.preschool) || {}; return {active:p.status === 'active', pack2:!!p.pack2}; }
+function psLicence(){ const p = (S.club && S.club.preschool) || {}; return {active:p.status === 'active', pack2:!!p.pack2, pack3:!!p.pack3}; }
 function psKey(){ return 'ngl-ps-plan-' + (S.uid || 'demo'); }
 function psDefaultCfg(){
   const y = new Date().getFullYear(), m = new Date().getMonth();
@@ -783,7 +783,7 @@ function psCfg(){
     if(!c){ try{ c = JSON.parse(localStorage.getItem(psKey()) || 'null'); }catch(_){ c = null; } }
     S.psCfg = c || psDefaultCfg();
   }
-  const lic = psLicence(); S.psCfg.pack = lic.pack2 ? 20 : 10;
+  const lic = psLicence(); S.psCfg.pack = (lic.pack2 ? 20 : 10) + (lic.pack3 ? 15 : 0); if(lic.pack3 && !lic.pack2) S.psCfg.pack = 35;
   return S.psCfg;
 }
 async function psSave(){
@@ -800,11 +800,12 @@ function screenPreschool(){
   const plans = NGLPS.THEMES;
   const mail = (subj, body) => `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
   const club = S.club ? S.club.name : 'our club';
-  const unlocked = n => n === 1 || (lic.active && (n <= PS_FREE || lic.pack2));
+  const packOf = n => n <= PS_FREE ? 1 : n <= 20 ? 2 : 3;
+  const unlocked = n => n === 1 || (lic.active && (n <= PS_FREE || (packOf(n) === 2 && lic.pack2) || (packOf(n) === 3 && lic.pack3)));
   const planCard = t => {
     const open = unlocked(t.n), href = t.n === 1 && !lic.active ? PS.dir + 'plans/sample/NGL_PreSchool_Lesson_Plan_01_Alphabet.pdf' : PS.plans + `NGL_PreSchool_Lesson_Plan_${P2(t.n)}_${t.name.replace(/ /g, '_')}.pdf`;
     return `<div class="ps-plan${open ? '' : ' locked'}"><div class="th" style="background-image:url(${PS.dir}img/plan${P2(t.n)}-thumb.jpg)">${open ? '' : '<span class="lock">🔒</span>'}</div>
-      <b>${t.n}. ${esc(t.name)}</b><span class="small muted">${t.n <= PS_FREE ? 'Included with the licence' : 'Lesson Plan Pack 11–20'}</span>
+      <b>${t.n}. ${esc(t.name)}</b><span class="small muted">${['', 'Included with the licence', 'Lesson Plan Pack 11–20', 'Lesson Plan Pack 21–35'][packOf(t.n)]}</span>
       ${open ? `<div class="btn-row" style="margin-top:4px;gap:6px"><a class="btn small" href="${href}" target="_blank" rel="noopener">Plan PDF</a><a class="btn small ghost" href="${href.replace('Lesson_Plan', 'Post').replace('.pdf', '.jpg')}" target="_blank" rel="noopener" download>Social post</a></div>` : `<span class="pill off">Locked</span>`}</div>`; };
   const today = new Date().toISOString().slice(0, 10);
   let cur = 0; rows.forEach((r, i) => { if(r.date <= today) cur = i; });
@@ -859,8 +860,7 @@ function screenPreschool(){
     </div>
     <h3 style="font-family:var(--cond);font-size:20px;color:var(--navy);margin:18px 0 8px">A social media post for every theme</h3>
     <div class="ps-posts">${plans.map(t => `<img src="${PS.dir}img/post${P2(t.n)}.jpg" alt="${esc(t.name)} week post">`).join('')}</div>
-    <div class="ps-plans">${plans.map(planCard).join('')}
-      ${[18, 19, 20].map(n => `<div class="ps-plan locked soon"><div class="th"><span class="lock">✦</span></div><b>${n}. Coming soon</b><span class="small muted">Lesson Plan Pack 11–20</span></div>`).join('')}</div>
+    <div class="ps-plans">${plans.map(planCard).join('')}</div>
 
     <h2 class="sec" id="ps-licence">Licence</h2>
     <div class="grid g2">
@@ -869,20 +869,25 @@ function screenPreschool(){
         <p>${lic.active ? '<span class="pill ok">Active</span>' : '<span class="pill off">Not started</span>'}</p>
         <div class="btn-row">${lic.active ? '' : `<a class="btn" href="${mail('NGL Pre-School Licence: ' + club, 'Hi Dave,\n\nWe’d like to start the NGL Pre-School licence.\n\nClub: ' + club + '\nApprox. number of Pre-School gymnasts:\n')}">Request the licence</a>`}</div></div>
       <div class="card accent" style="--c:var(--navy)"><h3>Lesson Plan Pack 11–20</h3>
-        <p>Ten more themed plans, including Christmas and Easter, which the planner places in the last week of the autumn and spring terms.</p>
+        <p>Ten more themed plans, including Christmas, Easter and Summer, which the planner places in the last week of each term.</p>
         <p style="font-size:26px;font-family:var(--cond);color:var(--navy);margin:6px 0">£${PS_PACK}</p>
         <p>${lic.pack2 ? '<span class="pill ok">Added</span>' : '<span class="pill off">Not added</span>'}</p>
         <div class="btn-row">${lic.pack2 ? '' : `<a class="btn ghost" href="${mail('NGL Pre-School: Lesson Plan Pack 11–20 for ' + club, 'Hi Dave,\n\nWe’d like to add Lesson Plan Pack 11–20 (£' + PS_PACK + ').\n\nClub: ' + club + '\n')}">Add the pack</a>`}</div></div>
+      <div class="card accent" style="--c:var(--navy)"><h3>Lesson Plan Pack 21–35</h3>
+        <p>Fifteen more themed plans, including Halloween, Bonfire Night and Harvest, which the planner places in the right weeks of the autumn term.</p>
+        <p style="font-size:26px;font-family:var(--cond);color:var(--navy);margin:6px 0">£${PS_PACK}</p>
+        <p>${lic.pack3 ? '<span class="pill ok">Added</span>' : '<span class="pill off">Not added</span>'}</p>
+        <div class="btn-row">${lic.pack3 ? '' : `<a class="btn ghost" href="${mail('NGL Pre-School: Lesson Plan Pack 21–35 for ' + club, 'Hi Dave,\n\nWe’d like to add Lesson Plan Pack 21–35 (£' + PS_PACK + ').\n\nClub: ' + club + '\n')}">Add the pack</a>`}</div></div>
     </div>
 
     <h2 class="sec" id="ps-planner">Term planner</h2>
     <div class="card">
-      <p class="muted" style="margin-top:0">Enter your term dates and the planner sets out the country, the two passport skills and the lesson plan theme for every week. Each term picks up where the last one finished. ${lic.pack2 ? 'Themes rotate through all of your lesson plans.' : 'Themes rotate through Lesson Plans 1–10; add the 11–20 pack for more themes plus Christmas and Easter weeks.'}</p>
+      <p class="muted" style="margin-top:0">Enter your term dates and the planner sets out the country, the two passport skills and the lesson plan theme for every week. Each term picks up where the last one finished. Themes rotate through the lesson plans you have, and seasonal plans you own (Christmas, Easter, Summer, Halloween, Bonfire Night and Harvest) go in the right weeks automatically.</p>
       <div class="ps-start">
         <label>Name parents will see<input id="psClub" value="${esc(cfg.club || '')}" placeholder="${esc(club)}"></label>
         <label>Class starts at country<select id="psLevel">${NGLPS.COUNTRIES.map(c => `<option value="${c.n}"${c.n === (cfg.startLevel || 1) ? ' selected' : ''}>${c.n}. ${esc(c.name)}</option>`).join('')}</select></label>
         <label>…from skills<select id="psWeek">${[0, 1, 2, 3].map(w => `<option value="${w}"${w === (cfg.startWeek || 0) ? ' selected' : ''}>${w * 2 + 1} & ${w * 2 + 2}</option>`).join('')}</select></label>
-        <label>First theme<select id="psTheme">${NGLPS.THEMES.filter(t => t.n <= (cfg.pack >= 20 ? 20 : 10) && t.n < 16).map((t, i) => `<option value="${i}"${i === (cfg.startTheme || 0) ? ' selected' : ''}>${t.n}. ${esc(t.name)}</option>`).join('')}</select></label>
+        <label>First theme<select id="psTheme">${NGLPS.THEMES.filter(t => t.n <= (cfg.pack >= 35 ? 99 : cfg.pack >= 20 ? 20 : 10) && ![16, 17, 20, 21, 32, 35].includes(t.n)).map((t, i) => `<option value="${i}"${i === (cfg.startTheme || 0) ? ' selected' : ''}>${t.n}. ${esc(t.name)}</option>`).join('')}</select></label>
       </div>
       <div id="psTerms">${termRows}</div>
       <div class="btn-row"><button class="btn ghost small" data-act="ps-add" type="button">+ Add a term</button><button class="btn" data-act="ps-save" type="button">Save plan</button><span id="psMsg" class="small muted" style="align-self:center"></span></div>
