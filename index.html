@@ -793,7 +793,7 @@ function screenOverview(){
     <h2 class="sec">Your programmes</h2>
     <div class="grid g2">${licenceCard('schools', true)}${licenceCard('recreational', true)}</div>
     <h2 class="sec">Your NGL apps</h2>
-    <p class="small muted" style="margin:-4px 0 12px">Everything your club uses, in one place. The Schools and Recreational hubs use this same login.</p>
+    <p class="small muted" style="margin:-4px 0 12px">Everything your club uses, in one place. The Pre-School, Schools and Recreational hubs use this same login.</p>
     <div class="apps">${appTiles()}</div>
     <div class="btn-row" style="margin-top:16px"><a class="btn ghost" href="${LINKS.website}" target="_blank" rel="noopener">NGL website</a></div>`;
 }
@@ -802,6 +802,7 @@ function appTiles(){
   const q = u => em ? u + (u.includes('?') ? '&' : '?') + 'email=' + em : u;
   const ext = (c, title, text, href, cta) => `<a class="app" style="--c:${c}" href="${esc(href)}" target="_blank" rel="noopener"><b>${esc(title)}</b><span>${esc(text)}</span><em>${esc(cta)} ↗</em></a>`;
   return [
+    ext('var(--pre)', 'Pre-School Hub', 'Weekly lesson plans, the term planner and the family app for Around the World.', q(LINKS.preschoolHub), 'Open, same login'),
     ext('var(--rec)', 'Recreational Hub', 'Lesson plans, assessments and ordering books, medals and certificates.', q(LINKS.recHub), 'Open, same login'),
     ext('#c9a400', 'Schools Hub', 'Your schools, licence orders and the family access code.', q(LINKS.schoolsHub), 'Open, same login'),
     ext('var(--general)', 'Competition booking', 'Reserve places at NGL competitions. Use your club email so bookings appear here.', q(LINKS.reserve), 'Reserve places'),

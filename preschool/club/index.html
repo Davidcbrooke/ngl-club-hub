@@ -709,6 +709,7 @@ function screenLogin(msg){
     <div class="field"><label for="pw">Password</label><input class="input" id="pw" type="password" autocomplete="current-password" required></div>
     <p class="error" id="err">${esc(msg || '')}</p><button class="btn block" type="submit">Sign in</button></form>
     <p class="note" style="margin-top:14px;text-align:center">New to NGL? <a href="${CLUB_HUB}#register">Create your club account</a><br><a href="#" data-act="reset">Forgotten your password?</a></p></div>`);
+  { const pre = new URLSearchParams(location.search).get('email'); if(pre) $('#em').value = pre; }
   $('#loginForm').addEventListener('submit', async e => { e.preventDefault(); const b = e.target.querySelector('button'); b.disabled = true;
     const r = await api.signIn($('#em').value.trim(), $('#pw').value); b.disabled = false;
     if(r.ok){ signedIn = true; tab = S.club ? 'dashboard' : 'admin'; show(); } else $('#err').textContent = r.reason; });
