@@ -210,7 +210,7 @@
   .inv-table th{background:#2a245f;color:#fff;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:8px 10px;text-align:left;border:0;}
   .inv-table td{padding:10px;border-bottom:1px solid #e3e4ee;color:#1c1f3a;font-size:13px;}
   .inv-table .num{text-align:right;}
-  .inv-total td{font-weight:900;font-size:16px;border-bottom:0;background:#fdebdc;}
+  .inv-total td{font-weight:900;font-size:16px;border-bottom:0;background:#fde3ef;}
   .inv-pay{background:#f4f5fa;border-left:4px solid #E84187;padding:12px 14px;border-radius:6px;}
   .inv-pay table{border-collapse:collapse;margin:6px 0 8px;width:auto;}
   .inv-pay td{padding:3px 18px 3px 0;border:0;font-size:13px;color:#1c1f3a;}
@@ -559,10 +559,13 @@
 .ps-book h4{margin:10px 0 4px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#ffb3d1}
 .ps-book li{margin:3px 0}
 .copy{display:flex;gap:8px;flex-wrap:wrap}.copy .input{flex:1;min-width:220px;font-size:13px}
-.adm td{font-size:14px}.adm .btn{margin:2px}
+.adm td{font-size:14px}
+.shop-grid.five{grid-template-columns:repeat(2,1fr)}@media(min-width:700px){.shop-grid.five{grid-template-columns:repeat(5,1fr)}}
+.shop-q .shop-l{display:block;min-height:46px}.shop-q small{display:block}.adm .btn{margin:2px}
 </style>
 </head>
 <body>
+<div id="print-area"></div>
 <div class="app">
   <header class="topbar"><div class="topbar-strap">Pre-School Awards Scheme · Club Hub</div><div class="topbar-in">
     <div class="wrap topbar-row">
@@ -591,6 +594,18 @@ const FAMILY = 'https://club.nationalgymnasticsleague.co.uk/preschool/';
 const CLUB_HUB = 'https://club.nationalgymnasticsleague.co.uk/';
 const CONTACT = 'admin@nationalgymnasticsleague.co.uk';
 const PRICE = {pack:100, seasonal:50};
+const INVOICE = {businessName:'National Gymnastics League', addressLines:['66 Waveney Road', 'Harpenden', 'Hertfordshire', 'AL5 4QZ'], email:CONTACT, termsDays:14,
+  vatNote:'No VAT charged: National Gymnastics League is not VAT registered.', bank:{accountName:'National Gymnastics League', sortCode:'60-84-64', accountNumber:'93416867'}};
+const EMAILJS = {serviceId:'service_3qlufgh', templateId:'template_8i40iia', publicKey:'ZSjEpECoOMHkWNB1D'};
+const SHOP_PRICE = {passport:5, medal:2};   // to clubs; RRP passport £10, medal £4
+const POSTAGE = [{upTo:20, price:4}, {upTo:100, price:8}, {upTo:Infinity, price:12}];
+const postageFor = n => n <= 0 ? 0 : POSTAGE.find(x => n <= x.upTo).price;
+const CODE_ALPHABET = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
+function orderRef(){ const r = new Uint32Array(5); crypto.getRandomValues(r); return 'ORD-' + Array.from(r, x => CODE_ALPHABET[x % CODE_ALPHABET.length]).join(''); }
+const toDate = c => !c ? new Date() : (typeof c.toDate === 'function' ? c.toDate() : (c.seconds ? new Date(c.seconds * 1000) : new Date(c)));
+const fmtDate = d => d.toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'});
+const orderTotal = o => (o.lines || []).reduce((a, l) => a + l.qty * l.unit, 0);
+const money = n => '£' + Number(n).toLocaleString('en-GB', {minimumFractionDigits:2, maximumFractionDigits:2});
 const BANDS = [{k:'xs', label:'1–24 Pre-School gymnasts', price:150}, {k:'sm', label:'25–49 Pre-School gymnasts', price:250}, {k:'s', label:'50–99 Pre-School gymnasts', price:400}, {k:'m', label:'100 or more Pre-School gymnasts', price:750}];
 const gbp = n => '£' + n.toLocaleString('en-GB');
 const DEMO = new URLSearchParams(location.search).has('demo');
@@ -601,7 +616,7 @@ const mail = (subj, body) => `mailto:${CONTACT}?subject=${encodeURIComponent(sub
 function toast(m){ const t = document.createElement('div'); t.textContent = m; t.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#fff;color:#0a1440;font-weight:700;padding:10px 16px;border-radius:12px;z-index:99;box-shadow:0 6px 20px rgba(0,0,0,.3)'; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
 
 /* ---------- data layer ---------- */
-const S = {uid:null, club:null, isAdmin:false, cfg:null};
+const S = {uid:null, club:null, isAdmin:false, cfg:null, orders:[]};
 let FB = null;
 async function fb(){
   if(FB) return FB;
@@ -615,12 +630,16 @@ async function loadClub(uid){
   const {fs, D} = await fb(); S.uid = uid;
   const [c, a] = await Promise.all([fs.getDoc(fs.doc(D, 'clubs', uid)), fs.getDoc(fs.doc(D, 'admins', uid)).catch(() => null)]);
   S.club = c.exists() ? c.data() : null; S.isAdmin = !!(a && a.exists());
+  const o = await fs.getDocs(fs.query(fs.collection(D, 'recOrders'), fs.where('clubId', '==', uid))).catch(() => ({docs:[]}));
+  S.orders = o.docs.map(d => ({id:d.id, ...d.data()})).filter(x => x.pathway === 'preschool').sort((x, y) => toDate(x.createdAt) - toDate(y.createdAt));
 }
 const api = DEMO ? {
   async restore(){ return false; },
   async signIn(){ S.uid = 'demo'; S.club = {name:'SAADI Gymnastics', email:'demo@club', preschool:{status:'inactive'}}; S.isAdmin = true; return {ok:true}; },
   async reset(){ return {ok:true}; }, async signOut(){}, async savePlan(c){ S.club.preschoolPlan = c; return true; },
-  async adminClubs(){ return [{id:'demo', ...S.club}]; }, async adminSet(club, data){ Object.assign(club, {preschool:data}); S.club.preschool = data; }
+  async adminClubs(){ return [{id:'demo', ...S.club}]; }, async adminSet(club, data){ Object.assign(club, {preschool:data}); S.club.preschool = data; },
+  async placeOrder(o){ const x = {id:orderRef(), ...o, clubId:'demo', clubName:S.club.name, pathway:'preschool', status:'awaiting-payment', createdAt:new Date()}; S.orders.push(x); return x; },
+  async adminOrders(){ return S.orders.slice().reverse(); }, async adminOrderStatus(o, st){ o.status = st; }, async saveDelivery(a){ S.club.deliveryAddress = a; }
 } : {
   async restore(){ const {auth, A} = await fb(); return new Promise(res => { const off = auth.onAuthStateChanged(A, async u => { off(); if(!u) return res(false); try{ await loadClub(u.uid); res(!!S.club || S.isAdmin); }catch(e){ res(false); } }); }); },
   async signIn(email, pw){ try{ const {auth, A} = await fb(); const c = await auth.signInWithEmailAndPassword(A, email, pw); await loadClub(c.user.uid); if(!S.club && !S.isAdmin) return {ok:false, reason:'This login isn’t linked to a club. Please create your club account in the NGL Club Hub.'}; return {ok:true}; }catch(e){ return {ok:false, reason:authError(e)}; } },
@@ -628,7 +647,13 @@ const api = DEMO ? {
   async signOut(){ const {auth, A} = await fb(); await auth.signOut(A); },
   async savePlan(c){ try{ const {fs, D} = await fb(); await fs.updateDoc(fs.doc(D, 'clubs', S.uid), {preschoolPlan:c}); S.club.preschoolPlan = c; return true; }catch(e){ console.warn(e); return false; } },
   async adminClubs(){ const {fs, D} = await fb(); const q = await fs.getDocs(fs.collection(D, 'clubs')); return q.docs.map(d => ({id:d.id, ...d.data()})).sort((a, b) => String(a.name).localeCompare(String(b.name))); },
-  async adminSet(club, data){ const {fs, D} = await fb(); await fs.updateDoc(fs.doc(D, 'clubs', club.id), {preschool:data}); club.preschool = data; }
+  async adminSet(club, data){ const {fs, D} = await fb(); await fs.updateDoc(fs.doc(D, 'clubs', club.id), {preschool:data}); club.preschool = data; },
+  async placeOrder(o){ const {fs, D} = await fb(); const id = orderRef(); const data = {...o, clubId:S.uid, clubName:S.club.name, pathway:'preschool', status:'awaiting-payment'};
+    await fs.setDoc(fs.doc(D, 'recOrders', id), {...data, createdAt:fs.serverTimestamp()}); const x = {id, ...data, createdAt:new Date()}; S.orders.push(x); return x; },
+  async adminOrders(){ const {fs, D} = await fb(); const q = await fs.getDocs(fs.query(fs.collection(D, 'recOrders'), fs.where('pathway', '==', 'preschool')));
+    return q.docs.map(d => ({id:d.id, ...d.data()})).sort((a, b) => toDate(b.createdAt) - toDate(a.createdAt)); },
+  async adminOrderStatus(o, st){ const {fs, D} = await fb(); await fs.updateDoc(fs.doc(D, 'recOrders', o.id), {status:st, [st + 'At']:fs.serverTimestamp()}); o.status = st; },
+  async saveDelivery(a){ try{ const {fs, D} = await fb(); await fs.updateDoc(fs.doc(D, 'clubs', S.uid), {deliveryAddress:a}); S.club.deliveryAddress = a; }catch(e){ console.warn(e); } }
 };
 const lic = () => { const p = (S.club && S.club.preschool) || {}; return {active:p.status === 'active', pack2:!!p.pack2, pack3:!!p.pack3, pack4:!!p.pack4, seasonal:!!p.seasonal}; };
 const packOf = n => n <= 10 ? 1 : n <= 20 ? 2 : n <= 30 ? 3 : 4;
@@ -650,7 +675,7 @@ const familyLink = () => FAMILY + '#p=' + P.encode(cfg());
 
 /* ---------- shell ---------- */
 let signedIn = false, tab = 'dashboard';
-const TABS = [['dashboard','Dashboard'], ['planner','Term planner'], ['plans','Lesson plans'], ['family','Family app'], ['programme','The programme'], ['licence','Licence & packs']];
+const TABS = [['dashboard','Dashboard'], ['planner','Term planner'], ['plans','Lesson plans'], ['family','Family app'], ['shop','Order supplies'], ['orders','Orders'], ['programme','The programme'], ['licence','Licence & packs']];
 function setTop(){
   const ta = $('#topActions'), nav = $('#navtabs');
   if(signedIn){
@@ -666,7 +691,7 @@ function show(){
   if(!signedIn) return screenLanding();
   if(ADMIN_MODE) tab = 'admin';
   if(!S.club && !S.isAdmin) return render('<div class="card"><h2>No club on this login</h2></div>');
-  ({dashboard:screenDashboard, planner:screenPlanner, plans:screenPlans, family:screenFamily, programme:() => render(programmeHTML(true)), licence:screenLicence, admin:screenAdmin}[tab] || screenDashboard)();
+  ({dashboard:screenDashboard, planner:screenPlanner, plans:screenPlans, family:screenFamily, shop:screenShop, orders:screenOrders, programme:() => render(programmeHTML(true)), licence:screenLicence, admin:screenAdmin}[tab] || screenDashboard)();
   window.scrollTo(0, 0);
 }
 
@@ -734,11 +759,15 @@ function licenceCard(){
   if(L.active) return `<div class="card lic-card"><p class="eyebrow">Pre-School Club Licence</p><h2>${esc(S.club.name)} <span class="tag ok">✓ Active</span></h2>
     <p class="muted">Lesson plans 1–10${L.pack2 ? ', 11–20' : ''}${L.pack3 ? ', 21–30' : ''}${L.pack4 ? ', 31–40' : ''}${L.seasonal ? ' and the Seasonal Pack' : ''} unlocked.</p>
     <div class="btn-row"><button class="btn" data-tab="planner">Term planner</button><button class="btn ghost" data-tab="plans">Lesson plans</button><button class="btn ghost" data-tab="licence">Add a pack</button></div></div>`;
+  const pend = pendingOf('ps-licence');
+  if(pend) return `<div class="card lic-card"><p class="eyebrow">Pre-School Club Licence</p><h2>Almost there <span class="tag wait">Awaiting payment</span></h2>
+    <p class="muted">Your lesson plans, term planner and family app unlock, and your free A1 poster is posted, as soon as we receive payment for invoice <b class="mono">${esc(pend.id)}</b> (${money(orderTotal(pend))}).</p>
+    <div class="btn-row"><button class="btn" data-act="invoice" data-order="${esc(pend.id)}">View invoice</button></div></div>`;
   return `<div class="card lic-card"><p class="eyebrow">Pre-School Club Licence</p><h2>Start your Pre-School licence</h2>
-    <p class="muted">The licence includes the A1 poster, Lesson Plans 1–10, the term planner and the family app. Until then you can explore the programme and the Week 1 sample.</p>
+    <p class="muted">The licence includes a free A1 Around the World poster, Lesson Plans 1–10, the term planner and the family app. Until then you can explore the programme and the Week 1 sample.</p>
     <p class="note">An NGL Recreational or Schools licence doesn’t include Pre-School.</p>
     ${tab === 'licence' ? `<div class="table-wrap" style="margin:6px 0 14px"><table><thead><tr><th>Pre-School gymnasts</th><th class="num">Club Licence a year</th><th></th></tr></thead><tbody>
-      ${BANDS.map(b => `<tr><td>${esc(b.label)}</td><td class="num"><b>${gbp(b.price)}</b></td><td class="num"><a class="btn small" href="${mail('NGL Pre-School Licence: ' + club + ' (' + b.label + ')', 'Hi Dave,\n\nWe’d like to start the NGL Pre-School Club Licence.\n\nClub: ' + club + '\nBand: ' + b.label + ' (' + gbp(b.price) + ' a year)\n')}">Choose</a></td></tr>`).join('')}
+      ${BANDS.map(b => `<tr><td>${esc(b.label)}</td><td class="num"><b>${gbp(b.price)}</b></td><td class="num"><button class="btn small" data-act="lic-order" data-band="${b.k}">Choose</button></td></tr>`).join('')}
       </tbody></table></div>
       <p class="note">Runs for 12 months from the day it starts. 5% off if it isn’t your club’s most expensive NGL licence. Lesson Plan Packs and the Seasonal Pack are below. <a href="https://club.nationalgymnasticsleague.co.uk/licences.html" target="_blank" rel="noopener">Every NGL licence fee ↗</a></p>`
     : `<p class="muted">From <b>${gbp(BANDS[0].price)} a year</b>, depending on how many Pre-School gymnasts you have.</p>
@@ -813,7 +842,7 @@ function screenLicence(){
   const L = lic(), club = S.club ? S.club.name : 'our club';
   const card = (key, title, desc, price) => `<div class="card"><h2>${title}</h2><p class="muted">${desc}</p><p class="stat">£${price}</p>
     <p>${L[key] ? '<span class="tag ok">✓ Added</span>' : '<span class="tag off">Not added</span>'}</p>
-    ${L[key] ? '' : `<a class="btn small" href="${mail('NGL Pre-School: ' + title + ' for ' + club, 'Hi Dave,\n\nWe’d like to add ' + title + ' (£' + price + ').\n\nClub: ' + club + '\n')}">Add the pack</a>`}</div>`;
+    ${L[key] ? '' : S.orders.some(o => o.psPack === key && o.status === 'awaiting-payment') ? '<span class="tag wait">Awaiting payment</span>' : L.active ? `<button class="btn small" data-act="pack-order" data-pack="${key}">Add the pack</button>` : '<span class="note">Available once your licence is active.</span>'}</div>`;
   render(`<h1>Licence &amp; packs</h1>${licenceCard()}
     <div class="grid2">
       ${card('pack2', 'Lesson Plan Pack 11–20', 'Weeks 11–20: Egypt to Brazil in Book 1, the Bahamas to Italy in Book 2.', PRICE.pack)}
@@ -825,16 +854,162 @@ function screenLicence(){
 async function screenAdmin(){
   if(!S.isAdmin) return render('<div class="card"><h2>NGL admins only</h2></div>');
   render('<h1>Pre-School licences</h1><p class="muted">Loading clubs…</p>');
-  const clubs = await api.adminClubs(); S.adminClubs = clubs;
+  const [clubs, orders] = await Promise.all([api.adminClubs(), api.adminOrders().catch(e => { console.warn(e); return []; })]); S.adminClubs = clubs; S.adminOrders = orders;
   const keys = [['status','Licence'], ['pack2','11–20'], ['pack3','21–30'], ['pack4','31–40'], ['seasonal','Seasonal']];
   render(`<h1>Pre-School licences</h1><p class="muted">Switch a club’s licence and packs on or off. Changes take effect next time the club opens the hub.</p>
     <div class="card table-wrap adm"><table><thead><tr><th>Club</th>${keys.map(k => `<th>${k[1]}</th>`).join('')}</tr></thead><tbody>
     ${clubs.map((c, i) => { const p = c.preschool || {}; return `<tr><td><b>${esc(c.name || c.id)}</b><br><span class="note">${esc(c.email || '')}</span></td>${keys.map(([k]) => { const on = k === 'status' ? p.status === 'active' : !!p[k];
       return `<td><button class="btn small ${on ? '' : 'ghost'}" data-act="adm" data-i="${i}" data-k="${k}">${on ? 'On' : 'Off'}</button></td>`; }).join('')}</tr>`; }).join('')}
+    </tbody></table></div>
+    <h2 style="margin-top:28px">Pre-School orders</h2><p class="muted">Mark an order paid when the money arrives: a licence order switches the club’s licence on, a pack order unlocks the pack. Mark supplies sent once posted.</p>
+    <div class="card table-wrap adm"><table><thead><tr><th>Order</th><th>Club</th><th>For</th><th class="num">Total</th><th>Status</th><th></th></tr></thead><tbody>
+    ${orders.length ? orders.map(o => `<tr><td class="mono">${esc(o.id)}<br><span class="note">${fmtDate(toDate(o.createdAt))}</span></td><td>${esc(o.clubName || '')}</td><td>${esc(orderFor(o))}${o.delivery ? `<br><span class="note">${esc(o.delivery).replace(/\n/g, ', ')}</span>` : ''}</td>
+      <td class="num">${money(orderTotal(o))}</td><td>${statusTag(o)}</td><td><button class="btn ghost small" data-act="invoice" data-order="${esc(o.id)}">Invoice</button>
+      ${o.status === 'awaiting-payment' ? `<button class="btn small" data-act="ord-status" data-st="paid" data-order="${esc(o.id)}">Mark paid</button>` : ''}
+      ${o.status === 'paid' && (o.kind === 'supplies' || o.kind === 'ps-licence') ? `<button class="btn small" data-act="ord-status" data-st="sent" data-order="${esc(o.id)}">Mark sent</button>` : ''}</td></tr>`).join('') : '<tr><td colspan="6" class="note">No Pre-School orders yet.</td></tr>'}
     </tbody></table></div>`);
 }
 
+/* ---------- orders, shop and invoices (same format as NGL Recreational; stored in recOrders with pathway:'preschool') ---------- */
+function modal(html){ const m = document.createElement('div'); m.className = 'modal-bg'; m.innerHTML = `<div class="modal" role="dialog" aria-modal="true">${html}</div>`;
+  m.addEventListener('click', e => { if(e.target === m || e.target.closest('[data-close]')) m.remove(); }); document.body.appendChild(m); return m; }
+const pendingOf = kind => S.orders.find(o => o.kind === kind && o.status !== 'paid' && o.status !== 'sent');
+function orderFor(o){
+  if(o.kind === 'ps-licence') return 'Pre-School Club Licence' + (o.psBandLabel ? ' (' + o.psBandLabel + ')' : '');
+  if(o.kind === 'ps-pack') return (o.lines[0] || {}).desc || 'Lesson plan pack';
+  const n = k => (o.lines || []).filter(l => l.kind === k).reduce((a, l) => a + l.qty, 0);
+  return [n('passport') ? n('passport') + ' passports' : '', n('medal') ? n('medal') + ' medals' : ''].filter(Boolean).join(', ') || 'Order';
+}
+function statusTag(o){
+  if(o.status === 'sent') return '<span class="tag ok">Sent</span>';
+  if(o.status === 'paid') return o.kind === 'supplies' ? '<span class="tag info">Paid · being packed</span>' : '<span class="tag ok">Paid</span>';
+  return '<span class="tag wait">Awaiting payment</span>';
+}
+const SHOP = {};
+function shopLines(){
+  const L = [];
+  [1, 2].forEach(b => { const q = +SHOP['passport' + b] || 0; if(q) L.push({kind:'passport', desc:`Pre-School passport: Book ${b} (countries ${b === 1 ? '1–10' : '11–20'})`, qty:q, unit:SHOP_PRICE.passport}); });
+  P.COUNTRIES.forEach(c => { const q = +SHOP['medal' + c.n] || 0; if(q) L.push({kind:'medal', desc:`Country medal: ${c.n}. ${c.name}`, qty:q, unit:SHOP_PRICE.medal}); });
+  const items = L.reduce((a, l) => a + l.qty, 0), post = postageFor(items);
+  if(post) L.push({kind:'postage', desc:`Postage and packing (${items} item${items === 1 ? '' : 's'})`, qty:1, unit:post});
+  return L;
+}
+function qtyBox(key, label, sub, img){
+  return `<label class="shop-q"><span class="shop-l">${img ? `<img src="${img}" alt="" style="width:46px;height:46px;float:left;margin:0 8px 0 0">` : ''}${label}${sub ? `<small>${sub}</small>` : ''}</span>
+    <input class="input" type="number" min="0" step="1" inputmode="numeric" data-shop="${key}" value="${SHOP[key] || ''}" placeholder="0"></label>`;
+}
+function screenShop(){
+  if(!lic().active) return render(`<p class="eyebrow">Order supplies</p><h1>Passports and medals</h1>${licenceCard()}<p class="muted">Ordering opens as soon as your Pre-School licence is paid.</p>`);
+  if(SHOP.address === undefined) SHOP.address = S.club.deliveryAddress || S.club.address || '';
+  render(`<p class="eyebrow">Order supplies</p><h1>Passports and medals</h1>
+  <p class="muted">Pay by bank transfer when you receive the invoice. We post your order as soon as payment arrives.</p>
+  <div class="card"><h2>Passports <span class="muted shop-p">${money(SHOP_PRICE.passport)} each · suggested price to families £10</span></h2>
+    <div class="shop-grid four">${qtyBox('passport1', 'Book 1', 'Countries 1–10: France to Iceland', DIR + 'img/book-cover.jpg')}${qtyBox('passport2', 'Book 2', 'Countries 11–20: America to Spain', DIR + 'img/medal11.png')}</div></div>
+  <div class="card"><h2>Country medals <span class="muted shop-p">${money(SHOP_PRICE.medal)} each · suggested price to families £4</span></h2>
+    <p class="note">One medal for each country a child completes, every four weeks. Order spares for children who miss a class.</p>
+    <h3 style="margin-top:12px">Book 1</h3><div class="shop-grid five">${P.COUNTRIES.slice(0, 10).map(c => qtyBox('medal' + c.n, c.n + '. ' + esc(c.name), '', DIR + 'img/medal' + P2(c.n) + '.png')).join('')}</div>
+    <h3 style="margin-top:14px">Book 2</h3><div class="shop-grid five">${P.COUNTRIES.slice(10).map(c => qtyBox('medal' + c.n, c.n + '. ' + esc(c.name), '', DIR + 'img/medal' + P2(c.n) + '.png')).join('')}</div></div>
+  <div class="card"><h2>Delivery address</h2>
+    <textarea class="input" id="shopAddr" rows="4" placeholder="Club name, street, town, postcode">${esc(SHOP.address)}</textarea>
+    <p class="note">Postage: ${POSTAGE.map((x, i) => (x.upTo === Infinity ? 'over ' + POSTAGE[i - 1].upTo + ' items ' : 'up to ' + x.upTo + ' items ') + money(x.price)).join(' · ')}.</p></div>
+  <div class="card shop-sum" id="shopSum"></div>`);
+  shopSummary();
+}
+function shopSummary(){
+  const el = $('#shopSum'); if(!el) return;
+  const L = shopLines(), total = L.reduce((a, l) => a + l.qty * l.unit, 0), goods = L.some(l => l.kind !== 'postage');
+  el.innerHTML = `<h2>Your order</h2>${goods ? `<div class="table-wrap"><table><tbody>${L.map(l => `<tr><td>${esc(l.desc)}</td><td class="num">${l.qty} × ${money(l.unit)}</td><td class="num">${money(l.qty * l.unit)}</td></tr>`).join('')}
+    <tr><td colspan="2" class="num"><b>Total</b></td><td class="num"><b>${money(total)}</b></td></tr></tbody></table></div>` : '<p class="muted">Add quantities above to build your order.</p>'}
+    <p class="error" id="shopErr"></p><button class="btn" data-act="shop-place" ${goods ? '' : 'disabled'}>Place order and get invoice</button>`;
+}
+function screenOrders(){
+  const rows = S.orders.slice().reverse();
+  render(`<p class="eyebrow">Orders</p><h1>Orders and invoices</h1>
+  <div class="card">${rows.length ? `<div class="table-wrap"><table><thead><tr><th>Order</th><th>Date</th><th>For</th><th class="num">Total</th><th>Status</th><th></th></tr></thead>
+    <tbody>${rows.map(o => `<tr><td class="mono">${esc(o.id)}</td><td>${fmtDate(toDate(o.createdAt))}</td><td>${esc(orderFor(o))}</td><td class="num">${money(orderTotal(o))}</td><td>${statusTag(o)}</td>
+      <td><button class="btn ghost small" data-act="invoice" data-order="${esc(o.id)}">Invoice</button></td></tr>`).join('')}</tbody></table></div>`
+    : `<p class="muted">No orders yet.</p><button class="btn" data-tab="licence">Start my licence</button>`}</div>`);
+}
+function invoiceHTML(o, club){
+  const issued = toDate(o.createdAt), due = new Date(issued.getTime() + INVOICE.termsDays * 864e5), paid = o.status === 'paid' || o.status === 'sent';
+  return `<div class="inv"><div class="inv-top"><div class="inv-brand">National Gymnastics League<small>NGL PRE-SCHOOL</small></div>
+      <div class="inv-title"><div class="inv-h">INVOICE</div><div class="inv-no">${esc(o.id)}</div>${paid ? '<div class="inv-paid">PAID</div>' : ''}</div></div>
+    <div class="inv-cols"><div><div class="inv-label">From</div><b>${esc(INVOICE.businessName)}</b><br>${INVOICE.addressLines.map(esc).join('<br>')}<br>${esc(INVOICE.email)}</div>
+      <div><div class="inv-label">Bill to</div><b>${esc(club.name || o.clubName || '')}</b><br>${club.contact ? esc(club.contact) + '<br>' : ''}${club.email ? esc(club.email) + '<br>' : ''}${club.bgNumber ? 'BG club no. ' + esc(club.bgNumber) : ''}</div>
+      ${o.delivery ? `<div><div class="inv-label">Deliver to</div>${esc(o.delivery).replace(/\n/g, '<br>')}</div>` : ''}
+      <div><div class="inv-label">Invoice date</div>${fmtDate(issued)}<div class="inv-label" style="margin-top:10px">Payment due</div>${fmtDate(due)}</div></div>
+    <table class="inv-table"><thead><tr><th>Description</th><th class="num">Qty</th><th class="num">Unit price</th><th class="num">Amount</th></tr></thead>
+      <tbody>${(o.lines || []).map(l => `<tr><td>${esc(l.desc)}</td><td class="num">${l.qty}</td><td class="num">${l.unit ? money(l.unit) : 'Free'}</td><td class="num">${money(l.qty * l.unit)}</td></tr>`).join('')}</tbody>
+      <tfoot><tr><td colspan="3" class="num">${esc(INVOICE.vatNote)}</td><td></td></tr><tr class="inv-total"><td colspan="3" class="num">Total due</td><td class="num">${money(orderTotal(o))}</td></tr></tfoot></table>
+    <div class="inv-pay"><div class="inv-label">How to pay: bank transfer</div>
+      <table><tr><td>Account name</td><td><b>${esc(INVOICE.bank.accountName)}</b></td></tr><tr><td>Sort code</td><td><b>${esc(INVOICE.bank.sortCode)}</b></td></tr>
+      <tr><td>Account number</td><td><b>${esc(INVOICE.bank.accountNumber)}</b></td></tr><tr><td>Payment reference</td><td><b class="mono">${esc(o.id)}</b></td></tr></table>
+      <p>Please use the payment reference exactly as shown so we can match your payment.${o.kind === 'ps-licence' ? ' Your Pre-School programme unlocks, and your free poster is posted, as soon as payment is received.' : o.kind === 'ps-pack' ? ' The plans unlock as soon as payment is received.' : ''}</p></div>
+    <div class="inv-foot">${esc(INVOICE.businessName)} · ${esc(INVOICE.email)} · nationalgymnasticsleague.co.uk</div></div>`;
+}
+function invoiceEmailHTML(o, club){
+  const td = 'padding:8px 10px;border-bottom:1px solid #e3e4ee;font-size:14px;color:#1c1f3a;';
+  return `<div style="font-family:Arial,Helvetica,sans-serif;background:#f4f5fa;padding:20px 0;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:620px;margin:0 auto;background:#ffffff;border-radius:10px;overflow:hidden;">
+<tr><td style="background:#E84187;padding:8px 24px;text-align:center;font-size:13px;font-weight:bold;color:#ffffff;">Pre-School Awards Scheme · Club Hub</td></tr>
+<tr><td style="background:#2a245f;padding:16px 24px;color:#ffffff;font-size:20px;font-weight:bold;">NGL Pre-School</td></tr><tr><td style="padding:24px;">
+<p style="margin:0 0 14px;font-size:15px;color:#1c1f3a;">Hello${club.contact ? ' ' + esc(club.contact.split(' ')[0]) : ''},</p>
+<p style="margin:0 0 18px;font-size:15px;color:#1c1f3a;">Thank you for your NGL Pre-School order. Invoice <b>${esc(o.id)}</b> is below.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:18px;"><tr style="background:#2a245f;color:#ffffff;font-size:11px;"><td style="padding:8px 10px;">DESCRIPTION</td><td align="right" style="padding:8px 10px;">QTY</td><td align="right" style="padding:8px 10px;">AMOUNT</td></tr>
+${(o.lines || []).map(l => `<tr><td style="${td}">${esc(l.desc)}</td><td align="right" style="${td}">${l.qty}</td><td align="right" style="${td}">${money(l.qty * l.unit)}</td></tr>`).join('')}
+<tr style="background:#fde3ef;font-size:16px;font-weight:bold;color:#1c1f3a;"><td colspan="2" align="right" style="padding:10px;">Total due</td><td align="right" style="padding:10px;">${money(orderTotal(o))}</td></tr></table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f5fa;border-left:4px solid #E84187;"><tr><td style="padding:12px 14px;font-size:14px;color:#1c1f3a;">
+<b>Pay by bank transfer within ${INVOICE.termsDays} days</b><br>Account name: ${esc(INVOICE.bank.accountName)}<br>Sort code: ${esc(INVOICE.bank.sortCode)}<br>Account number: ${esc(INVOICE.bank.accountNumber)}<br>Reference: <b style="font-family:Consolas,Menlo,monospace;">${esc(o.id)}</b></td></tr></table>
+<p style="margin:18px 0 0;font-size:13px;color:#4a4e6d;">You can download a PDF copy at any time from the Orders tab of your <a href="https://club.nationalgymnasticsleague.co.uk/preschool/club/" style="color:#2a245f;font-weight:bold;">NGL Pre-School Hub</a>.</p>
+</td></tr><tr><td style="padding:14px 24px;background:#f4f5fa;text-align:center;font-size:11px;color:#6b6f8f;">${esc(INVOICE.businessName)} · ${esc(INVOICE.email)}</td></tr></table></div>`;
+}
+async function emailInvoice(o, club){
+  if(!club || !club.email) throw new Error('No email address for this club');
+  const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({service_id:EMAILJS.serviceId, template_id:EMAILJS.templateId, user_id:EMAILJS.publicKey,
+      template_params:{to_email:club.email, to_name:club.contact || club.name || '', subject:`NGL Pre-School invoice ${o.id} – ${money(orderTotal(o))}`, invoice_html:invoiceEmailHTML(o, club)}})});
+  if(!res.ok) throw new Error('Email failed: ' + res.status);
+}
+let CURRENT_INVOICE = null;
+function showInvoice(o, club){
+  CURRENT_INVOICE = {o, club};
+  const m = modal(`<div class="inv-screen">${invoiceHTML(o, club)}</div><div class="btn-row" style="margin-top:14px"><button class="btn" data-act="print-invoice">Download / print PDF</button><button class="btn ghost" data-act="email-invoice">Email invoice</button><button class="btn ghost" data-close>Close</button></div>
+    <p class="note" id="invMailNote" style="margin:10px 0 0;min-height:1em"></p>`);
+  m.querySelector('.modal').classList.add('modal-wide');
+}
+async function placeAndConfirm(order, btn){
+  if(btn){ btn.disabled = true; btn.textContent = 'Placing order…'; }
+  let o; try{ o = await api.placeOrder(order); }catch(e){ console.error(e); if(btn){ btn.disabled = false; btn.textContent = 'Try again'; } toast('Couldn’t place the order. Please try again.'); return null; }
+  const m = modal(`<h2>Order ${esc(o.id)} placed</h2><p class="muted">${money(orderTotal(o))}. Pay by bank transfer within ${INVOICE.termsDays} days quoting <b class="mono">${esc(o.id)}</b>. ${o.kind === 'supplies' ? 'We’ll post it to you as soon as payment arrives.' : 'It unlocks as soon as payment arrives.'}</p>
+    <div class="btn-row"><button class="btn" data-act="invoice" data-order="${esc(o.id)}">View invoice</button><button class="btn ghost" data-close>Done</button></div>
+    <p class="note" id="mailNote" style="margin:12px 0 0">${DEMO ? 'Preview mode: no email sent.' : 'Emailing your invoice to ' + esc(S.club.email || '') + '…'}</p>`);
+  m.querySelector('[data-close]').addEventListener('click', () => { tab = 'orders'; show(); });
+  if(!DEMO) emailInvoice(o, S.club).then(() => { const n = $('#mailNote'); if(n){ n.style.color = 'var(--ok)'; n.textContent = '✓ Invoice emailed to ' + S.club.email + '.'; } }).catch(e => { console.error(e); const n = $('#mailNote'); if(n) n.textContent = 'We couldn’t email the invoice just now, but you can view it in Orders.'; });
+  return o;
+}
+function licenceOrderModal(bandKey){
+  const b = BANDS.find(x => x.k === bandKey);
+  const m = modal(`<h2>Start your Pre-School licence</h2><form id="licForm">
+    <div class="sum"><span>Pre-School Club Licence: ${esc(b.label)} (12 months)</span><span>${gbp(b.price)}</span></div>
+    <div class="sum"><span>A1 Around the World poster: free with your licence, postage included</span><span>Free</span></div>
+    <div class="sum"><b>Total</b><b>${gbp(b.price)}</b></div>
+    <div class="field" style="margin-top:14px"><label for="licAddr">Where should we post your poster?</label><textarea class="input" id="licAddr" rows="3" required placeholder="Club name, street, town, postcode">${esc(S.club.deliveryAddress || '')}</textarea></div>
+    <label style="display:flex;gap:8px;align-items:flex-start;margin:0 0 12px"><input type="checkbox" required style="width:auto;margin-top:3px"><span>I confirm we have ${esc(b.label.replace(' Pre-School gymnasts', ''))} Pre-School gymnasts. We’ll move up a band if that changes.</span></label>
+    <p class="note">Passports and medals are ordered from <b>Order supplies</b> once your licence is paid.</p>
+    <div class="btn-row"><button class="btn" type="submit">Place order and get invoice</button><button class="btn ghost" type="button" data-close>Cancel</button></div></form>`);
+  m.querySelector('#licForm').addEventListener('submit', async e => { e.preventDefault(); const addr = m.querySelector('#licAddr').value.trim();
+    api.saveDelivery(addr).catch(() => {}); m.remove();
+    await placeAndConfirm({kind:'ps-licence', psBand:b.k, psBandLabel:b.label, delivery:addr,
+      lines:[{kind:'licence', desc:`NGL Pre-School Club Licence: ${b.label} (12 months)`, qty:1, unit:b.price}, {kind:'poster', desc:'A1 Around the World poster (free with your licence, postage included)', qty:1, unit:0}]}); });
+}
+const PACK_INFO = {pack2:'Lesson Plan Pack 11–20', pack3:'Lesson Plan Pack 21–30', pack4:'Lesson Plan Pack 31–40', seasonal:'Seasonal Pack'};
+async function packOrder(key, btn){
+  const price = key === 'seasonal' ? PRICE.seasonal : PRICE.pack;
+  if(!confirm(`Order ${PACK_INFO[key]} for £${price}? We’ll send an invoice and the plans unlock when it’s paid.`)) return;
+  await placeAndConfirm({kind:'ps-pack', psPack:key, lines:[{kind:'pack', desc:`NGL Pre-School ${PACK_INFO[key]}`, qty:1, unit:price}]}, btn);
+}
+
 /* ---------- events ---------- */
+document.addEventListener('input', e => { const k = e.target.dataset && e.target.dataset.shop; if(k){ SHOP[k] = Math.max(0, parseInt(e.target.value) || 0); shopSummary(); } if(e.target.id === 'shopAddr') SHOP.address = e.target.value; });
 document.addEventListener('change', e => { if(tab === 'planner' && e.target.closest('.ps-start,.ps-term')){ readForm(); const y = scrollY; screenPlanner(); scrollTo(0, y); } });
 document.addEventListener('click', async e => {
   const g = e.target.closest('[data-go]'); if(g){ e.preventDefault(); const k = g.dataset.go; if(k === 'login') return screenLogin(); if(k === 'home'){ if(signedIn){ tab = 'dashboard'; show(); } else screenLanding(); } return; }
@@ -848,6 +1023,22 @@ document.addEventListener('click', async e => {
   if(act === 'del'){ readForm(); cfg().terms.splice(+a.dataset.ti, 1); screenPlanner(); scrollTo(0, y); }
   if(act === 'save'){ readForm(); try{ localStorage.setItem(cfgKey(), JSON.stringify(cfg())); }catch(_){} const ok = await api.savePlan(cfg()); screenPlanner(); scrollTo(0, y); $('#psMsg').textContent = ok ? 'Saved.' : 'Saved on this device only. We couldn’t save it to your club account.'; }
   if(act === 'copy'){ try{ await navigator.clipboard.writeText(familyLink()); toast('Family link copied.'); }catch(_){ $('#psLink').select(); toast('Press Ctrl+C to copy.'); } }
+  if(act === 'lic-order') return licenceOrderModal(a.dataset.band);
+  if(act === 'pack-order') return packOrder(a.dataset.pack, a);
+  if(act === 'invoice'){ const o = S.orders.find(x => x.id === a.dataset.order) || (S.adminOrders || []).find(x => x.id === a.dataset.order); if(!o) return;
+    const club = (S.adminClubs || []).find(c => c.id === o.clubId) || (o.clubId === S.uid ? S.club : {name:o.clubName}); document.querySelectorAll('.modal-bg').forEach(m => m.remove()); return showInvoice(o, club); }
+  if(act === 'print-invoice'){ const pa = $('#print-area'); pa.innerHTML = invoiceHTML(CURRENT_INVOICE.o, CURRENT_INVOICE.club); window.print(); return; }
+  if(act === 'email-invoice'){ const n = $('#invMailNote'); n.textContent = 'Sending…'; try{ await emailInvoice(CURRENT_INVOICE.o, CURRENT_INVOICE.club); n.textContent = '✓ Emailed to ' + CURRENT_INVOICE.club.email; }catch(err){ n.textContent = 'Couldn’t send: ' + err.message; } return; }
+  if(act === 'shop-place'){ const err = $('#shopErr'); SHOP.address = $('#shopAddr').value;
+    if(!SHOP.address.trim()){ err.textContent = 'Please add a delivery address.'; $('#shopAddr').focus(); return; }
+    const L = shopLines(); api.saveDelivery(SHOP.address.trim()).catch(() => {});
+    const o = await placeAndConfirm({kind:'supplies', lines:L, delivery:SHOP.address.trim()}, a);
+    if(o) Object.keys(SHOP).forEach(k => { if(k !== 'address') delete SHOP[k]; }); return; }
+  if(act === 'ord-status'){ const o = S.adminOrders.find(x => x.id === a.dataset.order), st = a.dataset.st; a.disabled = true;
+    try{ await api.adminOrderStatus(o, st);
+      if(st === 'paid' && (o.kind === 'ps-licence' || o.kind === 'ps-pack')){ const c = S.adminClubs.find(x => x.id === o.clubId);
+        if(c){ const p = {...(c.preschool || {})}; if(o.kind === 'ps-licence'){ p.status = 'active'; p.band = o.psBand; p.since = new Date().toISOString().slice(0, 10); } else p[o.psPack] = true; await api.adminSet(c, p); } }
+    }catch(err){ toast('Couldn’t update: ' + (err.message || err)); } return screenAdmin(); }
   if(act === 'adm'){ const c = S.adminClubs[+a.dataset.i], k = a.dataset.k, p = {...(c.preschool || {status:'inactive'})};
     if(k === 'status') p.status = p.status === 'active' ? 'inactive' : 'active'; else p[k] = !p[k];
     if(k === 'status' && p.status === 'active' && !p.since) p.since = new Date().toISOString().slice(0, 10);
