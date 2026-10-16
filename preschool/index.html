@@ -33,7 +33,7 @@ main{max-width:640px;margin:-38px auto 0;padding:0 16px 40px;position:relative;z
 .when span{font-size:13px;color:var(--muted)}
 .chip{display:inline-block;font:700 12px/1 'Barlow Condensed';letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:20px;background:var(--pink);color:#fff}
 .chip.soft{background:var(--pink-l);color:var(--pink-d)}
-.theme{position:relative;border-radius:14px;overflow:hidden;aspect-ratio:394/421;max-height:360px;width:100%;background:#eee center/cover}
+.theme{position:relative;border-radius:14px;overflow:hidden;aspect-ratio:4/5;max-height:none;width:100%;background:#eee center/cover}
 .tt{display:flex;align-items:center;gap:10px;margin:2px 0 12px}.tt h2{font:700 28px/1 'Barlow Condensed';color:var(--navy);text-transform:uppercase}
 .theme .lab{position:absolute;left:12px;bottom:12px;right:12px;display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
 .theme .lab h2{font:700 30px/1 'Barlow Condensed';color:#fff;text-transform:uppercase;text-shadow:0 2px 10px rgba(0,0,0,.55)}
@@ -126,7 +126,7 @@ function render(){
       <div class="nav"><button id="prev" aria-label="Previous week" ${idx ? '' : 'disabled'}>‹</button>
         <div class="when"><b>${esc(r.term)} · Week ${r.week}</b><span>${fmt(r.date)} – ${fmt(end, {day:'numeric', month:'short', year:'numeric'})}</span></div>
         <button id="next" aria-label="Next week" ${idx < rows.length - 1 ? '' : 'disabled'}>›</button></div>
-      <div class="tt"><span class="chip">This week’s theme</span><h2>${esc(t.name)}</h2></div><div class="theme" style="background-image:url(img/theme${pad(t.n)}.jpg)"></div>
+      <div class="tt"><span class="chip">This week’s theme</span><h2>${esc(t.name)}</h2></div><div class="theme" style="background-image:url(img/post${pad(t.n)}.jpg)"></div>
     </div>
     <div class="card">
       <div class="country"><img src="img/medal${pad(c.n)}.png" alt="${esc(c.name)} medal">

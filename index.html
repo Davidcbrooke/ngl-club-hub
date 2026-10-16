@@ -218,6 +218,7 @@ body.disc-on .card{border-color:transparent;box-shadow:0 6px 18px rgba(0,0,0,.18
 .ps-plan b{font-family:var(--cond);font-size:17px;color:var(--navy);line-height:1.15}
 .ps-plan .btn,.ps-plan .pill{align-self:flex-start;margin-top:4px}
 .ps-plan.soon .th{background:repeating-linear-gradient(45deg,#fbe3ee,#fbe3ee 10px,#fff 10px,#fff 20px)}
+.ps-posts{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px}.ps-posts img{height:240px;aspect-ratio:4/5;border-radius:6px;box-shadow:0 3px 10px rgba(20,37,74,.15)}
 .ps-list{margin:6px 0 8px;padding-left:20px}.ps-list li{margin:3px 0}
 .ps-start,.ps-term{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:end;margin:10px 0}
 .ps-term{background:var(--paper);border-radius:8px;padding:10px 12px}
@@ -804,7 +805,7 @@ function screenPreschool(){
     const open = unlocked(t.n), href = t.n === 1 && !lic.active ? PS.dir + 'plans/sample/NGL_PreSchool_Lesson_Plan_01_Alphabet.pdf' : PS.plans + `NGL_PreSchool_Lesson_Plan_${P2(t.n)}_${t.name.replace(/ /g, '_')}.pdf`;
     return `<div class="ps-plan${open ? '' : ' locked'}"><div class="th" style="background-image:url(${PS.dir}img/plan${P2(t.n)}-thumb.jpg)">${open ? '' : '<span class="lock">🔒</span>'}</div>
       <b>${t.n}. ${esc(t.name)}</b><span class="small muted">${t.n <= PS_FREE ? 'Included with the licence' : 'Lesson Plan Pack 11–20'}</span>
-      ${open ? `<a class="btn small" href="${href}" target="_blank" rel="noopener">Download PDF</a>` : `<span class="pill off">${t.n === 1 ? '' : 'Locked'}</span>`}</div>`; };
+      ${open ? `<div class="btn-row" style="margin-top:4px;gap:6px"><a class="btn small" href="${href}" target="_blank" rel="noopener">Plan PDF</a><a class="btn small ghost" href="${href.replace('Lesson_Plan', 'Post').replace('.pdf', '.jpg')}" target="_blank" rel="noopener" download>Social post</a></div>` : `<span class="pill off">Locked</span>`}</div>`; };
   const today = new Date().toISOString().slice(0, 10);
   let cur = 0; rows.forEach((r, i) => { if(r.date <= today) cur = i; });
   const termTables = cfg.terms.map((t, ti) => {
@@ -839,6 +840,7 @@ function screenPreschool(){
       <div class="app" style="--c:var(--pre)"><b>20 country medals</b><span>One for every country, so children collect the world as they go.</span></div>
       <div class="app" style="--c:var(--pre)"><b>A1 journey poster</b><span>The Around the World map for your gym wall, with Somi and Flic in every country.</span></div>
       <div class="app" style="--c:var(--pre)"><b>Themed lesson plans</b><span>Each plan has a theme, equipment list, warm-up, stretching and set-ups for four apparatus stations, with sticker skills marked.</span></div>
+      <div class="app" style="--c:var(--pre)"><b>Social media posts</b><span>A ready-made 4:5 post for every theme, so parents see what’s coming up on your club’s socials.</span></div>
       <div class="app" style="--c:var(--pre)"><b>Family app</b><span>Parents see the theme of the week, the two skills their child is working on and the journey so far.</span></div>
     </div>
 
@@ -855,6 +857,8 @@ function screenPreschool(){
       <a href="${PS.dir}img/plan01-p1.jpg" target="_blank" rel="noopener"><img src="${PS.dir}img/plan01-p1.jpg" alt="Lesson Plan 1, page 1" loading="lazy"></a>
       <a href="${PS.dir}img/plan01-p2.jpg" target="_blank" rel="noopener"><img src="${PS.dir}img/plan01-p2.jpg" alt="Lesson Plan 1, page 2" loading="lazy"></a>
     </div>
+    <h3 style="font-family:var(--cond);font-size:20px;color:var(--navy);margin:18px 0 8px">A social media post for every theme</h3>
+    <div class="ps-posts">${plans.map(t => `<img src="${PS.dir}img/post${P2(t.n)}.jpg" alt="${esc(t.name)} week post">`).join('')}</div>
     <div class="ps-plans">${plans.map(planCard).join('')}
       ${[18, 19, 20].map(n => `<div class="ps-plan locked soon"><div class="th"><span class="lock">✦</span></div><b>${n}. Coming soon</b><span class="small muted">Lesson Plan Pack 11–20</span></div>`).join('')}</div>
 
