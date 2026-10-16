@@ -253,7 +253,6 @@ body.disc-on .card{border-color:transparent;box-shadow:0 6px 18px rgba(0,0,0,.18
 <main><div class="wrap" id="view"><p class="muted"><span class="spin"></span>Loading…</p></div></main>
 <footer>National Gymnastics League · 66 Waveney Road, Harpenden, Herts AL5 4QZ · <a href="mailto:admin@nationalgymnasticsleague.co.uk">admin@nationalgymnasticsleague.co.uk</a></footer>
 
-<script src="preschool/data.js"></script>
 <script>
 /* =====================================================================
    NGL CLUB HUB
@@ -298,6 +297,7 @@ const BOOKINGS_CONFIG = {            // competitions and reservations
 const LINKS = {
   schoolsHub: 'https://nglschools.co.uk/club/',
   recHub:     'https://nglrecreational.co.uk/',
+  preschoolHub: 'https://club.nationalgymnasticsleague.co.uk/preschool/club/',
   reserve:    'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-booking-system.html',
   justgo:     '',     // paste the NGL JustGo page here to show an "Enter on JustGo" button
   website:    'https://www.nationalgymnasticsleague.co.uk'
@@ -670,7 +670,7 @@ function demoAdmin(){
 /* =====================================================================
    SCREENS
    ===================================================================== */
-const TABS = [['discover','Discover NGL'], ['overview','Overview'], ['licences','Licences'], ['preschool','Pre-School'], ['orders','Orders'], ['reservations','Reservations'], ['support','Club Support'], ['club','Club']];
+const TABS = [['discover','Discover NGL'], ['overview','Overview'], ['licences','Licences'], ['orders','Orders'], ['reservations','Reservations'], ['support','Club Support'], ['club','Club']];
 function setChrome(signedIn){
   $('#tabs').classList.toggle('hidden', !signedIn);
   $('#who').classList.toggle('hidden', !signedIn);
@@ -689,7 +689,7 @@ function render(){
   const demo = PREVIEW ? '<div class="demo">Preview mode: sample data for SAADI Gymnastics. Nothing is saved.</div>' : '';
   if(!S.club && S.isAdmin && S.tab !== 'admin') S.tab = 'admin';
   if(S.club && !S.discoverChecked){ S.discoverChecked = true; if(isNewClub() && S.tab === 'overview' && !location.hash) S.tab = 'discover'; }
-  const screens = {preschool:screenPreschool, discover:screenDiscover, music:screenMusic, overview:screenOverview, licences:screenLicences, orders:screenOrders, reservations:screenReservations, support:screenSupport, club:screenClub, admin:screenAdmin};
+  const screens = {discover:screenDiscover, music:screenMusic, overview:screenOverview, licences:screenLicences, orders:screenOrders, reservations:screenReservations, support:screenSupport, club:screenClub, admin:screenAdmin};
   document.body.classList.toggle('disc-on', S.tab === 'discover');
   v.innerHTML = demo + (screens[S.tab] || screenOverview)();
   if(S.tab === 'admin' && S.isAdmin) loadAdmin();
@@ -745,7 +745,7 @@ function screenDiscover(){
 
     <h2 class="sec" id="pathways">Seven pathways, one framework</h2>
     <div class="grid g2 disc-pw">
-      ${pw('preschool', 'Ages 3–4', ['Around the World with Somi & Flic: a passport with 20 countries to visit', 'A medal for every country and an A1 journey poster', 'Themed lesson plans with equipment, set-ups and rotations', 'A term planner and a family app for parents'], `<button type="button" class="btn" data-tab="preschool">Explore Pre-School</button>`)}
+      ${pw('preschool', 'Ages 3–4', ['Around the World with Somi & Flic: a passport with 20 countries to visit', 'A medal for every country and an A1 journey poster', 'Themed lesson plans with equipment, set-ups and rotations', 'A term planner and a family app for parents'], ext(LINKS.preschoolHub, 'Explore NGL Pre-School'))}
       ${pw('schools', 'Ages 5–11 · delivered in local schools', ['Run gymnastics in your local schools under the NGL name', 'Awards books and routine videos for every level', 'A family code so parents can see progress', 'A graduation performance to finish each programme'], ext(LINKS.schoolsHub, 'Explore NGL Schools'))}
       ${pw('recreational', 'Ages 4–18 · recreational classes', ['Tailor the term programme to your club: plans built from your apparatus and term length', 'Tailor every class to your gymnasts: Ruby, Pink, Teal and Indigo versions of every station', 'Four award books, 16 levels, assessed in the last two weeks of term', 'Club competitions where every gymnast medals', 'A family app so parents follow the journey'], ext(LINKS.recHub, 'Explore the sample') + ext(LINKS.recHub + '#licence', 'Licence & pricing', true))}
       ${pw('general', '2–10 hours a week', ['Skills books, assessments and competitions', 'WAG Levels 1–4 and MAG Levels 1–3', '24 clubs across four locations in 2027', 'Builds to the NGL National Finals'], ext(LINKS.reserve, 'Reserve competition places'))}
@@ -766,183 +766,6 @@ function screenDiscover(){
       <a class="btn red" href="${talk}">Talk to Dave</a>
     </div>`;
 }
-
-/* ----- NGL Pre-School: showcase, licence, lesson plans and the term planner ----- */
-const PS = {dir:'preschool/', plans:'preschool/plans/1Qes3TzvJrYQ/', family:'https://club.nationalgymnasticsleague.co.uk/preschool/'};
-const PS_FREE = 10, PS_PACK = 100, PS_SEASONAL = 50;
-function psLicence(){ const p = (S.club && S.club.preschool) || {}; return {active:p.status === 'active', pack2:!!p.pack2, pack3:!!p.pack3, pack4:!!p.pack4, seasonal:!!p.seasonal}; }
-function psKey(){ return 'ngl-ps-plan-' + (S.uid || 'demo'); }
-function psDefaultCfg(){
-  const y = new Date().getFullYear(), m = new Date().getMonth();
-  const sy = m >= 7 ? y : y - 1;
-  return {club:(S.club && S.club.name) || '', startWeek:1, seasonal:false,
-    terms:[{name:`Autumn ${sy}`, start:`${sy}-09-07`, weeks:14, half:7}, {name:`Spring ${sy + 1}`, start:`${sy + 1}-01-04`, weeks:12, half:6}, {name:`Summer ${sy + 1}`, start:`${sy + 1}-04-19`, weeks:13, half:6}]};
-}
-function psCfg(){
-  if(!S.psCfg){
-    let c = S.club && S.club.preschoolPlan;
-    if(!c){ try{ c = JSON.parse(localStorage.getItem(psKey()) || 'null'); }catch(_){ c = null; } }
-    S.psCfg = c || psDefaultCfg();
-  }
-  if(S.psCfg.startWeek == null || S.psCfg.startLevel){ S.psCfg.startWeek = ((S.psCfg.startLevel || 1) - 1) * 4 + 1; delete S.psCfg.startLevel; delete S.psCfg.startTheme; }
-  if(!psLicence().seasonal && !PREVIEW) S.psCfg.seasonal = false;
-  return S.psCfg;
-}
-async function psSave(){
-  const c = psCfg();
-  try{ localStorage.setItem(psKey(), JSON.stringify(c)); }catch(_){}
-  if(PREVIEW || !S.uid) return true;
-  try{ const {fs, D} = await fb(); await fs.updateDoc(fs.doc(D, 'clubs', S.uid), {preschoolPlan:c}); if(S.club) S.club.preschoolPlan = c; return true; }
-  catch(e){ console.warn('Pre-School plan saved on this device only', e); return false; }
-}
-function psFamilyLink(){ const c = Object.assign({}, psCfg()); return PS.family + '#p=' + NGLPS.encode(c); }
-function screenPreschool(){
-  const lic = psLicence(), cfg = psCfg(), rows = NGLPS.plan(cfg);
-  const P2 = n => String(n).padStart(2, '0');
-  const plans = NGLPS.THEMES;
-  const mail = (subj, body) => `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
-  const club = S.club ? S.club.name : 'our club';
-  const packOf = n => n <= PS_FREE ? 1 : n <= 20 ? 2 : n <= 30 ? 3 : 4;
-  const PACKS = ['', 'Included with the licence', 'Lesson Plan Pack 11–20', 'Lesson Plan Pack 21–30', 'Lesson Plan Pack 31–40'];
-  const unlocked = n => n === 1 || (lic.active && (n <= PS_FREE || lic['pack' + packOf(n)]));
-  const planCard = t => {
-    const open = t.seasonal ? (lic.active && lic.seasonal) : unlocked(t.n);
-    const fname = (t.seasonal ? 'NGL_PreSchool_' : 'NGL_PreSchool_Week_') + t.file;
-    const href = t.n === 1 && !lic.active ? PS.dir + 'plans/sample/' + fname + '.pdf' : PS.plans + fname + '.pdf';
-    const post = (t.n === 1 && !lic.active ? PS.dir + 'plans/sample/' : PS.plans) + 'NGL_PreSchool_Post_' + t.file + '.jpg';
-    const wk = t.seasonal ? null : NGLPS.weekInfo(t.n);
-    return `<div class="ps-plan${open ? '' : ' locked'}"><div class="th" style="background-image:url(${PS.dir}img/plan_${t.file}-thumb.jpg)">${open ? '' : '<span class="lock">🔒</span>'}</div>
-      <b>${t.seasonal ? '' : 'Week ' + t.n + ': '}${esc(t.name)}</b><span class="small muted">${t.seasonal ? 'Seasonal Pack' : `${esc(wk.b1.country.name)} ${wk.b1.nos.join('&')} · ${esc(wk.b2.country.name)} ${wk.b2.nos.join('&')}`}</span>
-      <span class="small muted">${t.seasonal ? '' : PACKS[packOf(t.n)]}</span>
-      ${open ? `<div class="btn-row" style="margin-top:4px;gap:6px"><a class="btn small" href="${href}" target="_blank" rel="noopener">Plan PDF</a><a class="btn small ghost" href="${post}" target="_blank" rel="noopener" download>Social post</a></div>` : `<span class="pill off">Locked</span>`}</div>`; };
-  const today = new Date().toISOString().slice(0, 10);
-  let cur = 0; rows.forEach((r, i) => { if(r.date <= today) cur = i; });
-  const termTables = cfg.terms.map((t, ti) => {
-    const tr = rows.filter(r => r.termIndex === ti);
-    if(!tr.length) return '';
-    const isCur = tr.some(r => rows.indexOf(r) === cur) || (ti === 0 && !rows.some(r => r.date <= today));
-    const firstC = tr.find(r => !r.seasonal), lastC = [...tr].reverse().find(r => !r.seasonal);
-    const cc = r => `<img src="${PS.dir}img/medal${P2(r.country.n)}.png" alt="">${esc(r.country.name)} <span class="muted small">${r.nos.join(' & ')}</span>`;
-    return `<details class="ps-det"${isCur ? ' open' : ''}><summary><b>${esc(t.name || 'Term ' + (ti + 1))}</b> <span class="small muted">· ${tr.length} weeks${firstC ? ` · weeks ${firstC.w}–${lastC.w} of 40` : ''}</span></summary>
-      <div class="ps-tbl"><table><thead><tr><th>Wk</th><th>Week of</th><th>Lesson plan</th><th>Book 1 sticker skills</th><th>Book 2 sticker skills</th></tr></thead><tbody>
-      ${tr.map(r => r.seasonal ? `<tr class="${rows.indexOf(r) === cur ? 'now' : ''} sea"><td>${r.week}</td><td>${new Date(r.date + 'T00:00:00Z').toLocaleDateString('en-GB', {day:'numeric', month:'short', timeZone:'UTC'})}</td><td><b>${esc(r.theme.name)}</b> <span class="muted small">Seasonal</span></td><td colspan="2" class="muted">Seasonal week: no new passport skills, the journey carries on next week.</td></tr>`
-        : `<tr class="${rows.indexOf(r) === cur ? 'now' : ''}${r.newLevel ? ' nl' : ''}"><td>${r.week}</td><td>${new Date(r.date + 'T00:00:00Z').toLocaleDateString('en-GB', {day:'numeric', month:'short', timeZone:'UTC'})}</td>
-        <td><b>${esc(r.theme.name)}</b> <span class="muted small">Week ${r.w}</span></td>
-        <td>${cc(r.b1)}<br><span class="sk">${r.b1.nos[0]}</span>${esc(r.b1.skills[0])}<br><span class="sk">${r.b1.nos[1]}</span>${esc(r.b1.skills[1])}</td>
-        <td>${cc(r.b2)}<br><span class="sk b2">${r.b2.nos[0]}</span>${esc(r.b2.skills[0])}<br><span class="sk b2">${r.b2.nos[1]}</span>${esc(r.b2.skills[1])}</td></tr>`).join('')}
-      </tbody></table></div></details>`; }).join('');
-  const termRows = cfg.terms.map((t, i) => `<div class="ps-term" data-ti="${i}">
-      <label>Term name<input data-f="name" value="${esc(t.name || '')}"></label>
-      <label>First week (Monday)<input type="date" data-f="start" value="${esc(t.start || '')}"></label>
-      <label>Teaching weeks<input type="number" min="1" max="20" data-f="weeks" value="${t.weeks || ''}"></label>
-      <label>Half-term after week<input type="number" min="0" max="19" data-f="half" value="${t.half || 0}"></label>
-      <button class="btn ghost small" data-act="ps-del" data-ti="${i}" type="button" aria-label="Remove term">Remove</button></div>`).join('');
-  return `
-    <section class="ps-hero">
-      <div><img class="logo" src="${LOGOS.preschool}" alt="NGL Pre-School">
-        <p class="eyebrow">Around the World with Somi &amp; Flic</p>
-        <h1>A passport to gymnastics for ages 3–4</h1>
-        <p>Every term, your youngest gymnasts travel the world with Somi and Flic. Each country is one level with eight skills. Every week’s lesson plan teaches the two Book 1 and two Book 2 sticker skills side by side, so children on either book can share a class. Two passport stickers a week, a new country (and medal) every four weeks, and no assessment week needed.</p>
-        <div class="btn-row"><a class="btn" href="#ps-licence" data-jump="ps-licence">Licence</a><a class="btn ghost" href="#ps-planner" data-jump="ps-planner">Plan your term</a><a class="btn ghost" href="${PS.dir}#demo" target="_blank" rel="noopener">See the family app ↗</a></div></div>
-      <img class="ps-poster" src="${PS.dir}img/poster.jpg" alt="Around the World A1 poster">
-    </section>
-
-    <h2 class="sec">What’s in the programme</h2>
-    <div class="apps">
-      <div class="app" style="--c:var(--pre)"><b>Passport books</b><span>Book 1 covers countries 1–10 and Book 2 covers 11–20, with a stamp page and eight skills for every country.</span></div>
-      <div class="app" style="--c:var(--pre)"><b>20 country medals</b><span>One for every country, so children collect the world as they go.</span></div>
-      <div class="app" style="--c:var(--pre)"><b>A1 journey poster</b><span>The Around the World map for your gym wall, with Somi and Flic in every country.</span></div>
-      <div class="app" style="--c:var(--pre)"><b>Themed lesson plans</b><span>40 weekly plans, one for every week of the passport. Each teaches that week’s Book 1 and Book 2 sticker skills inside its theme, plus a Seasonal Pack for Christmas, Easter, Summer, Halloween, Bonfire Night and Harvest.</span></div>
-      <div class="app" style="--c:var(--pre)"><b>Social media posts</b><span>A ready-made 4:5 post for every theme, so parents see what’s coming up on your club’s socials.</span></div>
-      <div class="app" style="--c:var(--pre)"><b>Family app</b><span>Parents pick Book 1 or Book 2 and see the theme of the week, their child’s two sticker skills and the journey so far.</span></div>
-    </div>
-
-    <h2 class="sec">The medals</h2>
-    <div class="ps-medals">${NGLPS.COUNTRIES.map(c => `<div><img src="${PS.dir}img/medal${P2(c.n)}.png" alt="${esc(c.name)} medal" loading="lazy"><span>${c.n}. ${esc(c.name)}</span></div>`).join('')}</div>
-
-    <h2 class="sec">Inside the passport</h2>
-    <div class="ps-book">${[['book-cover', 'Front cover'], ['book-inside', 'Where will your journey take you?'], ['book-france', 'Country 1: France'], ['book-england', 'Country 2: England'], ['book-china', 'Country 7: China'], ['book-back', 'Back cover']].map(([f, l]) => `<figure><a href="${PS.dir}img/${f}.jpg" target="_blank" rel="noopener"><img src="${PS.dir}img/${f}.jpg" alt="${esc(l)}" loading="lazy"></a><figcaption>${esc(l)}</figcaption></figure>`).join('')}</div>
-
-    <h2 class="sec">Lesson plans</h2>
-    <div class="ps-sample card">
-      <div><p class="eyebrow">Free sample</p><h3>Week 1: Alphabet</h3><p class="muted">Every plan follows the same two pages: a warm-up game, stretching, the equipment you’ll need and today’s sticker skills for Book 1 and Book 2, then the four apparatus stations with each sticker skill built in.</p>
-        <div class="btn-row"><a class="btn" href="${PS.dir}plans/sample/NGL_PreSchool_Week_01_Alphabet.pdf" target="_blank" rel="noopener">Download the sample PDF</a></div></div>
-      <a href="${PS.dir}img/plan01-p1.jpg" target="_blank" rel="noopener"><img src="${PS.dir}img/plan01-p1.jpg" alt="Lesson Plan 1, page 1" loading="lazy"></a>
-      <a href="${PS.dir}img/plan01-p2.jpg" target="_blank" rel="noopener"><img src="${PS.dir}img/plan01-p2.jpg" alt="Lesson Plan 1, page 2" loading="lazy"></a>
-    </div>
-    <h3 style="font-family:var(--cond);font-size:20px;color:var(--navy);margin:18px 0 8px">A social media post for every theme</h3>
-    <div class="ps-posts">${[...plans, ...NGLPS.SEASONAL].map(t => `<img src="${PS.dir}img/post_${t.file}.jpg" alt="${esc(t.name)} week post">`).join('')}</div>
-    <div class="ps-plans">${plans.map(planCard).join('')}</div>
-    <h3 style="font-family:var(--cond);font-size:20px;color:var(--navy);margin:18px 0 8px">Seasonal Pack</h3>
-    <div class="ps-plans">${NGLPS.SEASONAL.map(planCard).join('')}</div>
-
-    <h2 class="sec" id="ps-licence">Licence</h2>
-    <div class="grid g2">
-      <div class="card accent" style="--c:var(--pre)"><h3>NGL Pre-School Licence</h3>
-        <ul class="ps-list"><li>The A1 Around the World poster</li><li>Lesson Plans 1–10, free of charge</li><li>The term planner on this page</li><li>The family app for your parents</li></ul>
-        <p>${lic.active ? '<span class="pill ok">Active</span>' : '<span class="pill off">Not started</span>'}</p>
-        <div class="btn-row">${lic.active ? '' : `<a class="btn" href="${mail('NGL Pre-School Licence: ' + club, 'Hi Dave,\n\nWe’d like to start the NGL Pre-School licence.\n\nClub: ' + club + '\nApprox. number of Pre-School gymnasts:\n')}">Request the licence</a>`}</div></div>
-      <div class="card accent" style="--c:var(--navy)"><h3>Lesson Plan Pack 11–20</h3>
-        <p>Weeks 11–20: Egypt to Brazil in Book 1, and the Bahamas to Italy in Book 2.</p>
-        <p style="font-size:26px;font-family:var(--cond);color:var(--navy);margin:6px 0">£${PS_PACK}</p>
-        <p>${lic.pack2 ? '<span class="pill ok">Added</span>' : '<span class="pill off">Not added</span>'}</p>
-        <div class="btn-row">${lic.pack2 ? '' : `<a class="btn ghost" href="${mail('NGL Pre-School: Lesson Plan Pack 11–20 for ' + club, 'Hi Dave,\n\nWe’d like to add Lesson Plan Pack 11–20 (£' + PS_PACK + ').\n\nClub: ' + club + '\n')}">Add the pack</a>`}</div></div>
-      <div class="card accent" style="--c:var(--navy)"><h3>Lesson Plan Pack 21–30</h3>
-        <p>Weeks 21–30: Australia to Japan in Book 1, and India to Ireland in Book 2.</p>
-        <p style="font-size:26px;font-family:var(--cond);color:var(--navy);margin:6px 0">£${PS_PACK}</p>
-        <p>${lic.pack3 ? '<span class="pill ok">Added</span>' : '<span class="pill off">Not added</span>'}</p>
-        <div class="btn-row">${lic.pack3 ? '' : `<a class="btn ghost" href="${mail('NGL Pre-School: Lesson Plan Pack 21–30 for ' + club, 'Hi Dave,\n\nWe’d like to add Lesson Plan Pack 21–30 (£' + PS_PACK + ').\n\nClub: ' + club + '\n')}">Add the pack</a>`}</div></div>
-      <div class="card accent" style="--c:var(--navy)"><h3>Lesson Plan Pack 31–40</h3>
-        <p>Weeks 31–40: Japan to Iceland in Book 1, and Ireland to Spain in Book 2.</p>
-        <p style="font-size:26px;font-family:var(--cond);color:var(--navy);margin:6px 0">£${PS_PACK}</p>
-        <p>${lic.pack4 ? '<span class="pill ok">Added</span>' : '<span class="pill off">Not added</span>'}</p>
-        <div class="btn-row">${lic.pack4 ? '' : `<a class="btn ghost" href="${mail('NGL Pre-School: Lesson Plan Pack 31–40 for ' + club, 'Hi Dave,\n\nWe’d like to add Lesson Plan Pack 31–40 (£' + PS_PACK + ').\n\nClub: ' + club + '\n')}">Add the pack</a>`}</div></div>
-      <div class="card accent" style="--c:var(--navy)"><h3>Seasonal Pack</h3>
-        <p>Christmas, Easter, Summer, Halloween, Bonfire Night and Harvest. The planner drops them into the right weeks and pauses the passport journey for that week.</p>
-        <p style="font-size:26px;font-family:var(--cond);color:var(--navy);margin:6px 0">£${PS_SEASONAL}</p>
-        <p>${lic.seasonal ? '<span class="pill ok">Added</span>' : '<span class="pill off">Not added</span>'}</p>
-        <div class="btn-row">${lic.seasonal ? '' : `<a class="btn ghost" href="${mail('NGL Pre-School: Seasonal Pack for ' + club, 'Hi Dave,\n\nWe’d like to add Seasonal Pack (£' + PS_SEASONAL + ').\n\nClub: ' + club + '\n')}">Add the pack</a>`}</div></div>
-    </div>
-
-    <h2 class="sec" id="ps-planner">Term planner</h2>
-    <div class="card">
-      <p class="muted" style="margin-top:0">Enter your term dates and the planner sets out the lesson plan and the Book 1 and Book 2 sticker skills for every week, following the 40 weeks of the passport. Each term picks up where the last one finished. With the Seasonal Pack, Christmas, Easter, Summer, Halloween, Bonfire Night and Harvest go in the right weeks and the journey pauses for that week.</p>
-      <div class="ps-start">
-        <label>Name parents will see<input id="psClub" value="${esc(cfg.club || '')}" placeholder="${esc(club)}"></label>
-        <label>Class starts at<select id="psStart">${NGLPS.THEMES.map(t => { const w = NGLPS.weekInfo(t.n); return `<option value="${t.n}"${t.n === (cfg.startWeek || 1) ? ' selected' : ''}>Week ${t.n}: ${esc(t.name)} (${esc(w.b1.country.name)} / ${esc(w.b2.country.name)} ${w.b1.nos.join('&')})</option>`; }).join('')}</select></label>
-        <label class="ps-chk"><span>Seasonal weeks</span><span><input type="checkbox" id="psSeas"${cfg.seasonal ? ' checked' : ''}${lic.seasonal || PREVIEW ? '' : ' disabled'}> Use the Seasonal Pack${lic.seasonal || PREVIEW ? '' : ' (add the pack first)'}</span></label>
-      </div>
-      <div id="psTerms">${termRows}</div>
-      <div class="btn-row"><button class="btn ghost small" data-act="ps-add" type="button">+ Add a term</button><button class="btn" data-act="ps-save" type="button">Save plan</button><span id="psMsg" class="small muted" style="align-self:center"></span></div>
-      ${termTables || '<p class="muted">Add a term to see the weekly plan.</p>'}
-    </div>
-
-    <h2 class="sec">Family app</h2>
-    <div class="card ps-fam">
-      <div><p>Share this link with your Pre-School parents (by email, on your website or as a QR code on the poster). It shows this week’s theme and skills, the term ahead and the journey so far. No child details are stored.</p>
-        <input id="psLink" readonly value="${esc(psFamilyLink())}">
-        <div class="btn-row"><button class="btn" data-act="ps-copy" type="button">Copy family link</button><a class="btn ghost" href="${esc(psFamilyLink())}" target="_blank" rel="noopener">Open the family app ↗</a></div>
-        <p class="small muted">The link holds your whole plan, so if you change your term dates or add a term, share the new link.</p></div>
-    </div>`;
-}
-function psReadForm(){
-  const c = psCfg();
-  c.club = ($('#psClub') || {}).value || '';
-  c.startWeek = +($('#psStart') || {}).value || 1; c.seasonal = !!($('#psSeas') || {}).checked;
-  document.querySelectorAll('.ps-term').forEach(el => { const t = c.terms[+el.dataset.ti]; if(!t) return;
-    el.querySelectorAll('input').forEach(i => { t[i.dataset.f] = i.type === 'number' ? (+i.value || 0) : i.value; }); });
-}
-document.addEventListener('change', e => { if(S.tab === 'preschool' && e.target.closest('.ps-start,.ps-term')){ psReadForm(); const y = scrollY; render(); scrollTo(0, y); } });
-document.addEventListener('click', async e => {
-  const t = e.target.closest('[data-act^="ps-"]'); if(!t) return;
-  const a = t.dataset.act, y = scrollY;
-  if(a === 'ps-add'){ psReadForm(); const c = psCfg(), last = c.terms[c.terms.length - 1];
-    let start = ''; if(last && last.start){ const d = new Date(last.start + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + ((last.weeks || 12) + (last.half ? 1 : 0) + 2) * 7); start = d.toISOString().slice(0, 10); }
-    c.terms.push({name:'Term ' + (c.terms.length + 1), start, weeks:12, half:6}); render(); scrollTo(0, y); }
-  if(a === 'ps-del'){ psReadForm(); psCfg().terms.splice(+t.dataset.ti, 1); render(); scrollTo(0, y); }
-  if(a === 'ps-save'){ psReadForm(); const ok = await psSave(); render(); scrollTo(0, y); const m = $('#psMsg'); if(m) m.textContent = ok ? 'Saved.' : 'Saved on this device. We couldn’t save it to your club account, so use this computer to update it.'; }
-  if(a === 'ps-copy'){ psReadForm(); try{ await navigator.clipboard.writeText(psFamilyLink()); toast('Family link copied.'); }catch(_){ const i = $('#psLink'); i.select(); toast('Press Ctrl+C to copy the link.'); } }
-});
 
 /* ----- Overview ----- */
 function screenOverview(){
@@ -1109,13 +932,22 @@ function licenceCard(k, compact){
     ${compact ? '' : '<p class="small muted">Your Club Licence opens the lesson planner, award books, warm-ups and ordering in the Recreational Hub. It runs for 12 months from activation.</p>'}
     <div class="btn-row"><a class="btn" href="${LINKS.recHub}" target="_blank" rel="noopener">${r.key === 'none' ? 'Start NGL Recreational' : r.key === 'expired' || (r.key === 'active' && r.days <= 45) ? 'Renew in the Recreational Hub' : 'Open Recreational Hub'}</a></div></div>`;
 }
+function preschoolCard(){
+  const p = (S.club && S.club.preschool) || {}, on = p.status === 'active';
+  const packs = [['pack2','11–20'], ['pack3','21–30'], ['pack4','31–40']].filter(([k]) => p[k]).map(x => x[1]);
+  return `<div class="card accent" style="--c:${PATHWAYS.preschool.c}"><img class="logo" src="${LOGOS.preschool}" alt="NGL Pre-School">
+    ${on ? '<span class="pill ok">Active</span>' : '<span class="pill off">Not started</span>'}
+    <dl class="kv"><dt>Lesson plans</dt><dd>${on ? '1–10' + (packs.length ? ', ' + packs.join(', ') : '') : 'Week 1 sample'}</dd><dt>Seasonal Pack</dt><dd>${p.seasonal ? 'Added' : 'Not added'}</dd></dl>
+    <p class="small muted">Your Pre-School licence opens the 40 weekly lesson plans, the term planner and the family app in the Pre-School Hub.</p>
+    <div class="btn-row"><a class="btn" href="${LINKS.preschoolHub}" target="_blank" rel="noopener">${on ? 'Open Pre-School Hub' : 'Start NGL Pre-School'}</a></div></div>`;
+}
 function screenLicences(){
   const soon = k => `<div class="card accent" style="--c:${PATHWAYS[k].c}"><img class="logo" src="${LOGOS[k]}" alt="${esc(PATHWAYS[k].label)}">
       <span class="pill off">Coming soon</span><p class="small muted">Club Licences for the ${esc(PATHWAYS[k].short)} will be added here. Competition places can be reserved now.</p>
       <div class="btn-row"><a class="btn ghost" href="${LINKS.reserve}" target="_blank" rel="noopener">Reserve places</a></div></div>`;
   return `<h1 class="page">Licences</h1>
     <p class="lead">Each NGL programme is its own licence on your club account. Start, renew or order inside each programme’s hub.</p>
-    <div class="grid g2">${licenceCard('schools')}${licenceCard('recreational')}${soon('general')}${soon('performance')}</div>`;
+    <div class="grid g2">${preschoolCard()}${licenceCard('schools')}${licenceCard('recreational')}${soon('general')}${soon('performance')}</div>`;
 }
 
 /* ----- Orders ----- */

@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NGL Pre-School Club Hub</title>
+<meta name="description" content="NGL Pre-School: Around the World with Somi & Flic. Lesson plans, term planner, family app and licence for British Gymnastics clubs.">
+<meta name="theme-color" content="#0a1440">
+<link rel="icon" href="../../icons/ngl-favicon-64.png">
+<link rel="apple-touch-icon" href="../../icons/ngl-apple-touch-icon.png">
+<style>
+  :root{
+    --navy:#0a1440; --navy-2:#0d1a4f; --navy-3:#152463; --navy-4:#1d2f7a;
+    --line:rgba(255,255,255,0.14); --white:#fff; --muted:#b7c1e6;
+    --rec:#E84187; --rec-ink:#fff; --gold:#f2a900; --ok:#5fd38d; --warn:#ffb454; --bad:#ff8a95;
+    --ruby:#C8194A; --pink:#E0559C; --teal:#0FA3A8; --indigo:#5A55C8;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--navy);color:var(--white);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;}
+  button,input,select{font:inherit;color:inherit;}
+  a{color:var(--rec);}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 16px;}
+
+  .topbar{position:relative;z-index:30;background:var(--rec);width:100vw;margin-left:calc(50% - 50vw);}
+  .topbar-strap{text-align:center;color:var(--rec-ink);font-weight:800;font-size:13px;letter-spacing:.02em;padding:calc(7px + env(safe-area-inset-top,0px)) 16px 7px;}
+  .topbar-in{background:linear-gradient(180deg,#2a245f 0%,#2a245f 40%,var(--navy) 100%);border-top-right-radius:120px 38px;padding-bottom:18px;}
+  @media(min-width:700px){.topbar-in{border-top-right-radius:220px 46px;}}
+  .topbar-row{display:flex;align-items:center;gap:12px;min-height:66px;}
+  .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--white);}
+  .logo img{height:50px;width:auto;display:block;}
+  @media(min-width:700px){.logo img{height:58px;}}
+  .logo-mark{font-weight:900;font-size:22px;letter-spacing:.02em;line-height:1;}
+  .logo-mark small{display:block;font-size:11px;letter-spacing:.22em;color:var(--rec);font-weight:800;margin-top:3px;}
+  .top-actions{margin-left:auto;display:flex;gap:8px;align-items:center;}
+  @media(max-width:600px){.top-actions .pill{display:none;}}
+  .pill{font-size:12px;font-weight:800;padding:6px 10px;border-radius:999px;background:var(--rec);color:var(--rec-ink);white-space:nowrap;}
+
+  .navtabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:10px 0 12px;}
+  .navtabs::-webkit-scrollbar{display:none;}
+  .navtab{flex:0 0 auto;padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:var(--navy-3);font-weight:700;font-size:14px;cursor:pointer;}
+  .navtab.active{background:var(--rec);border-color:var(--rec);color:var(--rec-ink);}
+  .navtab.locked{opacity:1;}
+  .sample-tag{display:inline-block;margin-left:4px;padding:1px 7px;border-radius:999px;background:#E84187;color:#fff;font-size:.68em;font-weight:800;letter-spacing:.04em;vertical-align:1px;}
+  .sample-banner{border:2px solid #E84187;background:linear-gradient(180deg,rgba(232,65,135,.10),rgba(232,65,135,.02));margin-bottom:18px;}
+  .sample-banner h2{margin:2px 0 8px;}
+  .sample-banner .eyebrow{color:#ff9cc5;}
+
+  main{padding:18px 0 60px;}
+  .screen{animation:fadein .2s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+  @media (prefers-reduced-motion:reduce){.screen{animation:none;}}
+
+  h1{font-size:clamp(28px,5vw,44px);line-height:1.08;margin:0 0 12px;font-weight:900;letter-spacing:-.015em;text-wrap:balance;}
+  h2{font-size:22px;margin:0 0 10px;font-weight:850;text-wrap:balance;}
+  h3{font-size:16px;margin:0 0 6px;font-weight:800;}
+  p{line-height:1.55;margin:0 0 10px;}
+  .muted{color:var(--muted);}
+  .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--rec);font-weight:800;margin:0 0 10px;}
+  .card{background:var(--navy-3);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;}
+  .grid2{display:grid;grid-template-columns:1fr;gap:16px;}
+  .grid3{display:grid;grid-template-columns:1fr;gap:14px;}
+  .grid4{display:grid;grid-template-columns:1fr;gap:12px;}
+  @media(min-width:760px){.grid2{grid-template-columns:1fr 1fr;}.grid3{grid-template-columns:repeat(3,1fr);}.grid4{grid-template-columns:repeat(2,1fr);}}
+  @media(min-width:1000px){.grid4{grid-template-columns:repeat(4,1fr);}}
+  .grid2>*,.grid3>*,.grid4>*{min-width:0;}
+  .section{margin:30px 0 0;}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 18px;border-radius:12px;border:0;cursor:pointer;background:var(--rec);color:var(--rec-ink);font-weight:900;font-size:15px;text-decoration:none;}
+  .btn:active{transform:scale(.98);}
+  .btn:focus-visible,.navtab:focus-visible,.chip:focus-visible{outline:3px solid var(--white);outline-offset:2px;}
+  .btn.ghost{background:transparent;color:var(--white);border:1px solid var(--line);font-weight:700;}
+  .btn.small{padding:8px 12px;font-size:13px;border-radius:10px;}
+  .btn.block{width:100%;}
+  .btn[disabled]{opacity:.55;cursor:default;}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;}
+
+  .hero{display:grid;grid-template-columns:1fr;gap:24px;align-items:center;padding:14px 0 6px;}
+  @media(min-width:820px){.hero{grid-template-columns:1.3fr .7fr;}}
+  .lead{font-size:18px;color:var(--muted);}
+  .levels-art{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .lvtile{border-radius:16px;padding:18px 14px;font-weight:900;font-size:20px;color:#fff;min-height:96px;display:flex;flex-direction:column;justify-content:flex-end;}
+  .lvtile small{font-size:12px;font-weight:700;opacity:.9;letter-spacing:.04em;}
+  .bg-ruby{background:var(--ruby);}.bg-pink{background:var(--pink);}.bg-teal{background:var(--teal);}.bg-indigo{background:var(--indigo);}
+  .steps{counter-reset:st;}
+  .step{position:relative;padding-left:48px;}
+  .step::before{counter-increment:st;content:counter(st);position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;background:var(--rec);color:var(--rec-ink);display:grid;place-items:center;font-weight:900;}
+  .ticks{list-style:none;padding:0;margin:0;}
+  .ticks li{padding:7px 0 7px 28px;position:relative;line-height:1.45;}
+  .ticks li::before{content:"✓";position:absolute;left:4px;color:var(--rec);font-weight:900;}
+  .stat{font-size:34px;font-weight:900;color:var(--rec);line-height:1;}
+  .journey{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+  .jstep{font-size:12px;font-weight:800;padding:6px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);}
+  .jstep.on{background:var(--rec);border-color:var(--rec);color:var(--rec-ink);}
+
+  table{width:100%;border-collapse:collapse;}
+  th,td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--line);font-size:15px;vertical-align:top;}
+  th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:800;}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;}
+  .table-wrap{overflow-x:auto;}
+  s.was{color:var(--muted);font-weight:600;margin-right:6px;}
+
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:13px;font-weight:700;color:var(--muted);margin:0 0 6px;}
+  .input{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--navy-2);color:var(--white);font-size:16px;outline:none;}
+  .input:focus{border-color:var(--rec);}
+  select.input{appearance:auto;}
+  .error{color:var(--bad);font-weight:700;font-size:14px;min-height:1em;margin:0 0 10px;}
+  .note{font-size:13px;color:var(--muted);}
+  .auth{max-width:440px;margin:10px auto 0;}
+  .demo-banner{font-size:13px;text-align:center;color:var(--rec-ink);background:var(--warn);border-radius:10px;padding:9px 12px;margin:0 0 16px;font-weight:700;}
+
+  .lic-card{background:linear-gradient(135deg,var(--navy-4),var(--navy-3));position:relative;overflow:hidden;}
+  .lic-card::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(232,65,135,.32),transparent 70%);pointer-events:none;}
+  .kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px;}
+  @media(min-width:760px){.kpis{grid-template-columns:repeat(4,1fr);}}
+  .kpi{background:var(--navy-2);border:1px solid var(--line);border-radius:14px;padding:14px;}
+  .kpi .v{font-size:24px;font-weight:900;font-variant-numeric:tabular-nums;}
+  .kpi .l{font-size:12px;color:var(--muted);font-weight:700;margin-top:2px;}
+  .tag{display:inline-block;font-size:12px;font-weight:800;padding:3px 9px;border-radius:999px;white-space:nowrap;}
+  .tag.ok{background:rgba(95,211,141,.18);color:var(--ok);}
+  .tag.wait{background:rgba(255,180,84,.18);color:var(--warn);}
+  .tag.off{background:rgba(255,138,149,.16);color:var(--bad);}
+  .tag.info{background:rgba(232,65,135,.2);color:var(--rec);}
+  .row-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;}
+
+  .modal-bg{position:fixed;inset:0;background:rgba(3,8,30,.7);z-index:50;display:grid;place-items:center;padding:16px;}
+  .modal{background:var(--navy-3);border:1px solid var(--line);border-radius:18px;padding:22px;width:100%;max-width:520px;max-height:90vh;overflow:auto;}
+  .modal-wide{max-width:780px;}
+  .sum{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);}
+  .sum.total{font-weight:900;font-size:18px;border-bottom:0;}
+  .foot{text-align:center;font-size:12px;color:var(--muted);margin-top:40px;}
+  .mono{white-space:nowrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.04em;}
+
+  /* Content area */
+  .toolbar{display:flex;flex-direction:column;gap:10px;margin:0 0 18px;}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;}
+  .chips .lbl{font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;align-self:center;margin-right:4px;min-width:62px;}
+  .chip{padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--navy-2);font-weight:700;font-size:13px;cursor:pointer;}
+  .chip.on{background:var(--white);color:var(--navy);border-color:var(--white);}
+  .chip.lv-ruby.on{background:var(--ruby);border-color:var(--ruby);color:#fff;}
+  .chip.lv-pink.on{background:var(--pink);border-color:var(--pink);color:#fff;}
+  .chip.lv-teal.on{background:var(--teal);border-color:var(--teal);color:#fff;}
+  .chip.lv-indigo.on{background:var(--indigo);border-color:var(--indigo);color:#fff;}
+  .piece{background:var(--navy-3);border:1px solid var(--line);border-radius:18px;margin-bottom:16px;overflow:hidden;}
+  .piece-h{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;padding:14px 18px;border-bottom:1px solid var(--line);}
+  .piece-h h2{margin:0;font-size:19px;}
+  .piece-h .th{color:var(--rec);font-weight:800;}
+  .piece-h .su{margin-left:auto;font-size:12px;color:var(--muted);font-weight:700;}
+  .intro{padding:10px 18px;font-size:14px;color:var(--muted);border-bottom:1px solid var(--line);}
+  .intro b{color:var(--white);}
+  .grid-st{width:100%;border-collapse:collapse;min-width:720px;}
+  .grid-st th{padding:9px 12px;font-size:12px;color:#fff;letter-spacing:.06em;}
+  .grid-st th.n{background:transparent;color:var(--muted);width:44px;}
+  .grid-st td{padding:11px 12px;font-size:14px;line-height:1.45;border-bottom:1px solid var(--line);}
+  .grid-st td.n{font-weight:900;color:var(--muted);text-align:center;}
+  .grid-st tr:last-child td{border-bottom:0;}
+  .grid-st.one{min-width:0;}
+  .grid-st.one td{font-size:16px;}
+  .chg{display:inline-block;margin-left:6px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--rec);}
+  .final{color:var(--rec);font-weight:800;}
+  .asm{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+  .apill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;padding:2px 7px 2px 5px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid var(--c);color:var(--white);line-height:1.3;}
+  .thumbs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+  .thumb{padding:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;width:64px;height:64px;background:var(--navy-2);cursor:zoom-in;}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .grid-st.one .thumb{width:96px;height:96px;}
+  .apill i{width:8px;height:8px;border-radius:50%;background:var(--c);display:inline-block;flex:0 0 auto;}
+  .blockhead{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline;margin:0 0 12px;}
+  .blockhead h1{margin:0;font-size:clamp(24px,4vw,34px);}
+  .blockhead .muted{font-weight:700;}
+  .bookgrid{display:grid;grid-template-columns:1fr;gap:12px;}
+  @media(min-width:700px){.bookgrid{grid-template-columns:repeat(2,1fr);}}
+  @media(min-width:1000px){.bookgrid{grid-template-columns:repeat(3,1fr);}}
+  .bookgrid>*{min-width:0;}
+  .skill-list{list-style:none;padding:0;margin:0;}
+  .skill-list li{padding:7px 0;border-bottom:1px solid var(--line);font-size:14px;line-height:1.4;}
+  .skill-list li:last-child{border-bottom:0;}
+  .lvl-band{display:flex;align-items:center;gap:10px;margin:22px 0 10px;}
+  .lvl-band .dot{width:12px;height:28px;border-radius:4px;}
+  .lvl-band h2{margin:0;font-size:20px;}
+  .locked-card{text-align:center;padding:34px 20px;}
+
+  /* Families */
+  .fhead{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between;border-left:6px solid;padding:4px 0 4px 14px;}
+  .fstations{display:flex;flex-direction:column;}
+  .fstation{padding:12px 18px;border-bottom:1px solid var(--line);}
+  .fstation:last-child{border-bottom:0;}
+  .ftext{font-size:15px;line-height:1.45;}
+  .flinks{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+  .flink{display:inline-block;font-size:12px;font-weight:800;padding:3px 9px;border-radius:999px;line-height:1.35;}
+  .flink.fa{background:var(--c);color:#fff;}
+  .flink.fc{background:var(--gold);color:#2a1405;}
+  .flink.fb{border:1px solid var(--c);color:var(--white);}
+  .legend-f{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;font-size:13px;color:var(--muted);margin:0 0 14px;}
+  .legend-f .flink{margin-left:6px;}
+  /* Invoice */
+  .inv-screen{background:#fff;border-radius:12px;padding:6px;overflow-x:auto;}
+  .inv{-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#fff;color:#1c1f3a;font-size:13px;line-height:1.45;padding:22px;min-width:560px;}
+  .inv-top{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #E84187;padding-bottom:14px;margin-bottom:16px;}
+  .inv-brand{font-weight:900;font-size:20px;color:#2a245f;}
+  .inv-brand small{display:block;font-size:10px;letter-spacing:.2em;color:#E84187;}
+  .inv-title{text-align:right;}
+  .inv-h{font-size:26px;font-weight:900;letter-spacing:.08em;color:#2a245f;}
+  .inv-no{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;font-size:15px;}
+  .inv-paid{display:inline-block;margin-top:6px;border:2px solid #1f9d55;color:#1f9d55;font-weight:900;padding:2px 10px;border-radius:6px;transform:rotate(-4deg);}
+  .inv-cols{display:grid;grid-template-columns:1.2fr 1.2fr 1fr;gap:16px;margin-bottom:18px;}
+  .inv-label{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#6b6f8f;margin-bottom:3px;}
+  .inv-table{width:100%;border-collapse:collapse;margin-bottom:18px;}
+  .inv-table th{background:#2a245f;color:#fff;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:8px 10px;text-align:left;border:0;}
+  .inv-table td{padding:10px;border-bottom:1px solid #e3e4ee;color:#1c1f3a;font-size:13px;}
+  .inv-table .num{text-align:right;}
+  .inv-total td{font-weight:900;font-size:16px;border-bottom:0;background:#fdebdc;}
+  .inv-pay{background:#f4f5fa;border-left:4px solid #E84187;padding:12px 14px;border-radius:6px;}
+  .inv-pay table{border-collapse:collapse;margin:6px 0 8px;width:auto;}
+  .inv-pay td{padding:3px 18px 3px 0;border:0;font-size:13px;color:#1c1f3a;}
+  .inv-pay p{margin:0;font-size:12px;color:#4a4e6d;}
+  .inv-foot{margin-top:18px;text-align:center;font-size:11px;color:#6b6f8f;}
+
+  /* Print sheets */
+  #print-area{display:none;}
+  .sheet{background:#fff;color:#111;font-size:12px;}
+  .sheet h2{color:#111;font-size:18px;margin:0 0 4px;}
+  .sheet p{color:#333;margin:0 0 10px;}
+  .sheet table{border-collapse:collapse;width:100%;}
+  .sheet th,.sheet td{border:1px solid #999;padding:5px 6px;font-size:11px;color:#111;vertical-align:top;}
+  .sheet th{background:#eee;letter-spacing:0;text-transform:none;}
+  .sheet.compact .onepage{break-inside:avoid;}
+  .sheet.compact h2{font-size:15px;}
+  .sheet.compact td,.sheet.compact th{font-size:9.5px;padding:3px 5px;line-height:1.3;}
+  .sheet.compact .st{font-weight:700;margin-top:2px;}
+  .sheet .foot{font-size:9px;color:#555;margin-top:6px;}
+  .sheet .pc{background:#f6e2d2;font-weight:800;}
+  @media print{
+    body{background:#fff !important;}
+    .app,.modal-bg{display:none !important;}
+    #print-area{display:block;}
+    #print-area .inv{min-width:0;padding:0;}
+  }
+
+
+  /* ---------- Branded print sheets ---------- */
+  .print-wait{position:fixed;left:50%;top:20px;transform:translateX(-50%);z-index:100;background:var(--rec);color:var(--rec-ink);font-weight:800;padding:10px 16px;border-radius:999px;}
+  .sheet .brand{-webkit-print-color-adjust:exact;print-color-adjust:exact;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .sheet .ph-head{display:flex;align-items:center;gap:14px;background:#0a1440;color:#fff;border-radius:8px;padding:8px 14px;border-bottom:4px solid #E84187;margin-bottom:6px;}
+  .sheet .ph-logo{height:34px;width:auto;display:block;}
+  .sheet .ph-title{flex:1;min-width:0;}
+  .sheet .ph-wk{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#E84187;}
+  .sheet .ph-pc{font-size:17px;font-weight:900;color:#fff;line-height:1.2;}
+  .sheet .ph-meta{font-size:9.5px;color:#b7c1e6;text-align:right;line-height:1.35;}
+  .sheet .ph-strip{display:grid;gap:5px;margin-bottom:6px;}
+  .sheet .ph-shot{position:relative;height:40mm;border-radius:6px;overflow:hidden;background:#eef0f6;border:1px solid #d5d9e6;}
+  .sheet .ph-shot img{width:100%;height:100%;object-fit:cover;display:block;}
+  .sheet .ph-none{display:grid;place-items:center;height:100%;color:#888;font-size:9px;}
+  .sheet .ph-n{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#E84187;color:#2a1405;font-weight:900;font-size:10.5px;}
+  .sheet .ph-shot .ph-n{position:absolute;top:4px;left:4px;box-shadow:0 1px 3px rgba(0,0,0,.4);}
+  .sheet.compact .brand th{color:#2a1405;font-size:10px;border-color:#d9b89c;}
+  .sheet.compact .brand th span{font-weight:400;}
+  .sheet.compact .brand td{border-color:#d5d9e6;font-size:10.5px;padding:4px 6px;}
+  .sheet .brand .ph-stn{width:24px;text-align:center;background:#0a1440 !important;color:#fff !important;}
+  .sheet.compact .brand .st{border-left:3px solid;border-radius:3px;padding:1px 4px;margin-top:3px;font-weight:700;}
+  .sheet .ph-foot{display:flex;justify-content:space-between;font-size:8.5px;color:#555;margin-top:5px;}
+
+
+  /* ---------- Your group picker ---------- */
+  .grpcard{background:var(--navy-3);border:1px solid var(--line);border-radius:16px;padding:16px;margin:8px 0 6px;}
+  .grpcard h2{font-size:19px;margin:0 0 4px;}
+  .grpcard .muted{margin:0 0 12px;font-size:14px;}
+  .grprow{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+  @media(min-width:600px){.grprow{grid-template-columns:repeat(4,1fr);}}
+  .grpbox{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:64px;padding:12px 14px;border-radius:14px;border:2px solid var(--c);background:transparent;color:var(--white);cursor:pointer;text-align:left;}
+  .grpbox.on{background:var(--c);}
+  .grpbox .grp-name{font-size:18px;font-weight:900;}
+  .grpbox .grp-rung{font-size:14px;font-weight:800;}
+  .grpbox .grp-sub{font-size:11.5px;opacity:.8;}
+  .grpbox .grp-tick{position:absolute;top:8px;right:10px;width:22px;height:22px;border-radius:50%;border:2px solid currentColor;display:grid;place-items:center;font-size:13px;font-weight:900;}
+  .grprow.compact{grid-template-columns:repeat(4,1fr);gap:6px;margin:0 0 14px;}
+  .grprow.compact .grpbox{min-height:48px;padding:6px 10px;justify-content:center;gap:0;}
+  .grprow.compact .grp-name{font-size:14px;line-height:1.1;}
+  .grprow.compact .grp-rung{font-size:11.5px;}
+  .grprow.compact .grp-tick{display:none;}
+
+
+  /* ---------- Build your club plan ---------- */
+  .cp-prog{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:6px 0 18px;}
+  .cp-step{font-size:12px;font-weight:800;color:var(--muted);display:flex;flex-direction:column;gap:6px;}
+  .cp-step span{height:6px;border-radius:3px;background:var(--navy-4);font-size:0;}
+  .cp-step.done span{background:var(--rec);opacity:.6;}.cp-step.on span{background:var(--rec);}.cp-step.on{color:var(--white);}
+  .cp-q{background:var(--navy-3);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;}
+  .cp-ql{font-size:18px;font-weight:900;margin:0 0 10px 2px;}
+  .cp-opts{display:grid;grid-template-columns:1fr;gap:8px;}
+  @media(min-width:600px){.cp-opts{grid-template-columns:repeat(3,1fr);}}
+  .optbtn{min-height:56px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--navy-2);color:var(--white);font-weight:800;font-size:15px;text-align:left;cursor:pointer;}
+  .optbtn.on{background:var(--rec);border-color:var(--rec);color:var(--rec-ink);}
+  .bbgrid.five{grid-template-columns:repeat(3,1fr);}
+  .bbgrid.five .bigbtn{align-items:center;text-align:center;padding:16px 6px;}
+  .bbgrid.five .bb-t{font-size:28px;}
+  .cp-nav{display:flex;justify-content:space-between;gap:10px;margin-top:22px;}
+  .cp-nav .btn{min-height:52px;padding:14px 22px;font-size:16px;}
+  .cp-date{margin:0 0 16px;}
+  .cp-date label{display:block;font-weight:800;margin:0 0 8px;}
+  .input.big{font-size:18px;padding:14px;min-height:54px;width:100%;max-width:340px;}
+  .cp-sum{display:grid;grid-template-columns:1fr;gap:10px;}
+  @media(min-width:700px){.cp-sum{grid-template-columns:repeat(3,1fr);}}
+  .cp-sum>div{background:var(--navy-3);border:1px solid var(--line);border-radius:14px;padding:14px;}
+  .cp-sum span{display:block;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+  .cp-sum b{display:block;font-size:16px;line-height:1.35;}
+  .cp-sum small{display:block;color:var(--muted);margin-top:4px;font-size:13px;}
+  .cp-h{font-size:22px;margin:28px 0 10px;}
+  .cp-res{display:grid;grid-template-columns:1fr;gap:10px;}
+  @media(min-width:700px){.cp-res{grid-template-columns:1fr 1fr;}}
+  .cp-book{display:flex;gap:12px;align-items:flex-start;background:var(--navy-3);border:1px solid var(--line);border-left:6px solid var(--c);border-radius:14px;padding:12px 14px;}
+  .cp-bk{font-weight:900;font-size:17px;min-width:70px;}.cp-bk small{display:block;font-size:12.5px;color:var(--muted);font-weight:700;}
+  .cp-bt b{display:block;}.cp-book.ok .cp-bt b{color:var(--ok);}.cp-book.warn .cp-bt b{color:var(--warn);}
+  .cp-bt small{color:var(--muted);font-size:13px;}.cp-bt ul{margin:6px 0 0;padding-left:18px;font-size:13px;}
+  .cp-flag{margin-top:12px;padding:12px 14px;border-radius:12px;background:rgba(255,180,84,.12);border:1px solid rgba(255,180,84,.45);}
+  .cp-flag.soft{background:rgba(255,255,255,.05);border-color:var(--line);color:var(--muted);}
+  .weekgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+  @media(min-width:600px){.weekgrid{grid-template-columns:repeat(7,1fr);}}
+  .wkbtn{min-height:52px;border-radius:12px;border:1px solid var(--line);background:var(--navy-3);color:var(--white);font-weight:800;cursor:pointer;}
+  .wkbtn.assess{border-style:dashed;}
+  .cp-dash{display:block;width:100%;text-align:left;cursor:pointer;border-color:rgba(232,65,135,.6);color:var(--white);}
+  .cp-dash h2{margin:2px 0 6px;}
+
+
+  /* ---------- Club plan story ---------- */
+  .story-hero{background:linear-gradient(135deg,rgba(232,65,135,.18),rgba(232,65,135,.04));border:1px solid rgba(232,65,135,.45);border-radius:18px;padding:20px;margin:20px 0 6px;}
+  .story-hero h2{font-size:clamp(21px,3.4vw,27px);line-height:1.25;margin:4px 0 10px;}
+  .lead-s{font-size:16px;line-height:1.55;color:var(--white);margin:0;}
+  .story-h{font-size:20px;margin:26px 0 12px;}
+  .story-steps{display:grid;grid-template-columns:1fr;gap:10px;}
+  @media(min-width:760px){.story-steps{grid-template-columns:repeat(3,1fr);}}
+  .story-step{display:flex;gap:12px;background:var(--navy-3);border:1px solid var(--line);border-radius:14px;padding:14px;}
+  .story-step>span{flex:0 0 auto;width:34px;height:34px;border-radius:50%;background:var(--rec);color:var(--rec-ink);display:grid;place-items:center;font-weight:900;font-size:17px;}
+  .story-step b,.story-f b{display:block;font-size:16px;margin-bottom:4px;}
+  .story-step p,.story-f p{margin:0;color:var(--muted);font-size:14px;line-height:1.5;}
+  .story-grid{display:grid;grid-template-columns:1fr;gap:10px;}
+  @media(min-width:600px){.story-grid{grid-template-columns:1fr 1fr;}}
+  .story-f{background:var(--navy-3);border:1px solid var(--line);border-left:4px solid var(--rec);border-radius:12px;padding:12px 14px;}
+  .story-b li{font-size:15px;}
+  .modal-wide .story-hero{margin-top:0;}
+
+
+  /* ---------- Show your class today's skill ---------- */
+  .skillvid{margin:0 0 16px;}
+  .vidparts{margin:0 0 10px;}
+  .skillvid-h{font-size:13px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--rec);margin:0 0 8px 2px;}
+  .skillvid-box{position:relative;display:block;width:100%;aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:#000;border:1px solid var(--line);}
+  .skillvid-box iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+  .skillvid-box.empty{background:linear-gradient(135deg,#1d2f7a,#0d1a4f);cursor:pointer;padding:0;}
+  .skillvid-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:84px;height:84px;border-radius:50%;background:var(--rec);box-shadow:0 10px 30px rgba(0,0,0,.45);}
+  .skillvid-play::after{content:"";position:absolute;left:34px;top:26px;border-style:solid;border-width:16px 0 16px 26px;border-color:transparent transparent transparent var(--rec-ink);}
+  .skillvid-soon{position:absolute;left:0;right:0;bottom:14px;text-align:center;color:var(--muted);font-weight:700;font-size:14px;}
+
+  .lic-until{font-size:18px;margin:2px 0 4px;}
+  .lic-renew{margin:12px 0 0;padding:12px 14px;border-radius:12px;background:rgba(255,180,84,.12);border:1px solid rgba(255,180,84,.45);}
+
+  /* ---------- Coaching tips ---------- */
+  .tipbox{margin:0 0 10px;border:1px solid rgba(232,65,135,.45);border-radius:12px;background:rgba(232,65,135,.08);}
+  .tipbox summary{cursor:pointer;list-style:none;padding:10px 14px;font-weight:900;color:var(--rec);font-size:15px;}
+  .tipbox summary::-webkit-details-marker{display:none;}
+  .tipbox summary::before{content:"＋ ";}
+  .tipbox[open] summary::before{content:"－ ";}
+  .tipbox .tip-cues{margin:0;padding:0 14px 6px 32px;}
+  .tipbox .tip-cues li{margin:0 0 6px;font-size:15.5px;font-weight:700;}
+  .tipbox .tip-row{margin:0;padding:6px 14px 10px;font-size:14.5px;line-height:1.5;}
+  .tipbox .tip-row b{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px;}
+  .tipbox .tip-safe b{color:var(--warn);}
+  .tipbox .tip-home{color:var(--muted);font-size:13px;}
+  .fstation .tipbox{margin-top:10px;}
+
+
+  /* ---------- QR poster and flyers (print) ---------- */
+  .qposter{-webkit-print-color-adjust:exact;print-color-adjust:exact;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#0a1440;}
+  .qp{background:#fff;border:3px solid #0a1440;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;}
+  .qp.a4{height:270mm;}
+  .qp.a5{height:132mm;}
+  .qp-head{display:flex;align-items:center;gap:12px;background:#0a1440;padding:10px 16px;border-bottom:6px solid #E84187;}
+  .qp-head img{height:44px;width:auto;}
+  .qp-brand{color:#fff;font-weight:900;font-size:18px;margin-left:auto;}
+  .qp-body{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:14px 20px;}
+  .qp-club{font-weight:900;color:#E84187;font-size:20px;text-transform:uppercase;letter-spacing:.06em;}
+  .qp h1{font-size:34px;line-height:1.15;margin:6px 0 6px;color:#0a1440;}
+  .qp-lead{font-size:16px;margin:0 0 10px;color:#333;}
+  .qp-qr{width:110mm;max-width:80%;}
+  .qp-qr svg{width:100%;height:auto;display:block;}
+  .qp-steps{list-style:none;padding:0;margin:12px 0 8px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .qp-steps li{counter-increment:qs;background:#FDEBDD;border-radius:10px;padding:8px 12px;font-size:15px;}
+  .qp-steps li::before{content:counter(qs);display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#E84187;color:#2a1405;font-weight:900;margin-right:6px;}
+  .qp-alt{font-size:14px;color:#333;margin:6px 0 0;}
+  .qp-code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:18px;color:#E84187;}
+  .qp-foot{background:#0a1440;color:#b7c1e6;font-size:11.5px;text-align:center;padding:7px;}
+  .qp.a5 h1{font-size:24px;margin:4px 0;}.qp.a5 .qp-lead{font-size:12.5px;margin:0 0 6px;}.qp.a5 .qp-qr{width:58mm;}
+  .qp.a5 .qp-steps li{font-size:12px;padding:5px 8px;}.qp.a5 .qp-alt{font-size:12px;}.qp.a5 .qp-club{font-size:15px;}.qp.a5 .qp-head img{height:32px;}.qp.a5 .qp-brand{font-size:14px;}
+  .qp-cut{text-align:center;color:#888;font-size:11px;border-top:1px dashed #999;margin:5mm 0 4mm;padding-top:1mm;}
+
+  .codehelp{background:rgba(232,65,135,.1);border:1px solid rgba(232,65,135,.4);border-radius:12px;padding:10px 12px;margin:0 0 14px;font-size:14px;line-height:1.5;}
+  .codehelp b{color:var(--rec);}
+
+  /* ---------- Order supplies ---------- */
+  .shop-p{font-size:14px;font-weight:700;margin-left:8px;}
+  .shop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+  @media(min-width:700px){.shop-grid.four{grid-template-columns:repeat(4,1fr);}.shop-grid.six{grid-template-columns:repeat(6,1fr);}}
+  .shop-q{display:flex;flex-direction:column;gap:6px;background:var(--navy-2);border:1px solid var(--line);border-left:5px solid var(--c, var(--rec));border-radius:12px;padding:10px;}
+  .shop-l{font-weight:800;}.shop-l small{display:block;font-weight:600;color:var(--muted);font-size:12px;}
+  .shop-q .input{font-size:18px;padding:10px;text-align:center;}
+  .shop-book{margin:0 0 12px;}.shop-book>b{display:block;color:var(--c);margin:0 0 8px;}
+  .shop-sum{border-color:rgba(232,65,135,.6);}
+  textarea.input{width:100%;font:inherit;}
+
+  /* ---------- Coach flow: big buttons ---------- */
+  .flow{max-width:760px;margin:0 auto;}
+  .flow-h{font-size:clamp(26px,5vw,34px);margin:6px 0 6px;line-height:1.15;}
+  .flow-hrow{display:flex;align-items:center;gap:12px;}.flow-hrow .btn{margin-left:auto;}
+  .flow-sub{color:var(--muted);margin:0 0 16px;font-size:15px;}
+  .flow-sub b{color:var(--white);}
+  .flow-l{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:22px 2px 10px;}
+  .backbar{background:none;border:0;color:var(--muted);font-weight:800;font-size:15px;padding:10px 0;cursor:pointer;}
+  .backbar:hover{color:var(--white);}
+  .bbgrid{display:grid;grid-template-columns:1fr;gap:12px;}
+  @media(min-width:600px){.bbgrid{grid-template-columns:1fr 1fr;}.bbgrid.three{grid-template-columns:1fr 1fr 1fr;}}
+  .bigbtn{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:6px;width:100%;min-height:84px;padding:18px 20px;border-radius:16px;border:1px solid var(--line);background:var(--navy-3);color:var(--white);text-align:left;cursor:pointer;transition:transform .12s ease,background .15s ease;}
+  .bigbtn:hover{background:var(--navy-4);}
+  .bigbtn:active{transform:scale(.98);}
+  .bigbtn:focus-visible{outline:3px solid var(--white);outline-offset:2px;}
+  .bigbtn .bb-t{font-size:20px;font-weight:900;line-height:1.2;}
+  .bigbtn .bb-k{font-size:14px;color:var(--muted);line-height:1.35;}
+  .bigbtn.now{background:var(--rec);border-color:var(--rec);color:var(--rec-ink);}
+  .bigbtn.now .bb-k{color:var(--rec-ink);opacity:.85;}
+  .bigbtn.wide{margin-top:4px;}
+  .bigbtn.warm{border-color:rgba(242,169,0,.55);}
+  .bigbtn.assess{border-style:dashed;}
+  .bigbtn.go{margin-top:18px;background:var(--rec);border-color:var(--rec);color:var(--rec-ink);align-items:center;text-align:center;}
+  .bigbtn.go .bb-k{color:var(--rec-ink);opacity:.85;}
+  .setgrid{display:grid;grid-template-columns:1fr;gap:14px;}
+  @media(min-width:600px){.setgrid{grid-template-columns:1fr 1fr;}}
+  .setcard{position:relative;background:var(--navy-3);border:1px solid var(--line);border-radius:16px;padding:12px;}
+  .setn{position:absolute;top:18px;left:18px;z-index:2;width:38px;height:38px;border-radius:50%;background:var(--rec);color:var(--rec-ink);display:grid;place-items:center;font-weight:900;font-size:18px;box-shadow:0 4px 12px rgba(0,0,0,.35);}
+  .setphoto{display:block;width:100%;aspect-ratio:4/3;border:0;padding:0;border-radius:12px;overflow:hidden;background:var(--navy-4);cursor:zoom-in;}
+  .setphoto img{width:100%;height:100%;object-fit:cover;display:block;}
+  .setphoto.empty{display:grid;place-items:center;color:var(--muted);font-weight:700;cursor:default;}
+  .setcard .thumbs{margin-top:8px;}
+  .ladder{background:var(--navy-3);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px;}
+  .ladder-h{font-weight:900;font-size:18px;margin:2px 4px 10px;}
+  .rung{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;background:var(--navy-2);}
+  .rung:last-child{margin-bottom:0;}
+  .rung.starred{border-color:rgba(242,169,0,.6);}
+  .rung-n{font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--rec);margin-bottom:4px;}
+  .rung-n span{color:var(--muted);font-weight:700;letter-spacing:0;text-transform:none;margin-left:8px;}
+  .rung-t{font-size:16px;line-height:1.45;}
+  .stars{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+  .star{font-size:12.5px;font-weight:800;padding:4px 10px;border-radius:999px;background:color-mix(in srgb,var(--c) 22%,transparent);border:1px solid var(--c);}
+  .star .sk{font-weight:600;color:var(--muted);}
+
+  /* Run your class */
+  .runprev{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:16px 0 12px;}
+  .runprev i{color:var(--muted);font-style:normal;}
+  .rp{display:inline-flex;flex-direction:column;align-items:center;gap:1px;padding:7px 11px;border-radius:12px;border:1px solid var(--line);background:var(--navy-3);color:var(--white);font-weight:800;font-size:13px;}
+  .rp small{font-size:11px;color:var(--muted);font-weight:700;}
+  .rp.piece{border-color:var(--p);box-shadow:inset 0 -3px 0 var(--p);}
+  .runprog{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:8px 0 14px;padding-bottom:2px;}
+  .runprog::-webkit-scrollbar{display:none;}
+  .runprog .rp{cursor:pointer;flex:0 0 auto;}
+  .runprog .rp.done{opacity:.55;}
+  .runprog .rp.on{background:var(--rec);border-color:var(--rec);color:var(--rec-ink);box-shadow:none;}
+  .runprog .rp.on small{color:var(--rec-ink);}
+  .runprog .rp.piece.on{background:var(--p);border-color:var(--p);color:#fff;}
+  .runprog .rp.piece.on small{color:#fff;}
+  .runhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted);}
+  .runhead b{color:var(--white);}
+  .rundot{width:16px;height:16px;border-radius:50%;display:inline-block;border:2px solid rgba(255,255,255,.7);}
+  .runtitle{border-left:8px solid var(--p,var(--rec));padding-left:14px;margin:6px 0 14px;}
+  .runstep{font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--p,var(--rec));}
+  .runwarn{color:var(--warn);font-weight:900;}
+  .runnext{position:sticky;bottom:0;padding:14px 0 calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,rgba(10,20,64,0) 0%,var(--navy) 28%);display:flex;flex-direction:column;gap:8px;align-items:stretch;margin-top:18px;}
+  .bigbtn.go.rotate{background:var(--p);border-color:var(--p);}
+  .bigbtn.go.rotate .bb-t,.bigbtn.go.rotate .bb-k{color:#fff;}
+  .bigbtn.grpc{border-left:10px solid var(--g);}
+  .rotflash{position:fixed;inset:0;z-index:90;display:grid;place-items:center;background:var(--p);color:#fff;text-align:center;animation:rfIn .3s ease;transition:opacity .4s ease;}
+  .rotflash.out{opacity:0;}
+  .rotflash small{display:block;font-size:22px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.9;}
+  .rotflash b{display:block;font-size:min(16vw,110px);font-weight:900;line-height:1.05;}
+  @keyframes rfIn{from{transform:scale(1.15);opacity:0}to{transform:none;opacity:1}}
+
+  .runprog{gap:10px;align-items:flex-end;}
+  .rpg{flex:0 0 auto;display:flex;flex-direction:column;gap:4px;padding:5px 7px 6px;border-radius:14px;background:color-mix(in srgb,var(--p) 14%,transparent);border:2px solid transparent;}
+  .rpg.cur{border-color:var(--p);}
+  .rpg-l{font-size:11px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;color:var(--p);white-space:nowrap;filter:brightness(1.25);}
+  .rpg-b{display:flex;gap:5px;}
+  .runprog .rpn{flex:0 0 auto;width:34px;height:34px;border-radius:50%;border:2px solid var(--p);background:color-mix(in srgb,var(--p) 30%,var(--navy-3));color:var(--white);font-weight:900;font-size:14px;cursor:pointer;}
+  .runprog .rpn.done{opacity:.5;}
+  .runprog .rpn.on{background:var(--p);border-color:#fff;color:#fff;transform:scale(1.12);}
+  .stephead{display:flex;gap:14px;align-items:center;margin:4px 0 16px;}
+  .stepnum{flex:0 0 auto;width:68px;height:68px;border-radius:20px;background:var(--p,var(--rec));color:#fff;font-weight:900;font-size:40px;display:grid;place-items:center;}
+  .stephead .flow-h{margin:2px 0 2px;}
+  .bigline{font-size:19px;line-height:1.45;margin:0 0 14px;}
+  .bigcard{background:var(--navy-3);border:1px solid var(--line);border-radius:18px;padding:18px 20px;font-size:19px;line-height:1.5;}
+  .bigcard p{margin:0 0 10px;}
+  .rotcard{background:var(--p);color:#fff;border-radius:22px;padding:34px 20px;text-align:center;display:flex;flex-direction:column;gap:6px;}
+  .rotcard small{font-size:18px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.9;}
+  .rotcard b{font-size:min(13vw,64px);font-weight:900;line-height:1.05;}
+  .rotcard span{font-weight:800;font-size:16px;opacity:.95;}
+  .rotcard em{font-style:normal;font-size:17px;opacity:.9;}
+  .demo{display:flex;flex-direction:column;gap:10px;}
+  .dstn{display:flex;gap:12px;align-items:flex-start;background:var(--navy-3);border:1px solid var(--line);border-radius:16px;padding:12px;}
+  .dnum{flex:0 0 auto;width:44px;height:44px;border-radius:12px;background:var(--rec);color:var(--rec-ink);font-weight:900;font-size:24px;display:grid;place-items:center;}
+  .dbody{flex:1;min-width:0;}
+  .dtitle{font-weight:800;font-size:17px;line-height:1.35;}
+  .dwhy{font-size:14px;color:var(--muted);margin-top:4px;line-height:1.4;}
+  .dwhy b{color:var(--white);}
+  .dass{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;}
+  .drungs{margin-top:8px;}
+  .drungs summary{cursor:pointer;font-size:13px;font-weight:800;color:var(--rec);}
+  .dphoto{flex:0 0 auto;width:74px;height:74px;border-radius:12px;overflow:hidden;border:0;padding:0;background:var(--navy-2);cursor:pointer;}
+  .dphoto img{width:100%;height:100%;object-fit:cover;display:block;}
+</style>
+<style>
+/* Pre-School additions (dark theme) */
+.topbar{background:var(--rec)}
+.ps-hero{display:grid;grid-template-columns:1fr;gap:24px;align-items:center;padding:14px 0 6px}
+@media(min-width:820px){.ps-hero{grid-template-columns:1.1fr .9fr}}
+.ps-poster{width:100%;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.4);display:block}
+.ps-medals{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:12px}
+.ps-medals div{text-align:center;font-size:12px;color:var(--muted);line-height:1.2}
+.ps-medals img{width:100%;max-width:90px;aspect-ratio:1;display:block;margin:0 auto 4px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.35))}
+.ps-strip{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 10px;scroll-snap-type:x mandatory}
+.ps-strip figure{margin:0;flex:none;scroll-snap-align:start}
+.ps-strip img{height:260px;width:auto;display:block;border-radius:8px;background:#fff}
+.ps-strip figcaption{font-size:12px;color:var(--muted);margin-top:6px}
+.ps-posts img{height:230px;aspect-ratio:4/5;border-radius:8px}
+.ps-sample{display:grid;grid-template-columns:1fr;gap:16px;align-items:center}
+@media(min-width:820px){.ps-sample{grid-template-columns:1.2fr 1fr 1fr}}
+.ps-sample img{width:100%;border-radius:6px;display:block;background:#fff}
+.ps-plans{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.ps-plan{background:var(--navy-2);border:1px solid var(--line);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:4px}
+.ps-plan .th{aspect-ratio:210/297;border-radius:6px;background:#fff center top/cover;position:relative;margin-bottom:4px}
+.ps-plan.locked .th:after{content:"";position:absolute;inset:0;background:rgba(10,20,64,.35);border-radius:6px}
+.ps-plan .lock{position:absolute;z-index:1;left:50%;top:50%;transform:translate(-50%,-50%);font-size:22px;background:#fff;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.ps-plan b{font-size:14px;line-height:1.2}
+.ps-plan .s{font-size:12px;color:var(--muted)}
+.ps-plan .btn{margin-top:4px}
+.ps-start,.ps-term{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;align-items:end;margin:10px 0}
+.ps-term{background:var(--navy-2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.ps-start label,.ps-term label{display:flex;flex-direction:column;font-size:12px;font-weight:700;color:var(--muted);gap:4px}
+.ps-start .input,.ps-term .input{padding:9px 10px;font-size:14px}
+.ps-chk{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--white)}
+.ps-det{margin-top:14px}.ps-det summary{cursor:pointer;font-weight:850;font-size:18px;padding:6px 0}
+.ps-tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+.ps-tbl table{min-width:760px}.ps-tbl td{font-size:13.5px}
+.ps-tbl tr.nl td{border-top:2px solid rgba(232,65,135,.6)}
+.ps-tbl tr.now td{background:rgba(232,65,135,.14)}
+.ps-tbl tr.sea td{background:rgba(242,169,0,.08)}
+.ps-tbl td img{width:22px;height:22px;vertical-align:-6px;margin-right:6px}
+.sk{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--rec);color:#fff;font-size:11px;font-weight:800;margin-right:6px}
+.sk.b2{background:#90276A}
+.ps-week{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:760px){.ps-week{grid-template-columns:220px 1fr}}
+.ps-week img{width:100%;border-radius:10px}
+.ps-book h4{margin:10px 0 4px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#ffb3d1}
+.ps-book li{margin:3px 0}
+.copy{display:flex;gap:8px;flex-wrap:wrap}.copy .input{flex:1;min-width:220px;font-size:13px}
+.adm td{font-size:14px}.adm .btn{margin:2px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar"><div class="topbar-strap">Pre-School Awards Scheme · Club Hub</div><div class="topbar-in">
+    <div class="wrap topbar-row">
+      <a class="logo" href="#" data-go="home" aria-label="NGL Pre-School home"><img src="../img/logo.png" alt="NGL Pre-School"></a>
+      <div class="top-actions" id="topActions"></div>
+    </div>
+  </div></header>
+  <div class="wrap">
+    <nav class="navtabs" id="navtabs" hidden></nav>
+    <main id="view"></main>
+  </div>
+</div>
+<script src="../data.js"></script>
+<script>
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBK8gNFh4lYv6829YRFm-7Ia0tzh_RwMKQ",
+  authDomain: "ngl-schools.firebaseapp.com",
+  projectId: "ngl-schools",
+  storageBucket: "ngl-schools.firebasestorage.app",
+  messagingSenderId: "202087533031",
+  appId: "1:202087533031:web:a905eaa461925256b71542"
+};
+const P = NGLPS, $ = s => document.querySelector(s), $view = $('#view');
+const DIR = '../', PLANS = '../plans/1Qes3TzvJrYQ/', SAMPLE = '../plans/sample/';
+const FAMILY = 'https://club.nationalgymnasticsleague.co.uk/preschool/';
+const CLUB_HUB = 'https://club.nationalgymnasticsleague.co.uk/';
+const CONTACT = 'admin@nationalgymnasticsleague.co.uk';
+const PRICE = {pack:100, seasonal:50};
+const DEMO = new URLSearchParams(location.search).has('demo');
+const ADMIN_MODE = new URLSearchParams(location.search).has('admin');
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const P2 = n => String(n).padStart(2, '0');
+const mail = (subj, body) => `mailto:${CONTACT}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+function toast(m){ const t = document.createElement('div'); t.textContent = m; t.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#fff;color:#0a1440;font-weight:700;padding:10px 16px;border-radius:12px;z-index:99;box-shadow:0 6px 20px rgba(0,0,0,.3)'; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
+
+/* ---------- data layer ---------- */
+const S = {uid:null, club:null, isAdmin:false, cfg:null};
+let FB = null;
+async function fb(){
+  if(FB) return FB;
+  const v = '10.12.2';
+  const [app, auth, fs] = await Promise.all([import(`https://www.gstatic.com/firebasejs/${v}/firebase-app.js`), import(`https://www.gstatic.com/firebasejs/${v}/firebase-auth.js`), import(`https://www.gstatic.com/firebasejs/${v}/firebase-firestore.js`)]);
+  const a = app.initializeApp(FIREBASE_CONFIG);
+  FB = {auth, fs, A:auth.getAuth(a), D:fs.getFirestore(a)}; return FB;
+}
+function authError(e){ const c = (e && e.code) || ''; if(/invalid-credential|wrong-password|user-not-found/.test(c)) return 'That email and password don’t match. Please try again.'; if(c.includes('too-many')) return 'Too many attempts. Please wait a few minutes.'; if(c.includes('network')) return 'We couldn’t connect. Please check your internet connection.'; return 'Something went wrong. Please try again.'; }
+async function loadClub(uid){
+  const {fs, D} = await fb(); S.uid = uid;
+  const [c, a] = await Promise.all([fs.getDoc(fs.doc(D, 'clubs', uid)), fs.getDoc(fs.doc(D, 'admins', uid)).catch(() => null)]);
+  S.club = c.exists() ? c.data() : null; S.isAdmin = !!(a && a.exists());
+}
+const api = DEMO ? {
+  async restore(){ return false; },
+  async signIn(){ S.uid = 'demo'; S.club = {name:'SAADI Gymnastics', email:'demo@club', preschool:{status:'inactive'}}; S.isAdmin = true; return {ok:true}; },
+  async reset(){ return {ok:true}; }, async signOut(){}, async savePlan(c){ S.club.preschoolPlan = c; return true; },
+  async adminClubs(){ return [{id:'demo', ...S.club}]; }, async adminSet(club, data){ Object.assign(club, {preschool:data}); S.club.preschool = data; }
+} : {
+  async restore(){ const {auth, A} = await fb(); return new Promise(res => { const off = auth.onAuthStateChanged(A, async u => { off(); if(!u) return res(false); try{ await loadClub(u.uid); res(!!S.club || S.isAdmin); }catch(e){ res(false); } }); }); },
+  async signIn(email, pw){ try{ const {auth, A} = await fb(); const c = await auth.signInWithEmailAndPassword(A, email, pw); await loadClub(c.user.uid); if(!S.club && !S.isAdmin) return {ok:false, reason:'This login isn’t linked to a club. Please create your club account in the NGL Club Hub.'}; return {ok:true}; }catch(e){ return {ok:false, reason:authError(e)}; } },
+  async reset(email){ try{ const {auth, A} = await fb(); await auth.sendPasswordResetEmail(A, email); return {ok:true}; }catch(e){ return {ok:false, reason:authError(e)}; } },
+  async signOut(){ const {auth, A} = await fb(); await auth.signOut(A); },
+  async savePlan(c){ try{ const {fs, D} = await fb(); await fs.updateDoc(fs.doc(D, 'clubs', S.uid), {preschoolPlan:c}); S.club.preschoolPlan = c; return true; }catch(e){ console.warn(e); return false; } },
+  async adminClubs(){ const {fs, D} = await fb(); const q = await fs.getDocs(fs.collection(D, 'clubs')); return q.docs.map(d => ({id:d.id, ...d.data()})).sort((a, b) => String(a.name).localeCompare(String(b.name))); },
+  async adminSet(club, data){ const {fs, D} = await fb(); await fs.updateDoc(fs.doc(D, 'clubs', club.id), {preschool:data}); club.preschool = data; }
+};
+const lic = () => { const p = (S.club && S.club.preschool) || {}; return {active:p.status === 'active', pack2:!!p.pack2, pack3:!!p.pack3, pack4:!!p.pack4, seasonal:!!p.seasonal}; };
+const packOf = n => n <= 10 ? 1 : n <= 20 ? 2 : n <= 30 ? 3 : 4;
+const PACKS = ['', 'Included with the licence', 'Lesson Plan Pack 11–20', 'Lesson Plan Pack 21–30', 'Lesson Plan Pack 31–40'];
+const unlocked = t => t.seasonal ? (lic().active && lic().seasonal) : (t.n === 1 || (lic().active && (t.n <= 10 || lic()['pack' + packOf(t.n)])));
+const planFile = t => (t.seasonal ? 'NGL_PreSchool_' : 'NGL_PreSchool_Week_') + t.file;
+const planHref = t => (t.n === 1 && !t.seasonal && !lic().active ? SAMPLE : PLANS) + planFile(t) + '.pdf';
+const postHref = t => (t.n === 1 && !t.seasonal && !lic().active ? SAMPLE : PLANS) + 'NGL_PreSchool_Post_' + t.file + '.jpg';
+function cfgKey(){ return 'ngl-ps-plan-' + (S.uid || 'demo'); }
+function defaultCfg(){ const y = new Date().getFullYear(), sy = new Date().getMonth() >= 7 ? y : y - 1;
+  return {club:(S.club && S.club.name) || '', startWeek:1, seasonal:false, terms:[{name:`Autumn ${sy}`, start:`${sy}-09-07`, weeks:14, half:7}, {name:`Spring ${sy + 1}`, start:`${sy + 1}-01-04`, weeks:12, half:6}, {name:`Summer ${sy + 1}`, start:`${sy + 1}-04-19`, weeks:13, half:6}]}; }
+function cfg(){
+  if(!S.cfg){ let c = S.club && S.club.preschoolPlan; if(!c){ try{ c = JSON.parse(localStorage.getItem(cfgKey()) || 'null'); }catch(_){} } S.cfg = c || defaultCfg(); }
+  if(S.cfg.startLevel){ S.cfg.startWeek = (S.cfg.startLevel - 1) * 4 + 1; delete S.cfg.startLevel; delete S.cfg.startTheme; }
+  if(!lic().seasonal && !DEMO) S.cfg.seasonal = false;
+  return S.cfg;
+}
+const familyLink = () => FAMILY + '#p=' + P.encode(cfg());
+
+/* ---------- shell ---------- */
+let signedIn = false, tab = 'dashboard';
+const TABS = [['dashboard','Dashboard'], ['planner','Term planner'], ['plans','Lesson plans'], ['family','Family app'], ['programme','The programme'], ['licence','Licence & packs']];
+function setTop(){
+  const ta = $('#topActions'), nav = $('#navtabs');
+  if(signedIn){
+    ta.innerHTML = `${S.club ? `<span class="pill">${esc(S.club.name)}</span>` : ''}<button class="btn ghost small" data-act="signout">Sign out</button>`;
+    nav.hidden = false;
+    const tabs = ADMIN_MODE ? [['admin','Licences (admin)']] : TABS.concat(S.isAdmin ? [['admin','Admin']] : []);
+    nav.innerHTML = tabs.map(([k, l]) => `<button class="navtab ${tab === k ? 'active' : ''}" data-tab="${k}">${l}</button>`).join('');
+  }else{ ta.innerHTML = `<button class="btn ghost small" data-go="login">Club login</button>`; nav.hidden = true; }
+}
+function render(html){ $view.innerHTML = '<div class="screen">' + (DEMO ? '<div class="demo-banner">Preview mode: sample data. Use the Admin tab to switch the licence and packs on and off. Nothing is saved.</div>' : '') + html + '</div>'; }
+function show(){
+  setTop();
+  if(!signedIn) return screenLanding();
+  if(ADMIN_MODE) tab = 'admin';
+  if(!S.club && !S.isAdmin) return render('<div class="card"><h2>No club on this login</h2></div>');
+  ({dashboard:screenDashboard, planner:screenPlanner, plans:screenPlans, family:screenFamily, programme:() => render(programmeHTML(true)), licence:screenLicence, admin:screenAdmin}[tab] || screenDashboard)();
+  window.scrollTo(0, 0);
+}
+
+/* ---------- shared content ---------- */
+function programmeHTML(inside){
+  const books = [['book-cover','Front cover'], ['book-inside','Where will your journey take you?'], ['book-france','Country 1: France'], ['book-england','Country 2: England'], ['book-china','Country 7: China'], ['book-back','Back cover']];
+  const all = [...P.THEMES, ...P.SEASONAL];
+  return `
+    ${inside ? '' : ''}
+    <section class="ps-hero">
+      <div><p class="eyebrow">Around the World with Somi &amp; Flic</p>
+        <h1>A passport to gymnastics for ages 3–4</h1>
+        <p class="lead">Your youngest gymnasts travel the world with Somi and Flic. Each country is a level with eight skills. Every week’s lesson plan teaches two Book 1 and two Book 2 sticker skills side by side, so children on either book share one class.</p>
+        <p class="muted">Two passport stickers a week, a new country and medal every four weeks, and no assessment week.</p>
+        ${inside ? '' : `<div class="btn-row"><a class="btn" href="#" data-go="login">Club login</a><a class="btn ghost" href="${CLUB_HUB}#register">Register your club</a><a class="btn ghost" href="${FAMILY}#demo" target="_blank" rel="noopener">See the family app ↗</a></div>`}</div>
+      <img class="ps-poster" src="${DIR}img/poster.jpg" alt="Around the World A1 poster">
+    </section>
+    <div class="section"><h2>What clubs get</h2><div class="grid3">
+      <div class="card"><h3>Passport books</h3><p class="muted" style="margin:0">Book 1 (countries 1–10) and Book 2 (11–20), with a stamp page and eight skills for every country.</p></div>
+      <div class="card"><h3>40 weekly lesson plans</h3><p class="muted" style="margin:0">One for every week of the passport. Each has a theme, equipment list, warm-up and four apparatus stations with today’s sticker skills built in.</p></div>
+      <div class="card"><h3>Seasonal Pack</h3><p class="muted" style="margin:0">Christmas, Easter, Summer, Halloween, Bonfire Night and Harvest, dropped into the right weeks by the planner.</p></div>
+      <div class="card"><h3>20 country medals</h3><p class="muted" style="margin:0">One for every country, plus the A1 Around the World journey poster for your gym wall.</p></div>
+      <div class="card"><h3>Term planner</h3><p class="muted" style="margin:0">Enter your term dates and see the plan and the Book 1 and Book 2 skills for every week. Each term carries on from the last.</p></div>
+      <div class="card"><h3>Family app &amp; social posts</h3><p class="muted" style="margin:0">Parents see this week’s theme and their child’s skills. A ready-made 4:5 social post for every theme.</p></div>
+    </div></div>
+    <div class="section"><h2>The medals</h2><div class="card ps-medals">${P.COUNTRIES.map(c => `<div><img src="${DIR}img/medal${P2(c.n)}.png" alt="${esc(c.name)} medal" loading="lazy">${c.n}. ${esc(c.name)}</div>`).join('')}</div></div>
+    <div class="section"><h2>Inside the passport</h2><div class="ps-strip">${books.map(([f, l]) => `<figure><a href="${DIR}img/${f}.jpg" target="_blank" rel="noopener"><img src="${DIR}img/${f}.jpg" alt="${esc(l)}" loading="lazy"></a><figcaption>${esc(l)}</figcaption></figure>`).join('')}</div></div>
+    <div class="section"><h2>A lesson plan</h2><div class="card ps-sample">
+      <div><p class="eyebrow">Free sample</p><h2>Week 1: Alphabet</h2><p class="muted">Page 1: warm-up, stretching, equipment and today’s sticker skills for Book 1 and Book 2. Page 2: the four apparatus stations, with each sticker skill built in.</p>
+        <div class="btn-row"><a class="btn" href="${SAMPLE}NGL_PreSchool_Week_01_Alphabet.pdf" target="_blank" rel="noopener">Download the sample</a></div></div>
+      <a href="${DIR}img/plan01-p1.jpg" target="_blank" rel="noopener"><img src="${DIR}img/plan01-p1.jpg" alt="Week 1, page 1" loading="lazy"></a>
+      <a href="${DIR}img/plan01-p2.jpg" target="_blank" rel="noopener"><img src="${DIR}img/plan01-p2.jpg" alt="Week 1, page 2" loading="lazy"></a></div></div>
+    <div class="section"><h2>A social post for every theme</h2><div class="ps-strip ps-posts">${all.map(t => `<img src="${DIR}img/post_${t.file}.jpg" alt="${esc(t.name)} week" loading="lazy">`).join('')}</div></div>
+    ${inside ? '' : `<div class="section card" style="text-align:center"><h2>Licensed to British Gymnastics clubs</h2><p class="muted">The licence includes the poster, the term planner, the family app and Lesson Plans 1–10. Lesson Plan Packs are £${PRICE.pack} each and the Seasonal Pack is £${PRICE.seasonal}.</p>
+      <div class="btn-row" style="justify-content:center"><a class="btn" href="${CLUB_HUB}#register">Register your club</a><a class="btn ghost" href="#" data-go="login">Club login</a></div></div>`}`;
+}
+function screenLanding(){ render(programmeHTML(false) + `<p class="note" style="text-align:center;margin-top:24px">Questions? <a href="mailto:${CONTACT}">${CONTACT}</a></p>`); }
+function screenLogin(msg){
+  setTop();
+  render(`<div class="auth card"><h2>Club login</h2><p class="muted">Use your NGL club account: the same login as the NGL Club Hub, NGL Schools and NGL Recreational.</p>
+    <form id="loginForm"><div class="field"><label for="em">Email</label><input class="input" id="em" type="email" autocomplete="email" required></div>
+    <div class="field"><label for="pw">Password</label><input class="input" id="pw" type="password" autocomplete="current-password" required></div>
+    <p class="error" id="err">${esc(msg || '')}</p><button class="btn block" type="submit">Sign in</button></form>
+    <p class="note" style="margin-top:14px;text-align:center">New to NGL? <a href="${CLUB_HUB}#register">Create your club account</a><br><a href="#" data-act="reset">Forgotten your password?</a></p></div>`);
+  $('#loginForm').addEventListener('submit', async e => { e.preventDefault(); const b = e.target.querySelector('button'); b.disabled = true;
+    const r = await api.signIn($('#em').value.trim(), $('#pw').value); b.disabled = false;
+    if(r.ok){ signedIn = true; tab = S.club ? 'dashboard' : 'admin'; show(); } else $('#err').textContent = r.reason; });
+}
+
+/* ---------- club screens ---------- */
+function thisWeek(){ const rows = P.plan(cfg()), today = P.iso(new Date()); let i = -1; rows.forEach((r, k) => { if(r.date <= today) i = k; }); return {rows, i: i < 0 ? 0 : i, started: i >= 0}; }
+function weekCard(r){
+  if(!r) return '';
+  if(r.seasonal) return `<div class="card ps-week"><img src="${DIR}img/post_${r.theme.file}.jpg" alt=""><div><p class="eyebrow">${esc(r.term)} · week ${r.week}</p><h2>${esc(r.theme.name)} (Seasonal)</h2><p class="muted">No new passport skills this week. The journey carries on next week.</p>
+    ${unlocked(r.theme) ? `<div class="btn-row"><a class="btn small" href="${planHref(r.theme)}" target="_blank" rel="noopener">Lesson plan</a></div>` : ''}</div></div>`;
+  const t = r.theme;
+  return `<div class="card ps-week"><img src="${DIR}img/post_${t.file}.jpg" alt=""><div class="ps-book"><p class="eyebrow">${esc(r.term)} · week ${r.week} · programme week ${r.w} of 40</p><h2>${esc(t.name)}</h2>
+    <h4>Book 1 · ${esc(r.b1.country.name)} · skills ${r.b1.nos.join(' & ')}</h4><ul>${r.b1.skills.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
+    <h4>Book 2 · ${esc(r.b2.country.name)} · skills ${r.b2.nos.join(' & ')}</h4><ul>${r.b2.skills.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
+    <div class="btn-row">${unlocked(t) ? `<a class="btn small" href="${planHref(t)}" target="_blank" rel="noopener">Lesson plan</a><a class="btn small ghost" href="${postHref(t)}" target="_blank" rel="noopener" download>Social post</a>` : `<span class="note">${packOf(t.n) === 1 ? 'Unlocks with the Pre-School licence.' : 'This plan is in ' + PACKS[packOf(t.n)] + '.'}</span>`}</div></div></div>`;
+}
+function licenceCard(){
+  const L = lic(), club = S.club ? S.club.name : 'our club';
+  if(L.active) return `<div class="card lic-card"><p class="eyebrow">Pre-School Club Licence</p><h2>${esc(S.club.name)} <span class="tag ok">✓ Active</span></h2>
+    <p class="muted">Lesson plans 1–10${L.pack2 ? ', 11–20' : ''}${L.pack3 ? ', 21–30' : ''}${L.pack4 ? ', 31–40' : ''}${L.seasonal ? ' and the Seasonal Pack' : ''} unlocked.</p>
+    <div class="btn-row"><button class="btn" data-tab="planner">Term planner</button><button class="btn ghost" data-tab="plans">Lesson plans</button><button class="btn ghost" data-tab="licence">Add a pack</button></div></div>`;
+  return `<div class="card lic-card"><p class="eyebrow">Pre-School Club Licence</p><h2>Start your Pre-School licence</h2>
+    <p class="muted">The licence includes the A1 poster, Lesson Plans 1–10, the term planner and the family app. Until then you can explore the programme and the Week 1 sample.</p>
+    <p class="note">An NGL Recreational or Schools licence doesn’t include Pre-School.</p>
+    <div class="btn-row"><a class="btn" href="${mail('NGL Pre-School Licence: ' + club, 'Hi Dave,\n\nWe’d like to start the NGL Pre-School licence.\n\nClub: ' + club + '\nApprox. number of Pre-School gymnasts:\n')}">Request the licence</a><button class="btn ghost" data-tab="licence">Licence &amp; packs</button></div></div>`;
+}
+function screenDashboard(){
+  const {rows, i, started} = thisWeek();
+  render(`${licenceCard()}
+    <div class="section"><h2>${started ? 'This week' : 'Your first week'}</h2>${weekCard(rows[i])}</div>
+    <div class="grid4">
+      <button class="card" data-tab="planner" style="text-align:left;cursor:pointer"><h3>Term planner</h3><p class="muted" style="margin:0">Your terms, week by week, with the plan and both books’ skills.</p></button>
+      <button class="card" data-tab="plans" style="text-align:left;cursor:pointer"><h3>Lesson plans</h3><p class="muted" style="margin:0">40 weekly plans, the Seasonal Pack and a social post for each.</p></button>
+      <button class="card" data-tab="family" style="text-align:left;cursor:pointer"><h3>Family app</h3><p class="muted" style="margin:0">Share one link so parents follow the theme and skills.</p></button>
+      <a class="card" href="https://davidcbrooke.github.io/GYMNASTICS-RESULTS/NGL_Rotation_Planner.html" target="_blank" rel="noopener" style="text-align:left;text-decoration:none;color:inherit"><h3>Class rotations</h3><p class="muted" style="margin:0">The free NGL Rotation Planner, with the same club login.</p></a>
+    </div>`);
+}
+function planCard(t){
+  const open = unlocked(t), wk = t.seasonal ? null : P.weekInfo(t.n);
+  return `<div class="ps-plan${open ? '' : ' locked'}"><div class="th" style="background-image:url(${DIR}img/plan_${t.file}-thumb.jpg)">${open ? '' : '<span class="lock">🔒</span>'}</div>
+    <b>${t.seasonal ? '' : 'Week ' + t.n + ': '}${esc(t.name)}</b>
+    <span class="s">${t.seasonal ? 'Seasonal Pack' : `${esc(wk.b1.country.name)} ${wk.b1.nos.join('&')} · ${esc(wk.b2.country.name)} ${wk.b2.nos.join('&')}`}</span>
+    ${t.seasonal ? '' : `<span class="s">${PACKS[packOf(t.n)]}</span>`}
+    ${open ? `<a class="btn small" href="${planHref(t)}" target="_blank" rel="noopener">Plan PDF</a><a class="btn small ghost" href="${postHref(t)}" target="_blank" rel="noopener" download>Social post</a>` : '<span class="note">Locked</span>'}</div>`;
+}
+function screenPlans(){
+  render(`<h1>Lesson plans</h1><p class="lead">One plan for every week of the passport. Each teaches that week’s two Book 1 and two Book 2 sticker skills inside its theme.</p>
+    <div class="ps-plans">${P.THEMES.map(planCard).join('')}</div>
+    <div class="section"><h2>Seasonal Pack</h2><div class="ps-plans">${P.SEASONAL.map(planCard).join('')}</div></div>`);
+}
+function screenPlanner(){
+  const c = cfg(), L = lic(), rows = P.plan(c), today = P.iso(new Date());
+  let cur = 0; rows.forEach((r, i) => { if(r.date <= today) cur = i; });
+  const dd = d => new Date(d + 'T00:00:00Z').toLocaleDateString('en-GB', {day:'numeric', month:'short', timeZone:'UTC'});
+  const cc = (b, cls) => `<img src="${DIR}img/medal${P2(b.country.n)}.png" alt="">${esc(b.country.name)} <span class="note">${b.nos.join(' & ')}</span><br><span class="sk ${cls}">${b.nos[0]}</span>${esc(b.skills[0])}<br><span class="sk ${cls}">${b.nos[1]}</span>${esc(b.skills[1])}`;
+  const tables = c.terms.map((t, ti) => {
+    const tr = rows.filter(r => r.termIndex === ti); if(!tr.length) return '';
+    const f = tr.find(r => !r.seasonal), l = [...tr].reverse().find(r => !r.seasonal);
+    const open = tr.some(r => rows.indexOf(r) === cur) || (ti === 0 && !rows.some(r => r.date <= today));
+    return `<details class="ps-det"${open ? ' open' : ''}><summary>${esc(t.name || 'Term ' + (ti + 1))} <span class="note">· ${tr.length} weeks${f ? ` · programme weeks ${f.w}–${l.w}` : ''}</span></summary>
+      <div class="ps-tbl"><table><thead><tr><th>Wk</th><th>Week of</th><th>Lesson plan</th><th>Book 1 sticker skills</th><th>Book 2 sticker skills</th></tr></thead><tbody>
+      ${tr.map(r => r.seasonal ? `<tr class="sea ${rows.indexOf(r) === cur ? 'now' : ''}"><td>${r.week}</td><td>${dd(r.date)}</td><td><b>${esc(r.theme.name)}</b> <span class="note">Seasonal</span></td><td colspan="2" class="note">Seasonal week: no new passport skills.</td></tr>`
+        : `<tr class="${rows.indexOf(r) === cur ? 'now' : ''}${r.newLevel ? ' nl' : ''}"><td>${r.week}</td><td>${dd(r.date)}</td><td><b>${esc(r.theme.name)}</b><br><span class="note">Week ${r.w}</span></td><td>${cc(r.b1, '')}</td><td>${cc(r.b2, 'b2')}</td></tr>`).join('')}
+      </tbody></table></div></details>`; }).join('');
+  render(`<h1>Term planner</h1><p class="lead">Enter your term dates. The planner follows the 40 weeks of the passport and sets out the lesson plan and the Book 1 and Book 2 sticker skills for every week. Each term carries on from the last.</p>
+    <div class="card">
+      <div class="ps-start">
+        <label>Name parents will see<input class="input" id="psClub" value="${esc(c.club || '')}" placeholder="${esc(S.club ? S.club.name : '')}"></label>
+        <label>Class starts at<select class="input" id="psStart">${P.THEMES.map(t => { const w = P.weekInfo(t.n); return `<option value="${t.n}"${t.n === (c.startWeek || 1) ? ' selected' : ''}>Week ${t.n}: ${esc(t.name)} (${esc(w.b1.country.name)} / ${esc(w.b2.country.name)} ${w.b1.nos.join('&')})</option>`; }).join('')}</select></label>
+        <label>Seasonal weeks<span class="ps-chk"><input type="checkbox" id="psSeas"${c.seasonal ? ' checked' : ''}${L.seasonal || DEMO ? '' : ' disabled'}> Use the Seasonal Pack${L.seasonal || DEMO ? '' : ' (add it first)'}</span></label>
+      </div>
+      ${c.terms.map((t, i) => `<div class="ps-term" data-ti="${i}">
+        <label>Term name<input class="input" data-f="name" value="${esc(t.name || '')}"></label>
+        <label>First week (Monday)<input class="input" type="date" data-f="start" value="${esc(t.start || '')}"></label>
+        <label>Teaching weeks<input class="input" type="number" min="1" max="20" data-f="weeks" value="${t.weeks || ''}"></label>
+        <label>Half-term after week<input class="input" type="number" min="0" max="19" data-f="half" value="${t.half || 0}"></label>
+        <button class="btn ghost small" data-act="del" data-ti="${i}" type="button">Remove</button></div>`).join('')}
+      <div class="btn-row"><button class="btn ghost small" data-act="add" type="button">+ Add a term</button><button class="btn small" data-act="save" type="button">Save plan</button><span id="psMsg" class="note" style="align-self:center"></span></div>
+      ${tables || '<p class="muted">Add a term to see the weekly plan.</p>'}
+    </div>`);
+}
+function readForm(){
+  const c = cfg(); if(!$('#psStart')) return;
+  c.club = $('#psClub').value; c.startWeek = +$('#psStart').value || 1; c.seasonal = !!$('#psSeas').checked;
+  document.querySelectorAll('.ps-term').forEach(el => { const t = c.terms[+el.dataset.ti]; el.querySelectorAll('input').forEach(i => { t[i.dataset.f] = i.type === 'number' ? (+i.value || 0) : i.value; }); });
+}
+function screenFamily(){
+  render(`<h1>Family app</h1><p class="lead">Share one link with your Pre-School parents, by email, on your website or as a QR code by the poster. Parents choose Book 1 or Book 2 and see this week’s theme, their child’s two sticker skills, ideas to try at home and the journey so far. No child details are stored.</p>
+    <div class="card"><div class="copy"><input class="input" id="psLink" readonly value="${esc(familyLink())}"><button class="btn" data-act="copy">Copy link</button><a class="btn ghost" href="${esc(familyLink())}" target="_blank" rel="noopener">Open ↗</a></div>
+    <p class="note" style="margin-top:10px">The link holds your term plan. If you change your term dates or add a term in the Term planner, share the new link.</p></div>`);
+}
+function screenLicence(){
+  const L = lic(), club = S.club ? S.club.name : 'our club';
+  const card = (key, title, desc, price) => `<div class="card"><h2>${title}</h2><p class="muted">${desc}</p><p class="stat">£${price}</p>
+    <p>${L[key] ? '<span class="tag ok">✓ Added</span>' : '<span class="tag off">Not added</span>'}</p>
+    ${L[key] ? '' : `<a class="btn small" href="${mail('NGL Pre-School: ' + title + ' for ' + club, 'Hi Dave,\n\nWe’d like to add ' + title + ' (£' + price + ').\n\nClub: ' + club + '\n')}">Add the pack</a>`}</div>`;
+  render(`<h1>Licence &amp; packs</h1>${licenceCard()}
+    <div class="grid2">
+      ${card('pack2', 'Lesson Plan Pack 11–20', 'Weeks 11–20: Egypt to Brazil in Book 1, the Bahamas to Italy in Book 2.', PRICE.pack)}
+      ${card('pack3', 'Lesson Plan Pack 21–30', 'Weeks 21–30: Australia to Japan in Book 1, India to Ireland in Book 2.', PRICE.pack)}
+      ${card('pack4', 'Lesson Plan Pack 31–40', 'Weeks 31–40: Japan to Iceland in Book 1, Ireland to Spain in Book 2.', PRICE.pack)}
+      ${card('seasonal', 'Seasonal Pack', 'Christmas, Easter, Summer, Halloween, Bonfire Night and Harvest. The planner drops them into the right weeks and pauses the passport journey for that week.', PRICE.seasonal)}
+    </div>`);
+}
+async function screenAdmin(){
+  if(!S.isAdmin) return render('<div class="card"><h2>NGL admins only</h2></div>');
+  render('<h1>Pre-School licences</h1><p class="muted">Loading clubs…</p>');
+  const clubs = await api.adminClubs(); S.adminClubs = clubs;
+  const keys = [['status','Licence'], ['pack2','11–20'], ['pack3','21–30'], ['pack4','31–40'], ['seasonal','Seasonal']];
+  render(`<h1>Pre-School licences</h1><p class="muted">Switch a club’s licence and packs on or off. Changes take effect next time the club opens the hub.</p>
+    <div class="card table-wrap adm"><table><thead><tr><th>Club</th>${keys.map(k => `<th>${k[1]}</th>`).join('')}</tr></thead><tbody>
+    ${clubs.map((c, i) => { const p = c.preschool || {}; return `<tr><td><b>${esc(c.name || c.id)}</b><br><span class="note">${esc(c.email || '')}</span></td>${keys.map(([k]) => { const on = k === 'status' ? p.status === 'active' : !!p[k];
+      return `<td><button class="btn small ${on ? '' : 'ghost'}" data-act="adm" data-i="${i}" data-k="${k}">${on ? 'On' : 'Off'}</button></td>`; }).join('')}</tr>`; }).join('')}
+    </tbody></table></div>`);
+}
+
+/* ---------- events ---------- */
+document.addEventListener('change', e => { if(tab === 'planner' && e.target.closest('.ps-start,.ps-term')){ readForm(); const y = scrollY; screenPlanner(); scrollTo(0, y); } });
+document.addEventListener('click', async e => {
+  const g = e.target.closest('[data-go]'); if(g){ e.preventDefault(); const k = g.dataset.go; if(k === 'login') return screenLogin(); if(k === 'home'){ if(signedIn){ tab = 'dashboard'; show(); } else screenLanding(); } return; }
+  const t = e.target.closest('[data-tab]'); if(t){ readForm(); tab = t.dataset.tab; show(); return; }
+  const a = e.target.closest('[data-act]'); if(!a) return; const act = a.dataset.act, y = scrollY;
+  if(act === 'signout'){ await api.signOut(); signedIn = false; S.club = null; S.cfg = null; show(); }
+  if(act === 'reset'){ e.preventDefault(); const em = ($('#em') || {}).value; if(!em){ $('#err').textContent = 'Enter your club email first.'; return; } const r = await api.reset(em.trim()); $('#err').textContent = r.ok ? 'If that email has an NGL account, a reset link is on its way.' : r.reason; }
+  if(act === 'add'){ readForm(); const c = cfg(), last = c.terms[c.terms.length - 1]; let start = '';
+    if(last && last.start){ const d = new Date(last.start + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + ((last.weeks || 12) + (last.half ? 1 : 0) + 2) * 7); start = d.toISOString().slice(0, 10); }
+    c.terms.push({name:'Term ' + (c.terms.length + 1), start, weeks:12, half:6}); screenPlanner(); scrollTo(0, y); }
+  if(act === 'del'){ readForm(); cfg().terms.splice(+a.dataset.ti, 1); screenPlanner(); scrollTo(0, y); }
+  if(act === 'save'){ readForm(); try{ localStorage.setItem(cfgKey(), JSON.stringify(cfg())); }catch(_){} const ok = await api.savePlan(cfg()); screenPlanner(); scrollTo(0, y); $('#psMsg').textContent = ok ? 'Saved.' : 'Saved on this device only. We couldn’t save it to your club account.'; }
+  if(act === 'copy'){ try{ await navigator.clipboard.writeText(familyLink()); toast('Family link copied.'); }catch(_){ $('#psLink').select(); toast('Press Ctrl+C to copy.'); } }
+  if(act === 'adm'){ const c = S.adminClubs[+a.dataset.i], k = a.dataset.k, p = {...(c.preschool || {status:'inactive'})};
+    if(k === 'status') p.status = p.status === 'active' ? 'inactive' : 'active'; else p[k] = !p[k];
+    if(k === 'status' && p.status === 'active' && !p.since) p.since = new Date().toISOString().slice(0, 10);
+    try{ await api.adminSet(c, p); }catch(err){ toast('Couldn’t save: ' + (err.message || err)); } screenAdmin(); }
+});
+(async () => {
+  try{ const ok = await api.restore(); if(ok){ signedIn = true; tab = S.club ? 'dashboard' : 'admin'; } }catch(e){ console.error(e); }
+  if(!signedIn && (DEMO || ADMIN_MODE)){ if(DEMO){ await api.signIn(); signedIn = true; } else return screenLogin(); }
+  show();
+})();
+</script>
+</body>
+</html>
