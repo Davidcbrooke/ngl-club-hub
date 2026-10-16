@@ -16,7 +16,7 @@
   --navy:#14254a; --ngl-red:#C9142E; --navy-2:#223a70; --navy-3:#e8ecf5; --red:#c8202f; --gold:#d9a521; --gold-soft:#fbf1d6;
   --paper:#f4f5f8; --ink:#16213a; --muted:#5d6782; --line:#d6dbe6; --white:#fff;
   --ok:#1a7a43; --ok-soft:#e3f3ea; --warn:#a85d00; --warn-soft:#fdf0dc; --bad:#b3261e; --bad-soft:#fbe7e5;
-  --schools:#F8D438; --rec:#E88230; --general:#0071B3; --perf:#01AFB8;
+  --pre:#E84187; --schools:#F8D438; --rec:#E88230; --general:#0071B3; --perf:#01AFB8;
   --body:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;
   --cond:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;
 }
@@ -191,6 +191,49 @@ body.disc-on footer{color:#b9bbdc}body.disc-on footer a{color:#fff}
 body.disc-on .card{border-color:transparent;box-shadow:0 6px 18px rgba(0,0,0,.18)}
 @media (min-width:900px){.prob,.disc-pw{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:760px){.disc-hero{grid-template-columns:1fr;padding:20px}.disc-hero h1{font-size:28px}}
+
+/* NGL Pre-School */
+.ps-hero{display:grid;grid-template-columns:1.1fr 1fr;gap:22px;align-items:center;background:linear-gradient(135deg,#E84187,#b8236c);color:#fff;border-radius:10px;padding:24px}
+.ps-hero .logo{height:64px;width:auto;margin-bottom:8px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))}
+.ps-hero h1{font-family:var(--cond);font-size:34px;line-height:1.08;margin:4px 0 10px;color:#fff}
+.ps-hero p{color:#fff3f8;margin:8px 0}
+.ps-hero .eyebrow{font-size:12.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#ffd6e7;margin:0}
+.ps-hero .btn{background:#fff;color:#b0185f;border-color:#fff}.ps-hero .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.6)}
+.ps-poster{width:100%;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.25);display:block}
+.ps-medals{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:12px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:16px}
+.ps-medals div{text-align:center;font-size:12.5px;color:var(--muted);line-height:1.2}
+.ps-medals img{width:100%;max-width:96px;aspect-ratio:1;display:block;margin:0 auto 4px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.15))}
+.ps-book{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 12px;scroll-snap-type:x mandatory}
+.ps-book figure{margin:0;flex:none;scroll-snap-align:start}
+.ps-book img{height:300px;width:auto;display:block;border-radius:6px;box-shadow:0 4px 14px rgba(20,37,74,.15);background:#fff}
+.ps-book figcaption{font-size:13px;color:var(--muted);margin-top:6px}
+.ps-sample{display:grid;grid-template-columns:1fr 200px 200px;gap:16px;align-items:center;border-top:5px solid var(--pre)}
+.ps-sample img{width:100%;border-radius:4px;box-shadow:0 4px 14px rgba(20,37,74,.15);display:block}
+.ps-sample .eyebrow{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--pre);margin:0}
+.ps-plans{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:14px}
+.ps-plan{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:4px}
+.ps-plan .th{aspect-ratio:210/297;border-radius:4px;background:#f3f3f6 center top/cover;position:relative;margin-bottom:4px;border:1px solid var(--line)}
+.ps-plan.locked .th:after{content:"";position:absolute;inset:0;background:rgba(255,255,255,.45);border-radius:4px}
+.ps-plan .lock{position:absolute;z-index:1;left:50%;top:50%;transform:translate(-50%,-50%);font-size:24px;background:#fff;width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.15);color:var(--pre)}
+.ps-plan b{font-family:var(--cond);font-size:17px;color:var(--navy);line-height:1.15}
+.ps-plan .btn,.ps-plan .pill{align-self:flex-start;margin-top:4px}
+.ps-plan.soon .th{background:repeating-linear-gradient(45deg,#fbe3ee,#fbe3ee 10px,#fff 10px,#fff 20px)}
+.ps-list{margin:6px 0 8px;padding-left:20px}.ps-list li{margin:3px 0}
+.ps-start,.ps-term{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:end;margin:10px 0}
+.ps-term{background:var(--paper);border-radius:8px;padding:10px 12px}
+.ps-start label,.ps-term label{display:flex;flex-direction:column;font-size:12.5px;font-weight:700;color:var(--muted);gap:4px}
+.ps-start input,.ps-start select,.ps-term input{border:1px solid var(--line);border-radius:5px;padding:7px 9px;font-size:14.5px;font-weight:500;color:var(--ink);background:#fff;width:100%}
+.ps-tbl{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+.ps-tbl table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:720px}
+.ps-tbl th{background:var(--navy);color:#fff;text-align:left;padding:7px 10px;font-weight:700;font-size:12.5px;letter-spacing:.03em}
+.ps-tbl td{padding:7px 10px;border-top:1px solid var(--line);vertical-align:top}
+.ps-tbl tr.nl td{border-top:2px solid #f6b7d2}
+.ps-tbl tr.now td{background:#fdeef5}
+.ps-tbl td img{width:22px;height:22px;vertical-align:-6px;margin-right:6px}
+.ps-tbl .sk{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--pre);color:#fff;font-size:11px;font-weight:700;margin-right:6px}
+.ps-det{margin-top:12px}.ps-det summary{cursor:pointer;font-family:var(--cond);font-size:20px;color:var(--navy);padding:6px 0}.ps-det summary b{font-weight:700}
+.ps-fam input{width:100%;border:1px solid var(--line);border-radius:5px;padding:8px 10px;font-size:13px;color:var(--muted);background:var(--paper)}
+@media (max-width:760px){.ps-hero{grid-template-columns:1fr}.ps-sample{grid-template-columns:1fr 1fr}.ps-sample>div{grid-column:1/-1}.ps-book img{height:220px}}
 </style>
 </head>
 <body>
@@ -208,6 +251,7 @@ body.disc-on .card{border-color:transparent;box-shadow:0 6px 18px rgba(0,0,0,.18
 <main><div class="wrap" id="view"><p class="muted"><span class="spin"></span>Loading…</p></div></main>
 <footer>National Gymnastics League · 66 Waveney Road, Harpenden, Herts AL5 4QZ · <a href="mailto:admin@nationalgymnasticsleague.co.uk">admin@nationalgymnasticsleague.co.uk</a></footer>
 
+<script src="preschool/data.js"></script>
 <script>
 /* =====================================================================
    NGL CLUB HUB
@@ -624,7 +668,7 @@ function demoAdmin(){
 /* =====================================================================
    SCREENS
    ===================================================================== */
-const TABS = [['discover','Discover NGL'], ['overview','Overview'], ['licences','Licences'], ['orders','Orders'], ['reservations','Reservations'], ['support','Club Support'], ['club','Club']];
+const TABS = [['discover','Discover NGL'], ['overview','Overview'], ['licences','Licences'], ['preschool','Pre-School'], ['orders','Orders'], ['reservations','Reservations'], ['support','Club Support'], ['club','Club']];
 function setChrome(signedIn){
   $('#tabs').classList.toggle('hidden', !signedIn);
   $('#who').classList.toggle('hidden', !signedIn);
@@ -643,7 +687,7 @@ function render(){
   const demo = PREVIEW ? '<div class="demo">Preview mode: sample data for SAADI Gymnastics. Nothing is saved.</div>' : '';
   if(!S.club && S.isAdmin && S.tab !== 'admin') S.tab = 'admin';
   if(S.club && !S.discoverChecked){ S.discoverChecked = true; if(isNewClub() && S.tab === 'overview' && !location.hash) S.tab = 'discover'; }
-  const screens = {discover:screenDiscover, music:screenMusic, overview:screenOverview, licences:screenLicences, orders:screenOrders, reservations:screenReservations, support:screenSupport, club:screenClub, admin:screenAdmin};
+  const screens = {preschool:screenPreschool, discover:screenDiscover, music:screenMusic, overview:screenOverview, licences:screenLicences, orders:screenOrders, reservations:screenReservations, support:screenSupport, club:screenClub, admin:screenAdmin};
   document.body.classList.toggle('disc-on', S.tab === 'discover');
   v.innerHTML = demo + (screens[S.tab] || screenOverview)();
   if(S.tab === 'admin' && S.isAdmin) loadAdmin();
@@ -699,7 +743,7 @@ function screenDiscover(){
 
     <h2 class="sec" id="pathways">Seven pathways, one framework</h2>
     <div class="grid g2 disc-pw">
-      ${pw('preschool', 'Ages 3–4', ['Award passports, with a country medal for every level', 'Themed training plans', 'A graduation to celebrate moving on'], '')}
+      ${pw('preschool', 'Ages 3–4', ['Around the World with Somi & Flic: a passport with 20 countries to visit', 'A medal for every country and an A1 journey poster', 'Themed lesson plans with equipment, set-ups and rotations', 'A term planner and a family app for parents'], `<button type="button" class="btn" data-tab="preschool">Explore Pre-School</button>`)}
       ${pw('schools', 'Ages 5–11 · delivered in local schools', ['Run gymnastics in your local schools under the NGL name', 'Awards books and routine videos for every level', 'A family code so parents can see progress', 'A graduation performance to finish each programme'], ext(LINKS.schoolsHub, 'Explore NGL Schools'))}
       ${pw('recreational', 'Ages 4–18 · recreational classes', ['Tailor the term programme to your club: plans built from your apparatus and term length', 'Tailor every class to your gymnasts: Ruby, Pink, Teal and Indigo versions of every station', 'Four award books, 16 levels, assessed in the last two weeks of term', 'Club competitions where every gymnast medals', 'A family app so parents follow the journey'], ext(LINKS.recHub, 'Explore the sample') + ext(LINKS.recHub + '#licence', 'Licence & pricing', true))}
       ${pw('general', '2–10 hours a week', ['Skills books, assessments and competitions', 'WAG Levels 1–4 and MAG Levels 1–3', '24 clubs across four locations in 2027', 'Builds to the NGL National Finals'], ext(LINKS.reserve, 'Reserve competition places'))}
@@ -720,6 +764,153 @@ function screenDiscover(){
       <a class="btn red" href="${talk}">Talk to Dave</a>
     </div>`;
 }
+
+/* ----- NGL Pre-School: showcase, licence, lesson plans and the term planner ----- */
+const PS = {dir:'preschool/', plans:'preschool/plans/1Qes3TzvJrYQ/', family:'https://club.nationalgymnasticsleague.co.uk/preschool/'};
+const PS_FREE = 10, PS_PACK = 100;
+function psLicence(){ const p = (S.club && S.club.preschool) || {}; return {active:p.status === 'active', pack2:!!p.pack2}; }
+function psKey(){ return 'ngl-ps-plan-' + (S.uid || 'demo'); }
+function psDefaultCfg(){
+  const y = new Date().getFullYear(), m = new Date().getMonth();
+  const sy = m >= 7 ? y : y - 1;
+  return {club:(S.club && S.club.name) || '', startLevel:1, startWeek:0, startTheme:0,
+    terms:[{name:`Autumn ${sy}`, start:`${sy}-09-07`, weeks:14, half:7}, {name:`Spring ${sy + 1}`, start:`${sy + 1}-01-04`, weeks:12, half:6}, {name:`Summer ${sy + 1}`, start:`${sy + 1}-04-19`, weeks:13, half:6}]};
+}
+function psCfg(){
+  if(!S.psCfg){
+    let c = S.club && S.club.preschoolPlan;
+    if(!c){ try{ c = JSON.parse(localStorage.getItem(psKey()) || 'null'); }catch(_){ c = null; } }
+    S.psCfg = c || psDefaultCfg();
+  }
+  const lic = psLicence(); S.psCfg.pack = lic.pack2 ? 20 : 10;
+  return S.psCfg;
+}
+async function psSave(){
+  const c = psCfg();
+  try{ localStorage.setItem(psKey(), JSON.stringify(c)); }catch(_){}
+  if(PREVIEW || !S.uid) return true;
+  try{ const {fs, D} = await fb(); await fs.updateDoc(fs.doc(D, 'clubs', S.uid), {preschoolPlan:c}); if(S.club) S.club.preschoolPlan = c; return true; }
+  catch(e){ console.warn('Pre-School plan saved on this device only', e); return false; }
+}
+function psFamilyLink(){ const c = Object.assign({}, psCfg()); return PS.family + '#p=' + NGLPS.encode(c); }
+function screenPreschool(){
+  const lic = psLicence(), cfg = psCfg(), rows = NGLPS.plan(cfg);
+  const P2 = n => String(n).padStart(2, '0');
+  const plans = NGLPS.THEMES;
+  const mail = (subj, body) => `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+  const club = S.club ? S.club.name : 'our club';
+  const unlocked = n => n === 1 || (lic.active && (n <= PS_FREE || lic.pack2));
+  const planCard = t => {
+    const open = unlocked(t.n), href = t.n === 1 && !lic.active ? PS.dir + 'plans/sample/NGL_PreSchool_Lesson_Plan_01_Alphabet.pdf' : PS.plans + `NGL_PreSchool_Lesson_Plan_${P2(t.n)}_${t.name.replace(/ /g, '_')}.pdf`;
+    return `<div class="ps-plan${open ? '' : ' locked'}"><div class="th" style="background-image:url(${PS.dir}img/plan${P2(t.n)}-thumb.jpg)">${open ? '' : '<span class="lock">🔒</span>'}</div>
+      <b>${t.n}. ${esc(t.name)}</b><span class="small muted">${t.n <= PS_FREE ? 'Included with the licence' : 'Lesson Plan Pack 11–20'}</span>
+      ${open ? `<a class="btn small" href="${href}" target="_blank" rel="noopener">Download PDF</a>` : `<span class="pill off">${t.n === 1 ? '' : 'Locked'}</span>`}</div>`; };
+  const today = new Date().toISOString().slice(0, 10);
+  let cur = 0; rows.forEach((r, i) => { if(r.date <= today) cur = i; });
+  const termTables = cfg.terms.map((t, ti) => {
+    const tr = rows.filter(r => r.termIndex === ti);
+    if(!tr.length) return '';
+    const isCur = tr.some(r => rows.indexOf(r) === cur) || (ti === 0 && !rows.some(r => r.date <= today));
+    return `<details class="ps-det"${isCur ? ' open' : ''}><summary><b>${esc(t.name || 'Term ' + (ti + 1))}</b> <span class="small muted">· ${tr.length} weeks · ${esc(tr[0].country.name)} to ${esc(tr[tr.length - 1].country.name)}</span></summary>
+      <div class="ps-tbl"><table><thead><tr><th>Wk</th><th>Week of</th><th>Theme (lesson plan)</th><th>Level · country</th><th>Passport skills (2 stickers)</th></tr></thead><tbody>
+      ${tr.map(r => `<tr class="${rows.indexOf(r) === cur ? 'now' : ''}${r.newLevel ? ' nl' : ''}"><td>${r.week}</td><td>${new Date(r.date + 'T00:00:00Z').toLocaleDateString('en-GB', {day:'numeric', month:'short', timeZone:'UTC'})}</td>
+        <td><b>${esc(r.theme.name)}</b> <span class="muted small">#${r.theme.n}</span></td><td><img src="${PS.dir}img/medal${P2(r.country.n)}.png" alt="">${r.country.n}. ${esc(r.country.name)} <span class="muted small">wk ${r.levelWeek}/4</span></td>
+        <td><span class="sk">${r.skillNos[0]}</span>${esc(r.skills[0])}<br><span class="sk">${r.skillNos[1]}</span>${esc(r.skills[1])}</td></tr>`).join('')}
+      </tbody></table></div></details>`; }).join('');
+  const termRows = cfg.terms.map((t, i) => `<div class="ps-term" data-ti="${i}">
+      <label>Term name<input data-f="name" value="${esc(t.name || '')}"></label>
+      <label>First week (Monday)<input type="date" data-f="start" value="${esc(t.start || '')}"></label>
+      <label>Teaching weeks<input type="number" min="1" max="20" data-f="weeks" value="${t.weeks || ''}"></label>
+      <label>Half-term after week<input type="number" min="0" max="19" data-f="half" value="${t.half || 0}"></label>
+      <button class="btn ghost small" data-act="ps-del" data-ti="${i}" type="button" aria-label="Remove term">Remove</button></div>`).join('');
+  return `
+    <section class="ps-hero">
+      <div><img class="logo" src="${LOGOS.preschool}" alt="NGL Pre-School">
+        <p class="eyebrow">Around the World with Somi &amp; Flic</p>
+        <h1>A passport to gymnastics for ages 3–4</h1>
+        <p>Every term, your youngest gymnasts travel the world with Somi and Flic. Each country is one level with eight skills. Coaches teach two skills a week, every child earns two passport stickers a week, and a new country (and medal) comes every four weeks. No assessment week needed.</p>
+        <div class="btn-row"><a class="btn" href="#ps-licence" data-jump="ps-licence">Licence</a><a class="btn ghost" href="#ps-planner" data-jump="ps-planner">Plan your term</a><a class="btn ghost" href="${PS.dir}#demo" target="_blank" rel="noopener">See the family app ↗</a></div></div>
+      <img class="ps-poster" src="${PS.dir}img/poster.jpg" alt="Around the World A1 poster">
+    </section>
+
+    <h2 class="sec">What’s in the programme</h2>
+    <div class="apps">
+      <div class="app" style="--c:var(--pre)"><b>Passport books</b><span>Book 1 covers countries 1–10 and Book 2 covers 11–20, with a stamp page and eight skills for every country.</span></div>
+      <div class="app" style="--c:var(--pre)"><b>20 country medals</b><span>One for every country, so children collect the world as they go.</span></div>
+      <div class="app" style="--c:var(--pre)"><b>A1 journey poster</b><span>The Around the World map for your gym wall, with Somi and Flic in every country.</span></div>
+      <div class="app" style="--c:var(--pre)"><b>Themed lesson plans</b><span>Each plan has a theme, equipment list, warm-up, stretching and set-ups for four apparatus stations, with sticker skills marked.</span></div>
+      <div class="app" style="--c:var(--pre)"><b>Family app</b><span>Parents see the theme of the week, the two skills their child is working on and the journey so far.</span></div>
+    </div>
+
+    <h2 class="sec">The medals</h2>
+    <div class="ps-medals">${NGLPS.COUNTRIES.map(c => `<div><img src="${PS.dir}img/medal${P2(c.n)}.png" alt="${esc(c.name)} medal" loading="lazy"><span>${c.n}. ${esc(c.name)}</span></div>`).join('')}</div>
+
+    <h2 class="sec">Inside the passport</h2>
+    <div class="ps-book">${[['book-cover', 'Front cover'], ['book-inside', 'Where will your journey take you?'], ['book-france', 'Country 1: France'], ['book-england', 'Country 2: England'], ['book-china', 'Country 7: China'], ['book-back', 'Back cover']].map(([f, l]) => `<figure><a href="${PS.dir}img/${f}.jpg" target="_blank" rel="noopener"><img src="${PS.dir}img/${f}.jpg" alt="${esc(l)}" loading="lazy"></a><figcaption>${esc(l)}</figcaption></figure>`).join('')}</div>
+
+    <h2 class="sec">Lesson plans</h2>
+    <div class="ps-sample card">
+      <div><p class="eyebrow">Free sample</p><h3>Lesson Plan 1: Alphabet</h3><p class="muted">Every plan follows the same two pages: a warm-up game, stretching, the equipment you’ll need and this week’s sticker skills, then the four apparatus stations.</p>
+        <div class="btn-row"><a class="btn" href="${PS.dir}plans/sample/NGL_PreSchool_Lesson_Plan_01_Alphabet.pdf" target="_blank" rel="noopener">Download the sample PDF</a></div></div>
+      <a href="${PS.dir}img/plan01-p1.jpg" target="_blank" rel="noopener"><img src="${PS.dir}img/plan01-p1.jpg" alt="Lesson Plan 1, page 1" loading="lazy"></a>
+      <a href="${PS.dir}img/plan01-p2.jpg" target="_blank" rel="noopener"><img src="${PS.dir}img/plan01-p2.jpg" alt="Lesson Plan 1, page 2" loading="lazy"></a>
+    </div>
+    <div class="ps-plans">${plans.map(planCard).join('')}
+      ${[18, 19, 20].map(n => `<div class="ps-plan locked soon"><div class="th"><span class="lock">✦</span></div><b>${n}. Coming soon</b><span class="small muted">Lesson Plan Pack 11–20</span></div>`).join('')}</div>
+
+    <h2 class="sec" id="ps-licence">Licence</h2>
+    <div class="grid g2">
+      <div class="card accent" style="--c:var(--pre)"><h3>NGL Pre-School Licence</h3>
+        <ul class="ps-list"><li>The A1 Around the World poster</li><li>Lesson Plans 1–10, free of charge</li><li>The term planner on this page</li><li>The family app for your parents</li></ul>
+        <p>${lic.active ? '<span class="pill ok">Active</span>' : '<span class="pill off">Not started</span>'}</p>
+        <div class="btn-row">${lic.active ? '' : `<a class="btn" href="${mail('NGL Pre-School Licence: ' + club, 'Hi Dave,\n\nWe’d like to start the NGL Pre-School licence.\n\nClub: ' + club + '\nApprox. number of Pre-School gymnasts:\n')}">Request the licence</a>`}</div></div>
+      <div class="card accent" style="--c:var(--navy)"><h3>Lesson Plan Pack 11–20</h3>
+        <p>Ten more themed plans, including Christmas and Easter, which the planner places in the last week of the autumn and spring terms.</p>
+        <p style="font-size:26px;font-family:var(--cond);color:var(--navy);margin:6px 0">£${PS_PACK}</p>
+        <p>${lic.pack2 ? '<span class="pill ok">Added</span>' : '<span class="pill off">Not added</span>'}</p>
+        <div class="btn-row">${lic.pack2 ? '' : `<a class="btn ghost" href="${mail('NGL Pre-School: Lesson Plan Pack 11–20 for ' + club, 'Hi Dave,\n\nWe’d like to add Lesson Plan Pack 11–20 (£' + PS_PACK + ').\n\nClub: ' + club + '\n')}">Add the pack</a>`}</div></div>
+    </div>
+
+    <h2 class="sec" id="ps-planner">Term planner</h2>
+    <div class="card">
+      <p class="muted" style="margin-top:0">Enter your term dates and the planner sets out the country, the two passport skills and the lesson plan theme for every week. Each term picks up where the last one finished. ${lic.pack2 ? 'Themes rotate through all of your lesson plans.' : 'Themes rotate through Lesson Plans 1–10; add the 11–20 pack for more themes plus Christmas and Easter weeks.'}</p>
+      <div class="ps-start">
+        <label>Name parents will see<input id="psClub" value="${esc(cfg.club || '')}" placeholder="${esc(club)}"></label>
+        <label>Class starts at country<select id="psLevel">${NGLPS.COUNTRIES.map(c => `<option value="${c.n}"${c.n === (cfg.startLevel || 1) ? ' selected' : ''}>${c.n}. ${esc(c.name)}</option>`).join('')}</select></label>
+        <label>…from skills<select id="psWeek">${[0, 1, 2, 3].map(w => `<option value="${w}"${w === (cfg.startWeek || 0) ? ' selected' : ''}>${w * 2 + 1} & ${w * 2 + 2}</option>`).join('')}</select></label>
+        <label>First theme<select id="psTheme">${NGLPS.THEMES.filter(t => t.n <= (cfg.pack >= 20 ? 20 : 10) && t.n < 16).map((t, i) => `<option value="${i}"${i === (cfg.startTheme || 0) ? ' selected' : ''}>${t.n}. ${esc(t.name)}</option>`).join('')}</select></label>
+      </div>
+      <div id="psTerms">${termRows}</div>
+      <div class="btn-row"><button class="btn ghost small" data-act="ps-add" type="button">+ Add a term</button><button class="btn" data-act="ps-save" type="button">Save plan</button><span id="psMsg" class="small muted" style="align-self:center"></span></div>
+      ${termTables || '<p class="muted">Add a term to see the weekly plan.</p>'}
+    </div>
+
+    <h2 class="sec">Family app</h2>
+    <div class="card ps-fam">
+      <div><p>Share this link with your Pre-School parents (by email, on your website or as a QR code on the poster). It shows this week’s theme and skills, the term ahead and the journey so far. No child details are stored.</p>
+        <input id="psLink" readonly value="${esc(psFamilyLink())}">
+        <div class="btn-row"><button class="btn" data-act="ps-copy" type="button">Copy family link</button><a class="btn ghost" href="${esc(psFamilyLink())}" target="_blank" rel="noopener">Open the family app ↗</a></div>
+        <p class="small muted">The link holds your whole plan, so if you change your term dates or add a term, share the new link.</p></div>
+    </div>`;
+}
+function psReadForm(){
+  const c = psCfg();
+  c.club = ($('#psClub') || {}).value || '';
+  c.startLevel = +($('#psLevel') || {}).value || 1; c.startWeek = +($('#psWeek') || {}).value || 0; c.startTheme = +($('#psTheme') || {}).value || 0;
+  document.querySelectorAll('.ps-term').forEach(el => { const t = c.terms[+el.dataset.ti]; if(!t) return;
+    el.querySelectorAll('input').forEach(i => { t[i.dataset.f] = i.type === 'number' ? (+i.value || 0) : i.value; }); });
+}
+document.addEventListener('change', e => { if(S.tab === 'preschool' && e.target.closest('.ps-start,.ps-term')){ psReadForm(); const y = scrollY; render(); scrollTo(0, y); } });
+document.addEventListener('click', async e => {
+  const t = e.target.closest('[data-act^="ps-"]'); if(!t) return;
+  const a = t.dataset.act, y = scrollY;
+  if(a === 'ps-add'){ psReadForm(); const c = psCfg(), last = c.terms[c.terms.length - 1];
+    let start = ''; if(last && last.start){ const d = new Date(last.start + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + ((last.weeks || 12) + (last.half ? 1 : 0) + 2) * 7); start = d.toISOString().slice(0, 10); }
+    c.terms.push({name:'Term ' + (c.terms.length + 1), start, weeks:12, half:6}); render(); scrollTo(0, y); }
+  if(a === 'ps-del'){ psReadForm(); psCfg().terms.splice(+t.dataset.ti, 1); render(); scrollTo(0, y); }
+  if(a === 'ps-save'){ psReadForm(); const ok = await psSave(); render(); scrollTo(0, y); const m = $('#psMsg'); if(m) m.textContent = ok ? 'Saved.' : 'Saved on this device. We couldn’t save it to your club account, so use this computer to update it.'; }
+  if(a === 'ps-copy'){ psReadForm(); try{ await navigator.clipboard.writeText(psFamilyLink()); toast('Family link copied.'); }catch(_){ const i = $('#psLink'); i.select(); toast('Press Ctrl+C to copy the link.'); } }
+});
 
 /* ----- Overview ----- */
 function screenOverview(){

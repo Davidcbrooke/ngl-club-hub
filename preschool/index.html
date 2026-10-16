@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NGL Pre-School Families</title>
+<meta name="description" content="Around the World with Somi & Flic: this week's theme and passport skills for your child's NGL Pre-School class.">
+<meta name="theme-color" content="#E84187">
+<link rel="icon" href="../icons/ngl-favicon-64.png">
+<link rel="apple-touch-icon" href="../icons/ngl-apple-touch-icon.png">
+<style>
+@font-face{font-family:'Barlow Condensed';font-weight:600;font-display:swap;src:url(fonts/barlow-condensed-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Barlow Condensed';font-weight:700;font-display:swap;src:url(fonts/barlow-condensed-latin-700-normal.woff2) format('woff2')}
+@font-face{font-family:Roboto;font-weight:400;font-display:swap;src:url(fonts/roboto-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:Roboto;font-weight:500;font-display:swap;src:url(fonts/roboto-latin-500-normal.woff2) format('woff2')}
+@font-face{font-family:Roboto;font-weight:700;font-display:swap;src:url(fonts/roboto-latin-700-normal.woff2) format('woff2')}
+:root{--pink:#E84187;--pink-d:#b0185f;--pink-l:#FCE8F1;--navy:#29235C;--teal:#1F8A9E;--ink:#24304a;--muted:#6b7487;--bg:#F6F3F8;--card:#fff;--line:#ece6f0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:16px/1.5 Roboto,system-ui,sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+.seven{display:flex;height:6px}.seven i{flex:1}
+header{background:var(--pink);color:#fff;padding:18px 16px 54px;text-align:center;position:relative;overflow:hidden}
+header:after{content:"";position:absolute;inset:0;background:radial-gradient(rgba(255,255,255,.12) 1.4px,transparent 1.5px) 0 0/18px 18px;pointer-events:none}
+header img{width:min(260px,70vw);display:block;margin:6px auto 8px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.25));position:relative;z-index:1}
+header p{font:700 15px 'Barlow Condensed';letter-spacing:.12em;text-transform:uppercase;position:relative;z-index:1}
+header h1{font:700 26px/1.1 'Barlow Condensed';letter-spacing:.02em;margin-top:2px;position:relative;z-index:1}
+main{max-width:640px;margin:-38px auto 0;padding:0 16px 40px;position:relative;z-index:2}
+.card{background:var(--card);border-radius:18px;box-shadow:0 4px 18px rgba(41,35,92,.08);padding:18px;margin-bottom:16px}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.nav button{border:0;background:var(--pink-l);color:var(--pink-d);width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer}
+.nav button:disabled{opacity:.35;cursor:default}
+.nav .when{text-align:center;flex:1}
+.when b{display:block;font:700 20px/1.1 'Barlow Condensed';letter-spacing:.03em;text-transform:uppercase;color:var(--navy)}
+.when span{font-size:13px;color:var(--muted)}
+.chip{display:inline-block;font:700 12px/1 'Barlow Condensed';letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:20px;background:var(--pink);color:#fff}
+.chip.soft{background:var(--pink-l);color:var(--pink-d)}
+.theme{position:relative;border-radius:14px;overflow:hidden;aspect-ratio:394/421;max-height:360px;width:100%;background:#eee center/cover}
+.tt{display:flex;align-items:center;gap:10px;margin:2px 0 12px}.tt h2{font:700 28px/1 'Barlow Condensed';color:var(--navy);text-transform:uppercase}
+.theme .lab{position:absolute;left:12px;bottom:12px;right:12px;display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
+.theme .lab h2{font:700 30px/1 'Barlow Condensed';color:#fff;text-transform:uppercase;text-shadow:0 2px 10px rgba(0,0,0,.55)}
+h3{font:700 19px/1.15 'Barlow Condensed';letter-spacing:.04em;text-transform:uppercase;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.country{display:flex;gap:14px;align-items:center}
+.country img{width:92px;height:92px;flex:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,.18))}
+.country .lv{font:700 13px 'Barlow Condensed';letter-spacing:.1em;text-transform:uppercase;color:var(--pink)}
+.country .nm{font:700 26px/1.05 'Barlow Condensed';color:var(--navy)}
+.country .sub{font-size:14px;color:var(--muted)}
+.skills{list-style:none;margin-top:14px;display:grid;gap:10px}
+.skills li{display:flex;gap:12px;align-items:center;background:var(--pink-l);border-radius:14px;padding:12px 14px;font-weight:500}
+.star{flex:none;width:36px;height:36px;border-radius:50%;background:var(--pink);color:#fff;display:flex;align-items:center;justify-content:center;font:700 13px 'Barlow Condensed';position:relative}
+.star svg{position:absolute;inset:4px;width:28px;height:28px;opacity:.25}
+.note{font-size:14px;color:var(--muted);margin-top:12px}
+.home{list-style:none;display:grid;gap:8px}
+.home li{padding-left:28px;position:relative}
+.home li:before{content:"";position:absolute;left:4px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 4px #d5eef2}
+.journey{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.journey div{text-align:center;font-size:11px;color:var(--muted);line-height:1.2}
+.journey img{width:100%;aspect-ratio:1;display:block;margin-bottom:4px;transition:.2s}
+.journey .todo img{filter:grayscale(1) opacity(.35)}
+.journey .now img{outline:3px solid var(--pink);outline-offset:2px;border-radius:50%}
+.journey .now{color:var(--pink-d);font-weight:700}
+.bar{height:10px;border-radius:10px;background:var(--line);overflow:hidden;margin:4px 0 14px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--pink),#90276A)}
+.term{list-style:none}
+.term li{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.term li:last-child{border:0}
+.term li.cur{background:var(--pink-l);border-radius:12px;padding:10px 8px;border-bottom-color:transparent}
+.term .d{font:700 14px/1.1 'Barlow Condensed';color:var(--navy);text-transform:uppercase;text-align:center}
+.term .d small{display:block;font:500 11px Roboto;color:var(--muted);text-transform:none}
+.term .t b{display:block;font-weight:500}.term .t span{font-size:13px;color:var(--muted)}
+.term img{width:34px;height:34px}
+.empty{text-align:center;padding:30px 18px}
+.empty h2{font:700 26px 'Barlow Condensed';color:var(--navy);text-transform:uppercase;margin:12px 0 6px}
+.btn{display:inline-block;background:var(--pink);color:#fff;text-decoration:none;font:700 15px 'Barlow Condensed';letter-spacing:.08em;text-transform:uppercase;padding:12px 18px;border-radius:30px;border:0;cursor:pointer}
+footer{text-align:center;font-size:12px;color:var(--muted);padding:10px 16px 30px}
+footer a{color:var(--pink-d)}
+.demo{background:#fff6d6;color:#6b5400;font-size:13px;text-align:center;padding:8px 12px;border-radius:12px;margin-bottom:12px}
+</style>
+</head>
+<body>
+<div class="seven" aria-hidden="true"><i style="background:#E84187"></i><i style="background:#F8D438"></i><i style="background:#E88230"></i><i style="background:#0071B3"></i><i style="background:#01AFB8"></i><i style="background:#6AA525"></i><i style="background:#90276A"></i></div>
+<header>
+  <img src="img/logo.png" alt="NGL Pre-School">
+  <p>Around the World with Somi &amp; Flic</p>
+  <h1 id="club">Families</h1>
+</header>
+<main id="app"></main>
+<footer>NGL Pre-School · <a href="https://www.nationalgymnasticsleague.co.uk" target="_blank" rel="noopener">nationalgymnasticsleague.co.uk</a><br>No child details are stored in this app.</footer>
+<div class="seven" aria-hidden="true"><i style="background:#E84187"></i><i style="background:#F8D438"></i><i style="background:#E88230"></i><i style="background:#0071B3"></i><i style="background:#01AFB8"></i><i style="background:#6AA525"></i><i style="background:#90276A"></i></div>
+<script src="data.js"></script>
+<script>
+const P = NGLPS, $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2, '0');
+const STAR = '<svg viewBox="0 0 24 24"><path d="M12 1.8l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.9l-6.4 3.5 1.4-7.1-5.3-5 7.2-.9z" fill="currentColor"/></svg>';
+const fmt = (s, o) => P.parse(s).toLocaleDateString('en-GB', Object.assign({timeZone:'UTC'}, o || {day:'numeric', month:'short'}));
+const SAMPLE = {club:'Sample Club', pack:20, startLevel:1, terms:[{name:'Autumn Term', start:'2026-09-07', weeks:14, half:7}, {name:'Spring Term', start:'2027-01-04', weeks:12, half:6}, {name:'Summer Term', start:'2027-04-19', weeks:13, half:6}]};
+
+let cfg = null, rows = [], idx = 0, demo = false;
+function load(){
+  const h = new URLSearchParams(location.hash.slice(1));
+  if(h.get('p')) cfg = P.decode(h.get('p'));
+  if(!cfg && (h.has('demo') || new URLSearchParams(location.search).has('demo'))){ cfg = SAMPLE; demo = true; }
+  if(!cfg){ return empty(); }
+  rows = P.plan(cfg);
+  if(!rows.length) return empty();
+  $('#club').textContent = cfg.club || 'Families';
+  document.title = (cfg.club ? cfg.club + ' · ' : '') + 'NGL Pre-School Families';
+  // current week: the last week that has started (or the first upcoming one)
+  const today = P.iso(new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())));
+  idx = 0; rows.forEach((r, i) => { if(r.date <= today) idx = i; });
+  render();
+}
+function empty(){
+  $('#app').innerHTML = `<div class="card empty"><img src="img/theme01.jpg" alt="" style="width:100%;border-radius:14px">
+    <h2>Welcome to Around the World</h2>
+    <p>Your club shares a family link that shows your child's theme of the week, the passport skills they're working on and how far round the world they've travelled.</p>
+    <p class="note">Ask your club for their NGL Pre-School family link, or have a look at a sample class.</p>
+    <p style="margin-top:16px"><a class="btn" href="#demo" onclick="setTimeout(load)">See a sample</a></p></div>`;
+}
+function render(){
+  const r = rows[idx], t = r.theme, c = r.country;
+  const end = P.iso(new Date(P.parse(r.date).getTime() + 6 * 864e5));
+  const levelsDone = r.level - 1 + (r.levelWeek - 1) / 4;
+  const termRows = rows.filter(x => x.termIndex === r.termIndex);
+  $('#app').innerHTML = `
+    ${demo ? '<div class="demo">Sample class: your club’s link will show your child’s own class.</div>' : ''}
+    <div class="card">
+      <div class="nav"><button id="prev" aria-label="Previous week" ${idx ? '' : 'disabled'}>‹</button>
+        <div class="when"><b>${esc(r.term)} · Week ${r.week}</b><span>${fmt(r.date)} – ${fmt(end, {day:'numeric', month:'short', year:'numeric'})}</span></div>
+        <button id="next" aria-label="Next week" ${idx < rows.length - 1 ? '' : 'disabled'}>›</button></div>
+      <div class="tt"><span class="chip">This week’s theme</span><h2>${esc(t.name)}</h2></div><div class="theme" style="background-image:url(img/theme${pad(t.n)}.jpg)"></div>
+    </div>
+    <div class="card">
+      <div class="country"><img src="img/medal${pad(c.n)}.png" alt="${esc(c.name)} medal">
+        <div><div class="lv">Level ${c.n} of 20 · Week ${r.levelWeek} of 4</div><div class="nm">Welcome to ${esc(c.name)}!</div>
+        <div class="sub">${r.levelWeek === 4 ? `Last week in ${esc(c.name)}: the ${esc(c.name)} medal is next!` : `While we’re in ${esc(c.city)}, let’s learn some new skills.`}</div></div></div>
+      <ul class="skills">${r.skills.map((s, i) => `<li><span class="star">${STAR}${r.skillNos[i]}</span>${esc(s)}</li>`).join('')}</ul>
+      <p class="note">Two passport stickers to earn this week. Every 4 weeks your child completes a country and moves on to the next one.</p>
+    </div>
+    <div class="card"><h3>Try at home</h3><ul class="home">${t.home.map(h => `<li>${esc(h)}</li>`).join('')}</ul>
+      <p class="note">Ask them to show you their favourite ${esc(t.name.toLowerCase())} move from class!</p></div>
+    <div class="card"><h3>The journey so far</h3>
+      <div class="bar"><i style="width:${Math.round(levelsDone / 20 * 100)}%"></i></div>
+      <div class="journey">${P.COUNTRIES.map(x => `<div class="${x.n < r.level ? 'done' : x.n === r.level ? 'now' : 'todo'}"><img src="img/medal${pad(x.n)}.png" alt="">${esc(x.name)}</div>`).join('')}</div>
+      <p class="note">Shows where the class is if your child comes every week. Book 1 covers countries 1–10 and Book 2 covers 11–20.</p></div>
+    <div class="card"><h3>${esc(r.term)}</h3><ul class="term">${termRows.map(x => { const i = rows.indexOf(x); return `<li data-i="${i}" class="${i === idx ? 'cur' : ''}">
+        <span class="d">${fmt(x.date, {day:'numeric'})}<small>${fmt(x.date, {month:'short'})}</small></span>
+        <span class="t"><b>${esc(x.theme.name)}</b><span>${esc(x.country.name)} · skills ${x.skillNos.join(' & ')}</span></span>
+        <img src="img/medal${pad(x.country.n)}.png" alt=""></li>`; }).join('')}</ul></div>`;
+  $('#prev').onclick = () => { idx--; render(); scrollTo(0, 0); };
+  $('#next').onclick = () => { idx++; render(); scrollTo(0, 0); };
+  document.querySelectorAll('.term li').forEach(li => li.onclick = () => { idx = +li.dataset.i; render(); scrollTo(0, 0); });
+}
+addEventListener('hashchange', load);
+load();
+</script>
+</body>
+</html>
