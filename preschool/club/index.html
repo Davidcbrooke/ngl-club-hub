@@ -592,6 +592,7 @@ const P = NGLPS, $ = s => document.querySelector(s), $view = $('#view');
 const DIR = '../', PLANS = '../plans/1Qes3TzvJrYQ/', SAMPLE = '../plans/sample/';
 const FAMILY = 'https://club.nationalgymnasticsleague.co.uk/preschool/';
 const CLUB_HUB = 'https://club.nationalgymnasticsleague.co.uk/';
+const LICENCES = 'https://club.nationalgymnasticsleague.co.uk/licences.html';
 const CONTACT = 'admin@nationalgymnasticsleague.co.uk';
 const PRICE = {pack:100, seasonal:50};
 const INVOICE = {businessName:'National Gymnastics League', addressLines:['66 Waveney Road', 'Harpenden', 'Hertfordshire', 'AL5 4QZ'], email:CONTACT, termsDays:14,
@@ -703,10 +704,11 @@ function programmeHTML(inside){
     ${inside ? '' : ''}
     <section class="ps-hero">
       <div><p class="eyebrow">Around the World with Somi &amp; Flic</p>
-        <h1>A passport to gymnastics for ages 3–4</h1>
+        <h1>A passport to gymnastics for ages 2–4</h1>
         <p class="lead">Your youngest gymnasts travel the world with Somi and Flic. Each country is a level with eight skills. Every week’s lesson plan teaches two Book 1 and two Book 2 sticker skills side by side, so children on either book share one class.</p>
         <p class="muted">Two passport stickers a week, a new country and medal every four weeks, and no assessment week.</p>
-        ${inside ? '' : `<div class="btn-row"><a class="btn" href="#" data-go="login">Club login</a><a class="btn ghost" href="${CLUB_HUB}#register">Register your club</a><a class="btn ghost" href="${FAMILY}#demo" target="_blank" rel="noopener">See the family app ↗</a></div>`}</div>
+        ${inside ? '' : `<p class="muted" style="font-size:14px">Already have an NGL club account? Log in with it. Pre-School is a separate licence on the same account.</p>`}
+        ${inside ? '' : `<div class="btn-row"><a class="btn" href="${CLUB_HUB}#register">Register your club</a><a class="btn ghost" href="#" data-go="login">Club login</a><a class="btn ghost" href="${FAMILY}#demo" target="_blank" rel="noopener">See the family app ↗</a></div>`}</div>
       <img class="ps-poster" src="${DIR}img/poster.jpg" alt="Around the World A1 poster">
     </section>
     <div class="section"><h2>What clubs get</h2><div class="grid3">
@@ -725,8 +727,8 @@ function programmeHTML(inside){
       <a href="${DIR}img/plan01-p1.jpg" target="_blank" rel="noopener"><img src="${DIR}img/plan01-p1.jpg" alt="Week 1, page 1" loading="lazy"></a>
       <a href="${DIR}img/plan01-p2.jpg" target="_blank" rel="noopener"><img src="${DIR}img/plan01-p2.jpg" alt="Week 1, page 2" loading="lazy"></a></div></div>
     <div class="section"><h2>A social post for every theme</h2><div class="ps-strip ps-posts">${all.map(t => `<img src="${DIR}img/post_${t.file}.jpg" alt="${esc(t.name)} week" loading="lazy">`).join('')}</div></div>
-    ${inside ? '' : `<div class="section card" style="text-align:center"><h2>Licensed to British Gymnastics clubs</h2><p class="muted">The licence includes the poster, the term planner, the family app and Lesson Plans 1–10. Lesson Plan Packs are £${PRICE.pack} each and the Seasonal Pack is £${PRICE.seasonal}.</p>
-      <div class="btn-row" style="justify-content:center"><a class="btn" href="${CLUB_HUB}#register">Register your club</a><a class="btn ghost" href="#" data-go="login">Club login</a></div></div>`}`;
+    ${inside ? '' : `<div class="section card" style="text-align:center"><h2>Licensed to British Gymnastics clubs</h2><p class="muted">One yearly Club Licence, from £150 a year depending on how many Pre-School gymnasts you have. It includes the poster, the term planner, the family app and Lesson Plans 1–10. Lesson Plan Packs are £${PRICE.pack} each and the Seasonal Pack is £${PRICE.seasonal}.</p>
+      <div class="btn-row" style="justify-content:center"><a class="btn" href="${CLUB_HUB}#register">Register your club</a><a class="btn ghost" href="${LICENCES}" target="_blank" rel="noopener">See all licence fees ↗</a></div></div>`}`;
 }
 function screenLanding(){ render(programmeHTML(false) + `<p class="note" style="text-align:center;margin-top:24px">Questions? <a href="mailto:${CONTACT}">${CONTACT}</a></p>`); }
 function screenLogin(msg){

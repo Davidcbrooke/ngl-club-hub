@@ -926,7 +926,7 @@ function licenceCard(k, compact){
         ${compact ? '' : `<dt>Family code</dt><dd class="mono">${esc(S.club.accessCode || '–')} ${S.club.codeActive ? '<span class="pill ok">Live</span>' : '<span class="pill off">Off</span>'}</dd>`}
       </dl>
       ${compact ? '' : '<p class="small muted">Your Schools Club Licence switches on your family code and lets you order Awards Books, certificates and t-shirts. It runs for 12 months from activation.</p>'}
-      <div class="btn-row"><a class="btn" href="${LINKS.schoolsHub}" target="_blank" rel="noopener">${s.key === 'none' ? 'Start NGL Schools' : s.key === 'expired' || (s.key === 'active' && s.days <= 45) ? 'Renew in the Schools Club Hub' : 'Open Schools Club Hub'}</a></div></div>`;
+      <div class="btn-row"><a class="btn" href="${LINKS.schoolsHub}" target="_blank" rel="noopener">${s.key === 'none' ? 'Start NGL Schools' : s.key === 'expired' || (s.key === 'active' && s.days <= 45) ? 'Renew in the Schools Hub' : 'Open Schools Hub'}</a></div></div>`;
   }
   const r = recStatus();
   return `<div class="card accent" style="--c:var(--rec)"><img class="logo" src="${LOGOS.recreational}" alt="NGL Recreational">
