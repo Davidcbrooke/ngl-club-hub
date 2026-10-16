@@ -591,6 +591,8 @@ const FAMILY = 'https://club.nationalgymnasticsleague.co.uk/preschool/';
 const CLUB_HUB = 'https://club.nationalgymnasticsleague.co.uk/';
 const CONTACT = 'admin@nationalgymnasticsleague.co.uk';
 const PRICE = {pack:100, seasonal:50};
+const BANDS = [{k:'xs', label:'1–24 Pre-School gymnasts', price:150}, {k:'sm', label:'25–49 Pre-School gymnasts', price:250}, {k:'s', label:'50–99 Pre-School gymnasts', price:400}, {k:'m', label:'100 or more Pre-School gymnasts', price:750}];
+const gbp = n => '£' + n.toLocaleString('en-GB');
 const DEMO = new URLSearchParams(location.search).has('demo');
 const ADMIN_MODE = new URLSearchParams(location.search).has('admin');
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -735,7 +737,12 @@ function licenceCard(){
   return `<div class="card lic-card"><p class="eyebrow">Pre-School Club Licence</p><h2>Start your Pre-School licence</h2>
     <p class="muted">The licence includes the A1 poster, Lesson Plans 1–10, the term planner and the family app. Until then you can explore the programme and the Week 1 sample.</p>
     <p class="note">An NGL Recreational or Schools licence doesn’t include Pre-School.</p>
-    <div class="btn-row"><a class="btn" href="${mail('NGL Pre-School Licence: ' + club, 'Hi Dave,\n\nWe’d like to start the NGL Pre-School licence.\n\nClub: ' + club + '\nApprox. number of Pre-School gymnasts:\n')}">Request the licence</a><button class="btn ghost" data-tab="licence">Licence &amp; packs</button></div></div>`;
+    ${tab === 'licence' ? `<div class="table-wrap" style="margin:6px 0 14px"><table><thead><tr><th>Pre-School gymnasts</th><th class="num">Club Licence a year</th><th></th></tr></thead><tbody>
+      ${BANDS.map(b => `<tr><td>${esc(b.label)}</td><td class="num"><b>${gbp(b.price)}</b></td><td class="num"><a class="btn small" href="${mail('NGL Pre-School Licence: ' + club + ' (' + b.label + ')', 'Hi Dave,\n\nWe’d like to start the NGL Pre-School Club Licence.\n\nClub: ' + club + '\nBand: ' + b.label + ' (' + gbp(b.price) + ' a year)\n')}">Choose</a></td></tr>`).join('')}
+      </tbody></table></div>
+      <p class="note">Runs for 12 months from the day it starts. 5% off if it isn’t your club’s most expensive NGL licence. Lesson Plan Packs and the Seasonal Pack are below. <a href="https://club.nationalgymnasticsleague.co.uk/licences.html" target="_blank" rel="noopener">Every NGL licence fee ↗</a></p>`
+    : `<p class="muted">From <b>${gbp(BANDS[0].price)} a year</b>, depending on how many Pre-School gymnasts you have.</p>
+    <div class="btn-row"><button class="btn" data-tab="licence">See prices and start</button></div>`}</div>`;
 }
 function screenDashboard(){
   const {rows, i, started} = thisWeek();
