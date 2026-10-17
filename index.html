@@ -184,6 +184,17 @@ footer{color:var(--muted);font-size:13px;text-align:center;padding:20px 16px 30p
 .pw.soon>:not(.logo):not(.logo-pair):not(.btn-row){opacity:.6}
 .disc-talk{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;border-top:5px solid var(--red)}
 .pw .logo{display:block;align-self:flex-start;height:auto;width:auto;max-width:100%;max-height:64px;object-fit:contain;margin:0 0 10px}
+.disc-welcome{margin-bottom:18px;border-top:6px solid var(--rec);padding:22px 24px}
+.disc-welcome .eyebrow{font-size:12.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--rec);margin:0}
+.disc-welcome h1{font-family:var(--cond);font-size:32px;line-height:1.1;margin:4px 0 8px;color:var(--navy)}
+.disc-welcome .lead{margin:0 0 14px}
+.disc-welcome .steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.disc-welcome .steps li{display:flex;gap:12px;background:#f6f7fb;border-radius:8px;padding:14px}
+.disc-welcome .steps .n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
+.disc-welcome .steps h3{margin:2px 0 4px;font-size:17px;color:var(--navy)}
+.disc-welcome .steps p{margin:0;font-size:14px}
+.disc-welcome .steps .btn-row{margin-top:10px}
+@media (max-width:900px){.disc-welcome .steps{grid-template-columns:1fr}}
 body.disc-on{background:linear-gradient(180deg,#14254a 0,#1e1a4c 900px,#1e1a4c 100%)}
 body.disc-on h2.sec{color:#fff}
 body.disc-on .disc-hero{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14)}
@@ -304,7 +315,7 @@ const LINKS = {
 };
 const CONTACT_EMAIL = 'admin@nationalgymnasticsleague.co.uk';
 const BANK = { accountName:'National Gymnastics League', sortCode:'60-84-64', accountNumber:'93416867' };
-const PAYMENT_DUE_MONTHS = 4;   // matches the booking system's payment reminder
+const PAYMENT_DUE_MONTHS = 3;   // matches the booking system: payment due 3 months before each event
 
 /* Schools Club Licence bands (must match nglschools.co.uk/club) */
 const SCHOOLS_BANDS = { xs:{short:'1–24', price:150}, sm:{short:'25–49', price:250}, s:{short:'50–99', price:400}, m:{short:'100–249', price:750},
@@ -659,6 +670,10 @@ function demoData(){
     {id:'b3', reference:'NGL-2027-5170', compId:'c3', compName:'NGL Performance League Grades', compDate:`${y}-01-24`, spaces:6, club:'SAADI Gymnastics', email:'bookingoffice@saadigymnastics.co.uk'},
     {id:'b4', reference:'NGL-2027-5170', compId:'c4', compName:'NGL General League Round 2', compDate:`${y}-05-16`, spaces:0, waitlist:true, club:'SAADI Gymnastics', email:'bookingoffice@saadigymnastics.co.uk'}
   ];
+  if(new URLSearchParams(location.search).get('demo') === 'new'){   // ?demo=new previews a club that has just registered
+    S.club = {name:'Sample Gymnastics Club', bgNumber:'BG000000', contact:'Sam Smith', email:'office@sampleclub.org.uk', accessCode:'SAMPLE-0000', bookingEmails:[]};
+    S.schoolsOrders = []; S.recOrders = []; S.bookings = []; S.music = []; S.isAdmin = false;
+  }
 }
 function demoAdmin(){
   const now = Date.now(), day = 86400000;
@@ -691,11 +706,11 @@ function setChrome(signedIn){
   $('#who').innerHTML = `<b>${esc(S.club ? S.club.name : 'NGL admin')}</b>${esc(S.club ? S.club.email : '')}`;
 }
 function render(){
+  if(!S.club && S.isAdmin && S.tab !== 'admin') S.tab = 'admin';
+  if(S.club && !S.discoverChecked){ S.discoverChecked = true; if(isNewClub() && S.tab === 'overview' && ['', '#register', '#discover', '#overview'].includes(location.hash || '')) S.tab = 'discover'; }
   setChrome(true);
   const v = $('#view');
-  const demo = PREVIEW ? '<div class="demo">Preview mode: sample data for SAADI Gymnastics. Nothing is saved.</div>' : '';
-  if(!S.club && S.isAdmin && S.tab !== 'admin') S.tab = 'admin';
-  if(S.club && !S.discoverChecked){ S.discoverChecked = true; if(isNewClub() && S.tab === 'overview' && !location.hash) S.tab = 'discover'; }
+  const demo = PREVIEW ? `<div class="demo">Preview mode: sample data for ${S.club ? esc(S.club.name) : 'SAADI Gymnastics'}. Nothing is saved.</div>` : '';
   const screens = {discover:screenDiscover, music:screenMusic, overview:screenOverview, licences:screenLicences, orders:screenOrders, reservations:screenReservations, support:screenSupport, club:screenClub, admin:screenAdmin};
   document.body.classList.toggle('disc-on', S.tab === 'discover');
   v.innerHTML = demo + (screens[S.tab] || screenOverview)();
@@ -711,7 +726,8 @@ function statusPill(s){ return s === 'paid' ? '<span class="pill ok">Paid</span>
 const ANIM_URL = 'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-its-all-connected.html';
 function isNewClub(){
   const sch = schoolsStatus(), rec = recStatus();
-  return !!S.club && sch.key === 'none' && rec.key === 'none' && !allOrders().length;
+  const ps = (S.club && S.club.preschool) || {};
+  return !!S.club && sch.key === 'none' && rec.key === 'none' && ps.status !== 'active' && !allOrders().length;
 }
 function screenDiscover(){
   const club = S.club ? S.club.name : 'your club';
@@ -727,7 +743,23 @@ function screenDiscover(){
       <p class="who">Students and adults</p><ul><li>A University League for students</li><li>NGL Masters for adult gymnasts</li><li>The same connected approach for older gymnasts</li></ul>
       <div class="btn-row"><span class="pill off">Coming soon</span></div></div>`;
   const ext = (href, label, ghost) => `<a class="btn${ghost ? ' ghost' : ''}" href="${esc(href)}" target="_blank" rel="noopener">${esc(label)}</a>`;
-  return `
+  const reserve = LINKS.reserve + (S.club && S.club.email ? '?email=' + encodeURIComponent(S.club.email) : '');
+  const welcome = !isNewClub() ? '' : `
+    <section class="card disc-welcome">
+      <p class="eyebrow">You’re registered</p>
+      <h1>Thank you for registering your interest in the NGL</h1>
+      <p class="lead">This is your free NGL club account. On this page you’ll find links to every pathway hub, where you can explore samples of the programmes. Then, when you’re ready to take part in 2027, you can start an Awards Scheme licence or enter competitions.</p>
+      <ol class="steps">
+        <li><span class="n">1</span><div><h3>Explore the pathways</h3><p>See what’s inside each programme: sample lesson plans, award books, medals and the family apps. Every hub uses this same login.</p>
+          <div class="btn-row"><a class="btn" href="#pathways" data-scroll="pathways">See the pathways</a></div></div></li>
+        <li><span class="n">2</span><div><h3>Start an Awards Scheme licence</h3><p>Pre-School, Schools or Recreational. One yearly Club Licence per pathway, priced by the number of gymnasts in it, with 5% off every extra pathway. You start it from that pathway’s hub.</p>
+          <div class="btn-row"><a class="btn" href="https://club.nationalgymnasticsleague.co.uk/licences.html" target="_blank" rel="noopener">See licence fees</a><button type="button" class="btn ghost" data-tab="licences">Your licences</button></div></div></li>
+        <li><span class="n">3</span><div><h3>Enter 2027 competitions</h3><p>No licence needed. Reserve places for General League, Performance League and Recreational competitions now. Payment is due three months before each event.</p>
+          <div class="btn-row"><a class="btn" href="${esc(reserve)}" target="_blank" rel="noopener">Reserve competition places</a></div></div></li>
+      </ol>
+      <p class="muted" style="margin:10px 0 0">Your Overview tab will show your licences, orders and competition places once you’ve started.</p>
+    </section>`;
+  return `${welcome}
     <section class="disc-hero">
       <div>
         <p class="eyebrow">Welcome to the NGL${S.club ? ', ' + esc(S.club.name) : ''}</p>
@@ -753,10 +785,10 @@ function screenDiscover(){
     <h2 class="sec" id="pathways">Seven pathways, one framework</h2>
     <div class="grid g2 disc-pw">
       ${pw('preschool', 'Ages 3–4', ['Around the World with Somi & Flic: a passport with 20 countries to visit', 'A medal for every country and an A1 journey poster', 'Themed lesson plans with equipment, set-ups and rotations', 'A term planner and a family app for parents'], ext(LINKS.preschoolHub, 'Explore NGL Pre-School'))}
-      ${pw('schools', 'Ages 5–11 · delivered in local schools', ['Run gymnastics in your local schools under the NGL name', 'Awards books and routine videos for every level', 'A family code so parents can see progress', 'A graduation performance to finish each programme'], ext(LINKS.schoolsHub, 'Explore NGL Schools'))}
-      ${pw('recreational', 'Ages 4–18 · recreational classes', ['Tailor the term programme to your club: plans built from your apparatus and term length', 'Tailor every class to your gymnasts: Ruby, Pink, Teal and Indigo versions of every station', 'Four award books, 16 levels, assessed in the last two weeks of term', 'Club competitions where every gymnast medals', 'A family app so parents follow the journey'], ext(LINKS.recHub, 'Explore the sample') + ext(LINKS.recHub + '#licence', 'Licence & pricing', true))}
+      ${pw('schools', 'Ages 4–11 · delivered in local schools', ['Run gymnastics in your local schools under the NGL name', 'Awards books and routine videos for every level', 'A family code so parents can see progress', 'A graduation performance to finish each programme'], ext(LINKS.schoolsHub, 'Explore NGL Schools'))}
+      ${pw('recreational', 'Ages 4–16 · recreational classes', ['Tailor the term programme to your club: plans built from your apparatus and term length', 'Tailor every class to your gymnasts: Ruby, Pink, Teal and Indigo versions of every station', 'Four award books, 16 levels, assessed in the last two weeks of term', 'Club competitions where every gymnast medals', 'A family app so parents follow the journey'], ext(LINKS.recHub, 'Explore the sample') + ext(LINKS.recHub + '#licence', 'Licence & pricing', true))}
       ${pw('general', '2–10 hours a week', ['Skills books, assessments and competitions', 'WAG Levels 1–4 and MAG Levels 1–3', '24 clubs across four locations in 2027', 'Builds to the NGL National Finals'], ext(LINKS.reserve, 'Reserve competition places'))}
-      ${pw('performance', '10+ hours a week', ['Six levels with set work options', 'Extra preparation before British Gymnastics events', 'A place to compete when the usual route doesn’t fit', 'Skills books, assessments and competitions'], ext(LINKS.reserve, 'Reserve competition places'))}
+      ${pw('performance', '11+ hours a week', ['Six levels with set work options', 'Extra preparation before British Gymnastics events', 'A place to compete when the usual route doesn’t fit', 'Skills books, assessments and competitions'], ext(LINKS.reserve, 'Reserve competition places'))}
       ${uniMasters()}
     </div>
 
@@ -1222,7 +1254,7 @@ document.addEventListener('submit', async e => {
     if(f.id === 'regForm'){
       const d = {name:$('#rName').value.trim(), bgNumber:$('#rBg').value.trim(), contact:$('#rContact').value.trim(), email:$('#rEmail').value.trim(), password:$('#rPass').value};
       const r = await api.register(d);
-      if(r.ok) start(); else $('#authErr').textContent = r.reason;
+      if(r.ok){ S.tab = 'discover'; S.discoverChecked = true; try{ history.replaceState(null, '', '#discover'); }catch(_){} start(); } else $('#authErr').textContent = r.reason;
     }
     if(f.id === 'emailForm'){
       const email = lc($('#newEmail').value);
