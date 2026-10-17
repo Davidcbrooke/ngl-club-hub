@@ -1180,7 +1180,10 @@ function screenAuth(mode, msg){
   setChrome(false);
   const v = $('#view');
   if(mode === 'register'){
-    v.innerHTML = `<div class="auth"><h1 class="page">Register your club</h1><p class="lead">${location.hash === '#discover' ? 'Create your free club account to explore Discover NGL: every pathway, the Recreational lesson planner, award books and parent app. It takes about two minutes.' : 'One NGL account for every programme: Schools, Recreational and competitions.'}</p>
+    v.innerHTML = `<div class="auth"><h1 class="page">Register your club</h1><p class="lead">Create your club’s free NGL account. It takes about two minutes.</p>
+      <div class="card" style="border-left:6px solid #3BAA4A;margin-bottom:16px"><p style="margin:0 0 8px"><strong>No commitment. Registering doesn’t sign you up to anything.</strong> There’s nothing to pay and no licence to buy. It simply opens up:</p>
+        <ul style="margin:0 0 8px 20px;line-height:1.5"><li>Samples of every pathway: Pre-School, Schools, Recreational, General and Performance League</li><li>Free club tools, including the Rotation Planner</li><li>Club Support: business help and partner offers for your club</li><li>2027 competition reservations: reserve now, pay 3 months before the event</li></ul>
+        <p class="small muted" style="margin:0">You only pay if you later choose to take out an Awards Scheme licence or enter a competition.</p></div>
       <div class="card"><form id="regForm">
         <label class="f" for="rName">Club name</label><input class="f" id="rName" required autocomplete="organization">
         <label class="f" for="rBg">British Gymnastics club number</label><input class="f" id="rBg" required>
