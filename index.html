@@ -247,6 +247,38 @@ body.disc-on .card{border-color:transparent;box-shadow:0 6px 18px rgba(0,0,0,.18
 .ps-det{margin-top:12px}.ps-det summary{cursor:pointer;font-family:var(--cond);font-size:20px;color:var(--navy);padding:6px 0}.ps-det summary b{font-weight:700}
 .ps-fam input{width:100%;border:1px solid var(--line);border-radius:5px;padding:8px 10px;font-size:13px;color:var(--muted);background:var(--paper)}
 @media (max-width:760px){.ps-hero{grid-template-columns:1fr}.ps-sample{grid-template-columns:1fr 1fr}.ps-sample>div{grid-column:1/-1}.ps-book img{height:220px}}
+
+/* Register landing page: navy */
+body.reg-dark{background:#14123a}
+body.reg-dark footer{color:#aeb3d6}body.reg-dark footer a{color:#fff}
+.reg{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);grid-template-areas:"intro form" "video form" "gallery gallery";gap:22px 34px;padding:18px 0 10px;color:#fff}
+.reg-intro{grid-area:intro}.reg-form{grid-area:form;align-self:start;position:sticky;top:12px}.reg-video{grid-area:video}.reg-gallery{grid-area:gallery;margin-top:18px}
+.reg-k{font-weight:700;font-size:13px;letter-spacing:2.5px;text-transform:uppercase;color:#F8D438;margin-bottom:8px}
+.reg h1{font-family:var(--cond);font-size:46px;line-height:1.02;margin:0 0 12px;color:#fff}.reg h1 span{white-space:nowrap}
+.reg-lead{font-size:17.5px;color:#d9dbf2;margin:0 0 16px}
+.reg-free{background:rgba(59,170,74,.16);border:1px solid rgba(59,170,74,.55);border-left:6px solid #3BAA4A;border-radius:10px;padding:12px 14px;font-size:15.5px;color:#e9f6eb;margin-bottom:14px}
+.reg-free b{color:#fff}
+.reg-get{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.reg-get li{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px 12px 10px 40px;position:relative;font-size:14px;color:#c9cbee}
+.reg-get li::before{content:"";position:absolute;left:12px;top:12px;width:18px;height:18px;border-radius:50%;background:#3BAA4A url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10l3.5 3.5L15 7' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat}
+.reg-get b{display:block;color:#fff;font-size:15px}
+.reg-form .card{border:0;border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.45);padding:22px 24px;color:var(--ink)}
+.reg-form h2{font-family:var(--cond);font-size:26px;color:var(--navy);margin:0}
+.reg-video video{width:100%;max-width:420px;display:block;border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,.45);background:#000}
+.reg-video p{margin:8px 0 0;font-size:13px;color:#aeb3d6;letter-spacing:1px;text-transform:uppercase;font-weight:700}
+.reg-gallery h2{font-family:var(--cond);font-size:32px;margin:0 0 14px;color:#fff}
+.reg-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.reg-grid figure{margin:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-top:5px solid var(--c);border-radius:12px;overflow:hidden}
+.reg-grid .ph{aspect-ratio:4/3;overflow:hidden;background:#0d0b2a}.reg-grid img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;transition:transform .4s}
+.reg-grid figure:hover img{transform:scale(1.04)}
+.reg-grid figcaption{padding:10px 12px 12px;font-size:13.5px;line-height:1.35;color:#c9cbee}.reg-grid figcaption b{display:block;color:#fff;font-family:var(--cond);font-size:19px;margin-bottom:2px}
+.reg-cta{text-align:center;margin:22px 0 6px}
+.reg-btn{background:#F8D438;border-color:#F8D438;color:#14254a;font-size:17px;padding:13px 24px;border-radius:999px}
+@media (max-width:860px){
+  .reg{grid-template-columns:1fr;grid-template-areas:"intro" "form" "video" "gallery"}
+  .reg-form{position:static}.reg h1{font-size:36px}.reg-grid{grid-template-columns:1fr 1fr}.reg-video video{max-width:none}
+}
+@media (max-width:480px){.reg-get{grid-template-columns:1fr}.reg-grid{gap:10px}.reg-grid figcaption{font-size:12.5px}}
 </style>
 </head>
 <body>
@@ -694,6 +726,7 @@ function demoAdmin(){
    ===================================================================== */
 const TABS = [['discover','Discover NGL'], ['overview','Overview'], ['licences','Licences'], ['orders','Orders'], ['reservations','Reservations'], ['support','Club Support'], ['club','Club']];
 function setChrome(signedIn){
+  document.body.classList.remove('reg-dark');
   $('#tabs').classList.toggle('hidden', !signedIn);
   $('#who').classList.toggle('hidden', !signedIn);
   $('#signOutBtn').classList.toggle('hidden', !signedIn);
@@ -1180,11 +1213,32 @@ function screenAuth(mode, msg){
   setChrome(false);
   const v = $('#view');
   if(mode === 'register'){
-    v.innerHTML = `<div class="auth"><h1 class="page">Register your club</h1><p class="lead">Create your club’s free NGL account. It takes about two minutes.</p>
-      <div class="card" style="border-left:6px solid #3BAA4A;margin-bottom:16px"><p style="margin:0 0 8px"><strong>No commitment. Registering doesn’t sign you up to anything.</strong> There’s nothing to pay and no licence to buy. It simply opens up:</p>
-        <ul style="margin:0 0 8px 20px;line-height:1.5"><li>Samples of every pathway: Pre-School, Schools, Recreational, General and Performance League</li><li>Free club tools, including the Rotation Planner</li><li>Club Support: business help and partner offers for your club</li><li>2027 competition reservations: reserve now, pay 3 months before the event</li></ul>
-        <p class="small muted" style="margin:0">You only pay if you later choose to take out an Awards Scheme licence or enter a competition.</p></div>
-      <div class="card"><form id="regForm">
+    document.body.classList.add('reg-dark');
+    const G = [
+      ['discover.jpg', '#C9142E', 'Your Club Hub', 'Discover NGL: every pathway and how they connect, with links to each hub'],
+      ['preschool.jpg', '#E8559A', 'Pre-School', 'Around the World with Somi &amp; Flic: passports, country medals and themed lesson plans'],
+      ['schools.jpg', '#F8D438', 'Schools', 'A ready-to-deliver programme your club takes into local schools'],
+      ['lesson-planner.jpg', '#E88230', 'Recreational', 'Lesson plans built around your gym, with set-up photos for every station'],
+      ['award-books.jpg', '#E88230', 'Award books', 'Ruby to Indigo: one level a term, taught before it’s tested'],
+      ['coach-app.jpg', '#01AFB8', 'Run your class', 'Your plan live on a tablet, station by station'],
+      ['parent-app.jpg', '#7A4C9E', 'Family app', 'Parents see what their child is learning this week'],
+      ['support.jpg', '#3BAA4A', 'Club Support', 'Business help and partner offers across five pillars']
+    ];
+    v.innerHTML = `<div class="reg">
+      <div class="reg-intro">
+        <div class="reg-k">For British Gymnastics clubs · #ItsAllConnected</div>
+        <h1>Register your club with the NGL <span>(it’s free)</span></h1>
+        <p class="reg-lead">Seven connected pathways, from a child’s first class to adult gymnastics: lesson plans, awards, competitions, judges and parents, all in one place. Register to see it all for yourself.</p>
+        <div class="reg-free"><b>No commitment.</b> Registering doesn’t sign you up to anything. There’s nothing to pay and no licence to buy. You only pay if you later choose an Awards Scheme licence or enter a competition.</div>
+        <ul class="reg-get">
+          <li><b>Samples of every pathway</b> Pre-School, Schools, Recreational, General and Performance League</li>
+          <li><b>Free club tools</b> including the Rotation Planner</li>
+          <li><b>Club Support</b> business help and partner offers for your club</li>
+          <li><b>2027 competition reservations</b> reserve now, pay 3 months before the event</li>
+        </ul>
+      </div>
+      <div class="reg-form" id="regBox"><div class="card"><h2>Create your free club account</h2><p class="small muted" style="margin:0 0 10px">Takes about two minutes.</p>
+        <form id="regForm">
         <label class="f" for="rName">Club name</label><input class="f" id="rName" required autocomplete="organization">
         <label class="f" for="rBg">British Gymnastics club number</label><input class="f" id="rBg" required>
         <label class="f" for="rContact">Main contact</label><input class="f" id="rContact" required autocomplete="name">
@@ -1192,7 +1246,13 @@ function screenAuth(mode, msg){
         <label class="f" for="rPass">Password</label><input class="f" id="rPass" type="password" minlength="8" required autocomplete="new-password">
         <div class="btn-row"><button class="btn" type="submit">Create club account</button></div>
         <div class="err" id="authErr"></div></form>
-        <p class="small" style="margin-top:14px">Already registered for NGL Schools or Recreational? <button class="linkbtn" data-auth="login">Log in with the same details</button></p></div></div>`;
+        <p class="small" style="margin-top:14px">Already registered for NGL Schools or Recreational? <button class="linkbtn" data-auth="login">Log in with the same details</button></p></div></div>
+      <div class="reg-video"><video src="img/reg/ngl-tour.mp4" poster="img/reg/ngl-tour-poster.jpg" autoplay muted loop playsinline controls preload="metadata"></video><p>The NGL in 78 seconds</p></div>
+      <div class="reg-gallery"><h2>Here’s what you’ll see when you register</h2>
+        <div class="reg-grid">${G.map(([img, c, t, d]) => `<figure style="--c:${c}"><div class="ph"><img src="img/reg/${img}" alt="${t}" loading="lazy"></div><figcaption><b>${t}</b>${d}</figcaption></figure>`).join('')}</div>
+        <div class="reg-cta"><a class="btn reg-btn" href="#regBox" onclick="document.getElementById('rName').focus({preventScroll:true})">Register your club (it’s free)</a></div>
+      </div>
+    </div>`;
     return;
   }
   v.innerHTML = `<div class="auth"><h1 class="page">NGL Club Hub</h1><p class="lead">Your licences, orders and competition reservations in one place.</p>
