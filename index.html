@@ -524,8 +524,10 @@ async function loadClub(uid){
     fs.getDocs(fs.query(fs.collection(D, 'orders'), fs.where('clubId', '==', uid))).catch(() => ({docs:[]})),
     fs.getDocs(fs.query(fs.collection(D, 'recOrders'), fs.where('clubId', '==', uid))).catch(() => ({docs:[]}))
   ]);
-  S.club = club.exists() ? club.data() : null;
   S.isAdmin = !!(admin && admin.exists());
+  // An NGL admin login always opens the admin view, never a club's dashboard
+  // (the NGL admin account once registered as a club, which made it look like SAADI).
+  S.club = (!S.isAdmin && club.exists()) ? club.data() : null;
   S.schoolsOrders = sch.docs.map(d => ({id:d.id, ...d.data()}));
   S.recOrders = rec.docs.map(d => ({id:d.id, ...d.data()}));
   loadBookings();   // in the background, so the hub opens straight away
@@ -734,7 +736,7 @@ function setChrome(signedIn){
   if(!signedIn) return;
   const owed = unpaid().length;
   const base = S.music.length ? [...TABS.slice(0, 4), ['music','Floor music'], ...TABS.slice(4)] : TABS;
-  const tabs = S.isAdmin ? [...base, ['admin','All clubs']] : base;
+  const tabs = S.isAdmin && !S.club ? [['admin','All clubs']] : S.isAdmin ? [...base, ['admin','All clubs']] : base;
   const missing = musicMissing();
   $('#tabs .wrap').innerHTML = tabs.map(([k, l]) => `<button role="tab" data-tab="${k}" aria-selected="${S.tab === k}">${l}${k === 'orders' && owed ? `<span class="count">${owed}</span>` : ''}${k === 'music' && missing ? `<span class="count">${missing}</span>` : ''}</button>`).join('');
   $('#who').innerHTML = `<b>${esc(S.club ? S.club.name : 'NGL admin')}</b>${esc(S.club ? S.club.email : '')}`;
