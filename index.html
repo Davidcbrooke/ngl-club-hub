@@ -377,6 +377,7 @@ const PATHWAYS = {
 
 /* ---------- Helpers ---------- */
 const PREVIEW = new URLSearchParams(location.search).has('demo');
+const ENTRY_HASH = location.hash || '';   // remembered so email-campaign sign-ups stay tagged even if the hash changes on the page
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const gbp = n => '£' + Number(n || 0).toLocaleString('en-GB', {minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2});
@@ -629,7 +630,7 @@ const api = {
           code = c;
         }
       }catch(e){ console.warn('Schools code not created', e); }
-      await fs.setDoc(fs.doc(D, 'clubs', uid), {name:d.name, bgNumber:d.bgNumber, contact:d.contact, email:d.email, accessCode:code, source:location.hash === '#discover' ? 'email-campaign' : 'clubhub', createdAt:fs.serverTimestamp()});
+      await fs.setDoc(fs.doc(D, 'clubs', uid), {name:d.name, bgNumber:d.bgNumber, contact:d.contact, email:d.email, accessCode:code, source:(ENTRY_HASH === '#discover' || location.hash === '#discover') ? 'email-campaign' : 'clubhub', createdAt:fs.serverTimestamp()});
       await loadClub(uid);
       return {ok:true};
     }catch(e){ return {ok:false, reason:friendlyAuthError(e)}; }
@@ -1250,7 +1251,7 @@ function screenAuth(mode, msg){
       <div class="reg-video"><video src="img/reg/ngl-tour.mp4" poster="img/reg/ngl-tour-poster.jpg" autoplay muted loop playsinline controls preload="metadata"></video><p>The NGL in 78 seconds</p></div>
       <div class="reg-gallery"><h2>Here’s what you’ll see when you register</h2>
         <div class="reg-grid">${G.map(([img, c, t, d]) => `<figure style="--c:${c}"><div class="ph"><img src="img/reg/${img}" alt="${t}" loading="lazy"></div><figcaption><b>${t}</b>${d}</figcaption></figure>`).join('')}</div>
-        <div class="reg-cta"><a class="btn reg-btn" href="#regBox" onclick="document.getElementById('rName').focus({preventScroll:true})">Register your club (it’s free)</a></div>
+        <div class="reg-cta"><a class="btn reg-btn" href="#" onclick="event.preventDefault();document.getElementById('regBox').scrollIntoView({behavior:'smooth',block:'start'});document.getElementById('rName').focus({preventScroll:true})">Register your club (it’s free)</a></div>
       </div>
     </div>`;
     return;
