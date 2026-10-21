@@ -157,7 +157,34 @@ footer{color:var(--muted);font-size:13px;text-align:center;padding:20px 16px 30p
 .offer-kind{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--c)}
 .offer-head{font-weight:700;color:var(--ink);margin:2px 0 4px!important}
 
-/* Your NGL apps launcher */
+/* Your Pathways */
+.g3{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.pws .card{display:flex;flex-direction:column}
+.pws .card .btn-row{margin-top:auto;padding-top:12px}
+.pws .pill,.pws .logo{align-self:flex-start}
+.pws .card .logo{max-width:100%;object-fit:contain}
+.pill.soon{background:#e6f0fa;color:#0b4f86}
+.pw-price{font-size:14px;margin:8px 0 0!important}
+.sec-note{font-size:14px;margin:-4px 0 12px;color:#c9cde6}
+
+/* Navy page on every tab (matches Discover and the rest of NGL) */
+html{background:#1e1a4c}
+body{background:linear-gradient(180deg,#14254a 0,#1e1a4c 900px,#1e1a4c 100%) #1e1a4c;min-height:100vh}
+#view{color:#e6e8f5}
+#view h1.page,#view h2.sec{color:#fff}
+#view p.lead,#view > .muted,#view > p.small,#view > p{color:#c9cde6}
+#view a:not(.btn):not(.app){color:#fff}
+#view .card a:not(.btn),#view table a:not(.btn){color:var(--navy-2)}
+#view .card,#view .app,#view table,#view .note,#view .demo,#view form,#view dialog{color:var(--ink)}
+#view .card,#view .app{border-color:transparent;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+#view .filters button:not([aria-pressed="true"]){color:var(--navy)}
+#view .filters button[aria-pressed="true"]{background:var(--ngl-red);border-color:var(--ngl-red)}
+#view .pillar h2{color:#fff}
+#view .pillar-tag{color:#c9cde6}
+#view .pillar-n{box-shadow:0 0 0 2px rgba(255,255,255,.35)}
+footer{color:#b9bbdc}footer a{color:#fff}
+
+/* Club Tools launcher */
 .apps{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
 .app{display:flex;flex-direction:column;gap:4px;background:#fff;border:1px solid var(--line);border-left:5px solid var(--c,var(--navy));border-radius:8px;padding:14px 16px;text-decoration:none;color:var(--ink)}
 .app:hover{border-color:var(--c,var(--navy));box-shadow:0 2px 10px rgba(20,37,74,.08)}
@@ -865,10 +892,10 @@ function screenOverview(){
       <div class="card stat"><div class="v">${res.length}</div><div class="l">Upcoming reservations</div><div class="s">${places} gymnast place${places === 1 ? '' : 's'}</div></div>
       <div class="card stat"><div class="v" style="font-size:24px;padding-top:6px">${next ? fmt(next.date) : '–'}</div><div class="l">Next competition</div><div class="s">${next ? esc(next.compName) : (S.bookingsLoading ? 'Loading…' : 'No reservations yet')}</div></div>
     </div>
-    <h2 class="sec">Your programmes</h2>
-    <div class="grid g2">${licenceCard('schools', true)}${licenceCard('recreational', true)}</div>
-    <h2 class="sec">Your NGL apps</h2>
-    <p class="small muted" style="margin:-4px 0 12px">Everything your club uses, in one place. The Pre-School, Schools and Recreational hubs use this same login.</p>
+    <h2 class="sec">Your Pathways</h2>
+    <p class="sec-note">One annual licence per pathway, priced by the number of gymnasts. 5% off every extra pathway. Every hub uses this same login.</p>
+    <div class="grid g3 pws">${pathwayCards()}</div>
+    <h2 class="sec">Club Tools</h2>
     <div class="apps">${appTiles()}</div>
     <div class="btn-row" style="margin-top:16px"><a class="btn ghost" href="${LINKS.website}" target="_blank" rel="noopener">NGL website</a></div>`;
 }
@@ -877,13 +904,10 @@ function appTiles(){
   const q = u => em ? u + (u.includes('?') ? '&' : '?') + 'email=' + em : u;
   const ext = (c, title, text, href, cta) => `<a class="app" style="--c:${c}" href="${esc(href)}" target="_blank" rel="noopener"><b>${esc(title)}</b><span>${esc(text)}</span><em>${esc(cta)} ↗</em></a>`;
   return [
-    ext('var(--pre)', 'Pre-School Hub', 'Weekly lesson plans, the term planner and the family app for Around the World.', q(LINKS.preschoolHub), 'Open, same login'),
-    ext('var(--rec)', 'Recreational Hub', 'Lesson plans, assessments and ordering books, medals and certificates.', q(LINKS.recHub), 'Open, same login'),
-    ext('#c9a400', 'Schools Hub', 'Your schools, licence orders and the family access code.', q(LINKS.schoolsHub), 'Open, same login'),
     ext('var(--general)', 'Competition booking', 'Reserve places at NGL competitions. Use your club email so bookings appear here.', q(LINKS.reserve), 'Reserve places'),
     ext('var(--perf)', 'Rotation Planner', 'Free: build your weekly session plan and show it live on a gym screen.', 'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/NGL_Rotation_Planner.html', 'Open planner'),
     ext('var(--navy-2)', 'Judging Pathway', 'For your coaches and volunteers who want to judge. Each judge registers themselves.', 'https://www.nationalgymnasticsleague.co.uk/register-to-become-a-remote-judge', 'Share with your judges'),
-    `<button type="button" class="app" style="--c:var(--red);text-align:left;font:inherit;cursor:pointer" data-tab="support"><b>Club Support</b><span>Partner offers under the five pillars: HR, coaching, safeguarding and more.</span><em>See offers →</em></button>`
+    `<button type="button" class="app" style="--c:var(--red);text-align:left;font:inherit;cursor:pointer" data-tab="support"><b>Make Your Club Better</b><span>Club Support: partner offers under the five pillars: HR, coaching, safeguarding and more.</span><em>See offers →</em></button>`
   ].join('');
 }
 
@@ -1007,6 +1031,31 @@ function licenceCard(k, compact){
     </dl>
     ${compact ? '' : '<p class="small muted">Your Club Licence opens the lesson planner, award books, warm-ups and ordering in the Recreational Hub. It runs for 12 months from activation.</p>'}
     <div class="btn-row"><a class="btn" href="${LINKS.recHub}" target="_blank" rel="noopener">${r.key === 'none' ? 'Start NGL Recreational' : r.key === 'expired' || (r.key === 'active' && r.days <= 45) ? 'Renew in the Recreational Hub' : 'Open Recreational Hub'}</a></div></div>`;
+}
+/* ---------- Your Pathways: one card per pathway, same order as the NGL Club Hub box ---------- */
+const PRESCHOOL_FROM = 150;   // must match the lowest band in preschool/club/index.html
+const fromPrice = bands => Math.min(...Object.values(bands).map(b => b.price));
+function pathwayCards(){
+  const em = S.club && S.club.email ? encodeURIComponent(S.club.email) : '';
+  const q = u => em ? u + (u.includes('?') ? '&' : '?') + 'email=' + em : u;
+  const card = (k, pill, cls, lines, btn) => `<div class="card accent pw-card" style="--c:${PATHWAYS[k].c}"><img class="logo" src="${LOGOS[k]}" alt="${esc(PATHWAYS[k].label)}">
+      <span class="pill ${cls}">${esc(pill)}</span>${lines}<div class="btn-row">${btn}</div></div>`;
+  const price = n => `<p class="pw-price">Annual licence from <b>${gbp(n)}</b></p>`;
+  const a = (href, label, ghost) => `<a class="btn${ghost ? ' ghost' : ''}" href="${esc(href)}" target="_blank" rel="noopener">${esc(label)}</a>`;
+  const interest = k => `<a class="btn ghost" href="mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(PATHWAYS[k].label + ': register interest')}&body=${encodeURIComponent('Please keep us updated on ' + PATHWAYS[k].label + '.\n\nClub: ' + ((S.club && S.club.name) || ''))}">Register interest</a>`;
+  const out = [];
+  const ps = (S.club && S.club.preschool) || {};
+  out.push(ps.status === 'active' ? preschoolCard()
+    : card('preschool', 'Live April 2027', 'soon', `<p class="small muted">Lesson plans, the term planner, passport awards and the family app.</p>${price(PRESCHOOL_FROM)}`, a(q(LINKS.preschoolHub), 'See what’s inside')));
+  out.push(schoolsStatus().key !== 'none' ? licenceCard('schools', true)
+    : card('schools', 'Live now', 'ok', `<p class="small muted">Awards, assessments and graduations in your local schools.</p>${price(fromPrice(SCHOOLS_BANDS))}`, a(q(LINKS.schoolsHub), 'Start NGL Schools')));
+  out.push(recStatus().key !== 'none' ? licenceCard('recreational', true)
+    : card('recreational', 'Live January 2027', 'soon', `<p class="small muted">Four award levels, Ruby to Indigo, with the lesson planner, assessments and competitions.</p>${price(fromPrice(REC_BANDS))}`, a(q(LINKS.recHub), 'Start NGL Recreational')));
+  out.push(card('general', 'Competitions live now', 'ok', `<p class="small muted">Compete locally, score nationally.</p><p class="pw-price">Award books <b>live April 2027</b></p>`, a(q(LINKS.reserve), 'Reserve places')));
+  out.push(card('performance', 'Live 2027', 'soon', `<p class="small muted">Awards, assessments and competitions for your performance squads.</p>`, interest('performance')));
+  out.push(card('university', 'Coming soon', 'off', `<p class="small muted">Awards, assessments and competitions that keep students in the sport.</p>`, interest('university')));
+  out.push(card('masters', 'Coming soon', 'off', `<p class="small muted">Awards, assessments and competitions for adult gymnasts.</p>`, interest('masters')));
+  return out.join('');
 }
 function preschoolCard(){
   const p = (S.club && S.club.preschool) || {}, on = p.status === 'active';
