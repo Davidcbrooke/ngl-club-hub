@@ -1179,7 +1179,7 @@ function screenAdmin(){
   const week = rows.filter(r => r.joined && now - r.joined < 7 * 864e5).length;
   const sinceCampaign = rows.filter(r => r.joined && r.joined >= CAMPAIGN_START).length;
   const viaEmail = rows.filter(r => r.c.source === 'email-campaign').length;
-  const SRC = {'email-campaign':['Email campaign','ok'], clubhub:['Club Hub','off'], recreational:['Recreational Hub','off'], schools:['Schools Hub','off']};
+  const SRC = {'email-campaign':['Email campaign','ok'], clubhub:['NGL Club Hub','off'], recreational:['Recreational Hub','off'], schools:['Schools Hub','off']};
   const srcPill = s => { const x = SRC[s] || [s || 'Earlier', 'off']; return `<span class="pill ${x[1]}">${esc(x[0])}</span>`; };
   return `<h1 class="page">All clubs</h1>
     <p class="lead">NGL admin view. Approve payments in the Schools and Recreational hubs.</p>
@@ -1218,7 +1218,7 @@ function screenAuth(mode, msg){
   if(mode === 'register'){
     document.body.classList.add('reg-dark');
     const G = [
-      ['discover.jpg', '#C9142E', 'Your Club Hub', 'Discover NGL: every pathway and how they connect, with links to each hub'],
+      ['discover.jpg', '#C9142E', 'Your NGL Club Hub', 'Discover NGL: every pathway and how they connect, with links to each hub'],
       ['preschool.jpg', '#E8559A', 'Pre-School', 'Around the World with Somi &amp; Flic: passports, country medals and themed lesson plans'],
       ['schools.jpg', '#F8D438', 'Schools', 'A ready-to-deliver programme your club takes into local schools'],
       ['lesson-planner.jpg', '#E88230', 'Recreational', 'Lesson plans built around your gym, with set-up photos for every station'],
@@ -1373,7 +1373,7 @@ async function start(){
     if(ok) start(); else screenAuth(['#register', '#discover'].includes(location.hash || '') ? 'register' : 'login');
   }catch(e){
     console.error(e);
-    $('#view').innerHTML = '<div class="empty"><b>We couldn’t open the Club Hub</b>Please check your internet connection and refresh the page.</div>';
+    $('#view').innerHTML = '<div class="empty"><b>We couldn’t open the NGL Club Hub</b>Please check your internet connection and refresh the page.</div>';
   }
 })();
 </script>
