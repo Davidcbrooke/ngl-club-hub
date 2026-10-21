@@ -164,6 +164,8 @@ footer{color:var(--muted);font-size:13px;text-align:center;padding:20px 16px 30p
 .pws .pill,.pws .logo{align-self:flex-start}
 .pws .card .logo{max-width:100%;object-fit:contain}
 .pill.soon{background:#e6f0fa;color:#0b4f86}
+.pw-on{display:inline-flex;align-items:center;font-weight:700;color:var(--ok);background:var(--ok-soft);border-radius:6px;padding:7px 12px;font-size:14.5px}
+.pws .btn-row{align-items:center;flex-wrap:wrap}
 .pw-price{font-size:14px;margin:8px 0 0!important}
 .sec-note{font-size:14px;margin:-4px 0 12px;color:#c9cde6}
 
@@ -285,6 +287,7 @@ body.reg-dark footer{color:#aeb3d6}body.reg-dark footer a{color:#fff}
 .reg-lead{font-size:17.5px;color:#d9dbf2;margin:0 0 16px}
 .reg-free{background:rgba(59,170,74,.16);border:1px solid rgba(59,170,74,.55);border-left:6px solid #3BAA4A;border-radius:10px;padding:12px 14px;font-size:15.5px;color:#e9f6eb;margin-bottom:14px}
 .reg-free b{color:#fff}
+.reg-int{background:rgba(232,85,154,.18);border:1px solid rgba(232,85,154,.6);border-left:6px solid #E8559A;border-radius:10px;padding:12px 14px;font-size:15.5px;color:#fde8f1;margin-bottom:14px}.reg-int b{display:block;color:#fff;font-size:19px;margin-bottom:2px}.reg-int .linkbtn{color:#fff;text-decoration:underline}
 .reg-get{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .reg-get li{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px 12px 10px 40px;position:relative;font-size:14px;color:#c9cbee}
 .reg-get li::before{content:"";position:absolute;left:12px;top:12px;width:18px;height:18px;border-radius:50%;background:#3BAA4A url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10l3.5 3.5L15 7' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat}
@@ -404,7 +407,10 @@ const PATHWAYS = {
 
 /* ---------- Helpers ---------- */
 const PREVIEW = new URLSearchParams(location.search).has('demo');
-const ENTRY_HASH = location.hash || '';   // remembered so email-campaign sign-ups stay tagged even if the hash changes on the page
+const ENTRY_HASH = location.hash || '';
+/* Register interest: pathways not live yet. A post link like #preschool registers interest on sign-up or log-in. */
+const INTEREST = {preschool:'NGL Pre-School', performance:'NGL Performance League', university:'NGL University League', masters:'NGL Masters'};
+const ENTRY_INTEREST = (k => INTEREST[k] ? k : '')(ENTRY_HASH.replace(/^#(interest-)?/, ''));   // remembered so email-campaign sign-ups stay tagged even if the hash changes on the page
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const gbp = n => '£' + Number(n || 0).toLocaleString('en-GB', {minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2});
@@ -659,10 +665,16 @@ const api = {
           code = c;
         }
       }catch(e){ console.warn('Schools code not created', e); }
-      await fs.setDoc(fs.doc(D, 'clubs', uid), {name:d.name, bgNumber:d.bgNumber, contact:d.contact, email:d.email, accessCode:code, source:(ENTRY_HASH === '#discover' || location.hash === '#discover') ? 'email-campaign' : 'clubhub', createdAt:fs.serverTimestamp()});
+      await fs.setDoc(fs.doc(D, 'clubs', uid), {name:d.name, bgNumber:d.bgNumber, contact:d.contact, email:d.email, accessCode:code, source:(ENTRY_HASH === '#discover' || location.hash === '#discover') ? 'email-campaign' : 'clubhub', ...(ENTRY_INTEREST ? {interest:{[ENTRY_INTEREST]: fs.serverTimestamp()}} : {}), createdAt:fs.serverTimestamp()});
       await loadClub(uid);
       return {ok:true};
     }catch(e){ return {ok:false, reason:friendlyAuthError(e)}; }
+  },
+  async registerInterest(k){
+    S.club.interest = {...(S.club.interest || {}), [k]: new Date()};
+    if(PREVIEW) return true;
+    try{ const {fs, D} = await fb(); await fs.updateDoc(fs.doc(D, 'clubs', S.uid), {['interest.' + k]: fs.serverTimestamp()}); return true; }
+    catch(e){ console.warn('Interest not saved', e); const i = {...S.club.interest}; delete i[k]; S.club.interest = i; return false; }
   },
   async resetPassword(email){
     if(PREVIEW) return {ok:true};
@@ -742,9 +754,9 @@ function demoAdmin(){
   return {
     clubs:[
       {id:'demo', ...S.club},
-      {id:'c2', name:'Northgate Gymnastics Club', email:'info@northgate.example', contact:'Sam Patel', rec:{status:'active', band:'s', expires:new Date(now + 300 * day)}},
+      {id:'c2', name:'Northgate Gymnastics Club', email:'info@northgate.example', contact:'Sam Patel', interest:{preschool:new Date(now - 3 * day)}, rec:{status:'active', band:'s', expires:new Date(now + 300 * day)}},
       {id:'c3', name:'Riverside Gym Academy', email:'office@riverside.example', contact:'Jo Evans', codeActive:true, bands:{[season]:22}},
-      {id:'c4', name:'Elite Gymnastics', email:'hello@elite.example', contact:'Chris Hughes', source:'email-campaign', createdAt:new Date(now - 0.3 * day)}
+      {id:'c4', name:'Elite Gymnastics', email:'hello@elite.example', contact:'Chris Hughes', interest:{preschool:new Date(now - day), masters:new Date(now - 2 * day)}, source:'email-campaign', createdAt:new Date(now - 0.3 * day)}
     ],
     orders:[...S.schoolsOrders.map(o => ({...o, clubId:'demo'})), {id:'ORD-AAAA1', clubId:'c3', qty:140, price:22, season, status:'awaiting-payment', createdAt:new Date(now - 3 * day)}],
     recOrders:[...S.recOrders.map(o => ({...o, clubId:'demo'})), {id:'ORD-BBBB2', clubId:'c2', kind:'start', band:'s', status:'paid', createdAt:new Date(now - 65 * day), lines:[{kind:'licence', qty:1, unit:500}]}]
@@ -894,7 +906,7 @@ function screenOverview(){
     </div>
     <h2 class="sec">Your Pathways</h2>
     <p class="sec-note">One annual licence per pathway, priced by the number of gymnasts. 5% off every extra pathway. Every hub uses this same login.</p>
-    <div class="grid g3 pws">${pathwayCards()}</div>
+    <div class="grid g3 pws" id="pathways">${pathwayCards()}</div>
     <h2 class="sec">Club Tools</h2>
     <div class="apps">${appTiles()}</div>
     <div class="btn-row" style="margin-top:16px"><a class="btn ghost" href="${LINKS.website}" target="_blank" rel="noopener">NGL website</a></div>`;
@@ -1042,11 +1054,13 @@ function pathwayCards(){
       <span class="pill ${cls}">${esc(pill)}</span>${lines}<div class="btn-row">${btn}</div></div>`;
   const price = n => `<p class="pw-price">Annual licence from <b>${gbp(n)}</b></p>`;
   const a = (href, label, ghost) => `<a class="btn${ghost ? ' ghost' : ''}" href="${esc(href)}" target="_blank" rel="noopener">${esc(label)}</a>`;
-  const interest = k => `<a class="btn ghost" href="mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(PATHWAYS[k].label + ': register interest')}&body=${encodeURIComponent('Please keep us updated on ' + PATHWAYS[k].label + '.\n\nClub: ' + ((S.club && S.club.name) || ''))}">Register interest</a>`;
+  const interest = k => ((S.club && S.club.interest) || {})[k]
+    ? `<span class="pw-on">✓ You’re on the list</span><span class="small muted">We’ll tell you first when it launches.</span>`
+    : `<button class="btn" data-act="interest" data-k="${k}">Register interest</button>`;
   const out = [];
   const ps = (S.club && S.club.preschool) || {};
   out.push(ps.status === 'active' ? preschoolCard()
-    : card('preschool', 'Live April 2027', 'soon', `<p class="small muted">Lesson plans, the term planner, passport awards and the family app.</p>${price(PRESCHOOL_FROM)}`, a(q(LINKS.preschoolHub), 'See what’s inside')));
+    : card('preschool', 'Live April 2027', 'soon', `<p class="small muted">Lesson plans, the term planner, passport awards and the family app.</p>${price(PRESCHOOL_FROM)}`, interest('preschool') + a(q(LINKS.preschoolHub), 'See what’s inside', true)));
   out.push(schoolsStatus().key !== 'none' ? licenceCard('schools', true)
     : card('schools', 'Live now', 'ok', `<p class="small muted">Awards, assessments and graduations in your local schools.</p>${price(fromPrice(SCHOOLS_BANDS))}`, a(q(LINKS.schoolsHub), 'Start NGL Schools')));
   out.push(recStatus().key !== 'none' ? licenceCard('recreational', true)
@@ -1190,11 +1204,12 @@ function screenClub(){
 
 /* ----- Admin: all clubs ----- */
 const CAMPAIGN_START = new Date('2026-10-15T17:30:00Z');
-const ADMIN_FILTERS = [['all','All clubs'], ['week','Joined in the last 7 days'], ['campaign','Joined since the email campaign'], ['nolicence','No licence yet'], ['rec','Recreational active'], ['schools','Schools active']];
+const ADMIN_FILTERS = [['all','All clubs'], ['week','Joined in the last 7 days'], ['campaign','Joined since the email campaign'], ['nolicence','No licence yet'], ['rec','Recreational active'], ['schools','Schools active'], ...Object.entries(INTEREST).map(([k, l]) => ['int-' + k, 'Registered interest: ' + l.replace('NGL ', '')])];
 function adminRows(rows){
   const f = S.adminFilter || 'all', now = new Date();
   return rows.filter(r => f === 'all' || (f === 'week' && r.joined && now - r.joined < 7 * 864e5) || (f === 'campaign' && r.joined && r.joined >= CAMPAIGN_START)
-    || (f === 'nolicence' && !r.recOn && !r.schOn) || (f === 'rec' && r.recOn) || (f === 'schools' && r.schOn));
+    || (f === 'nolicence' && !r.recOn && !r.schOn) || (f === 'rec' && r.recOn) || (f === 'schools' && r.schOn)
+    || (f.startsWith('int-') && (r.c.interest || {})[f.slice(4)]));
 }
 function adminEmails(rows){ return [...new Set(adminRows(rows).map(r => lc(r.c.email || '')).filter(e => e.includes('@')))]; }
 function mailBar(rows){
@@ -1243,6 +1258,9 @@ function screenAdmin(){
       <div class="card stat"><div class="v">${sinceCampaign}</div><div class="l">Joined since the email campaign (15 Oct)</div></div>
       <div class="card stat"><div class="v">${viaEmail}</div><div class="l">Came in from an email link</div></div>
     </div>
+    <h2 class="sec">Registered interest</h2>
+    <div class="grid g4" style="margin-bottom:16px">${Object.entries(INTEREST).map(([k, l]) => { const n = rows.filter(r => (r.c.interest || {})[k]).length;
+      return `<button class="card stat" data-int-f="int-${k}" style="text-align:left;cursor:pointer;border-top:4px solid ${(PATHWAYS[k] || {}).c || 'var(--navy)'}"><div class="v">${n}</div><div class="l">${esc(l.replace('NGL ', ''))}</div><div class="s">${n ? 'Show these clubs' : 'None yet'}</div></button>`; }).join('')}</div>
     ${mailBar(rows)}
     <p class="small muted" style="margin:-4px 0 12px">Newest first. “Email campaign” means the club registered straight after clicking a link in an NGL email.</p>
     <div class="tablewrap"><table class="list"><thead><tr><th>Club</th><th>Joined</th><th>Contact</th><th>Schools</th><th>Recreational</th><th class="num">Awaiting payment</th></tr></thead><tbody>
@@ -1278,6 +1296,7 @@ function screenAuth(mode, msg){
     ];
     v.innerHTML = `<div class="reg">
       <div class="reg-intro">
+        ${ENTRY_INTEREST ? `<div class="reg-int"><b>Register interest in ${INTEREST[ENTRY_INTEREST]}</b>Create your free club account and you’re on the list: we’ll tell you first when it launches. Already have an NGL account? <button class="linkbtn" data-auth="login">Log in</button> and you’re done.</div>` : ''}
         <div class="reg-k">For British Gymnastics clubs · #ItsAllConnected</div>
         <h1>Register your club with the NGL <span>(it’s free)</span></h1>
         <p class="reg-lead">Seven connected pathways, from a child’s first class to adult gymnastics: lesson plans, awards, competitions, judges and parents, all in one place. Register to see it all for yourself.</p>
@@ -1309,6 +1328,7 @@ function screenAuth(mode, msg){
   }
   v.innerHTML = `<div class="auth"><h1 class="page">NGL Club Hub</h1><p class="lead">Your licences, orders and competition reservations in one place.</p>
     ${PREVIEW ? '<div class="demo">Preview mode: any email and password opens the sample club.</div>' : ''}
+    ${ENTRY_INTEREST ? `<div class="note" style="border-left:5px solid var(--pre)"><b>Register interest in ${INTEREST[ENTRY_INTEREST]}.</b> Log in and you’re on the list. New to NGL? <button class="linkbtn" data-auth="register">Create your free account</button>.</div>` : ''}
     <div class="card"><form id="loginForm">
       <label class="f" for="lEmail">Club email</label><input class="f" id="lEmail" type="email" required autocomplete="email">
       <label class="f" for="lPass">Password</label><input class="f" id="lPass" type="password" required autocomplete="current-password">
@@ -1324,13 +1344,15 @@ function screenAuth(mode, msg){
 document.addEventListener('click', async e => {
   const j = e.target.closest('[data-jump]');
   if(j){ const el = document.getElementById(j.dataset.jump); if(el) el.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'}); return; }
-  const t = e.target.closest('[data-tab],[data-of],[data-rf],[data-act],[data-ics],[data-auth],[data-rm-email]');
+  const t = e.target.closest('[data-tab],[data-of],[data-rf],[data-act],[data-ics],[data-auth],[data-rm-email],[data-int-f]');
   if(!t) return;
   if(t.dataset.tab){ e.preventDefault(); if(S.club || S.isAdmin) go(t.dataset.tab); return; }
   if(t.dataset.of){ S.orderFilter = t.dataset.of; render(); return; }
+  if(t.dataset.intF){ S.adminFilter = t.dataset.intF; render(); const el = document.getElementById('admFilter'); if(el) el.scrollIntoView({behavior:'smooth', block:'center'}); return; }
   if(t.dataset.rf){ S.resFilter = t.dataset.rf; render(); return; }
   if(t.dataset.ics){ const r = myReservations().find(x => x.id === t.dataset.ics); if(r) downloadIcs([r], 'NGL-' + (r.compName || 'Competition').replace(/\W+/g, '-')); return; }
   if(t.dataset.rmEmail){ await api.removeBookingEmail(t.dataset.rmEmail); render(); return; }
+  if(t.dataset.act === 'interest' && t.dataset.k){ t.disabled = true; const ok = await api.registerInterest(t.dataset.k); render(); toast(ok ? 'You’re on the list for ' + INTEREST[t.dataset.k] + '.' : 'Sorry, that didn’t save. Please try again.'); return; }
   if(t.dataset.auth === 'register') return screenAuth('register');
   if(t.dataset.auth === 'login') return screenAuth('login');
   if(t.dataset.auth === 'forgot'){
@@ -1349,8 +1371,8 @@ document.addEventListener('click', async e => {
   if(a === 'adm-copy'){ try{ await navigator.clipboard.writeText((S.adminMailList || []).join(', ')); toast(`${(S.adminMailList || []).length} addresses copied. Paste them into BCC.`); }catch(_){ toast('Couldn’t copy. Use Download CSV instead.'); } }
   if(a === 'adm-csv'){
     const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
-    const lines = [['EMAIL','CLUB_NAME','CONTACT','BG_NUMBER','JOINED','SOURCE','SCHOOLS','RECREATIONAL'].join(',')]
-      .concat((S.adminMailRows || []).filter(r => (r.c.email || '').includes('@')).map(r => [lc(r.c.email), r.c.name, r.c.contact, r.c.bgNumber, r.joined ? r.joined.toISOString().slice(0, 10) : '', r.c.source || '', r.schOn ? 'active' : '', r.recOn ? 'active' : ''].map(q).join(',')));
+    const lines = [['EMAIL','CLUB_NAME','CONTACT','BG_NUMBER','JOINED','SOURCE','SCHOOLS','RECREATIONAL','INTEREST'].join(',')]
+      .concat((S.adminMailRows || []).filter(r => (r.c.email || '').includes('@')).map(r => [lc(r.c.email), r.c.name, r.c.contact, r.c.bgNumber, r.joined ? r.joined.toISOString().slice(0, 10) : '', r.c.source || '', r.schOn ? 'active' : '', r.recOn ? 'active' : '', Object.keys(r.c.interest || {}).map(k => (INTEREST[k] || k).replace('NGL ', '')).join('; ')].map(q).join(',')));
     const el = document.createElement('a'); el.href = URL.createObjectURL(new Blob([lines.join('\r\n')], {type:'text/csv'})); el.download = 'NGL-Club-Hub-clubs-' + new Date().toISOString().slice(0, 10) + '.csv'; el.click();
   }
   if(a === 'ics-all'){ const list = myReservations().filter(r => !r.past); if(list.length) downloadIcs(list, 'NGL-My-Reservations'); else toast('No upcoming reservations to add.'); }
@@ -1369,7 +1391,7 @@ document.addEventListener('submit', async e => {
     if(f.id === 'regForm'){
       const d = {name:$('#rName').value.trim(), bgNumber:$('#rBg').value.trim(), contact:$('#rContact').value.trim(), email:$('#rEmail').value.trim(), password:$('#rPass').value};
       const r = await api.register(d);
-      if(r.ok){ S.tab = 'discover'; S.discoverChecked = true; try{ history.replaceState(null, '', '#discover'); }catch(_){} start(); } else $('#authErr').textContent = r.reason;
+      if(r.ok){ if(ENTRY_INTEREST){ S.club.interest = {...(S.club.interest || {}), [ENTRY_INTEREST]: new Date()}; S.newInterest = ENTRY_INTEREST; } { S.tab = 'discover'; S.discoverChecked = true; try{ history.replaceState(null, '', '#discover'); }catch(_){} } start(); } else $('#authErr').textContent = r.reason;
     }
     if(f.id === 'emailForm'){
       const email = lc($('#newEmail').value);
@@ -1414,12 +1436,19 @@ function downloadIcs(list, file){
 async function start(){
   const h = (location.hash || '').slice(1);
   if(h && [...TABS.map(t => t[0]), 'admin', 'music'].includes(h)) S.tab = h;
+  if(S.newInterest){ toast('Welcome! You’re on the list for ' + INTEREST[S.newInterest] + '. Have a look around while you wait.'); S.newInterest = ''; setTimeout(() => window.scrollTo(0, 0), 50); }
+  else if(ENTRY_INTEREST && S.club){
+    S.tab = 'overview'; S.discoverChecked = true;
+    if(!(S.club.interest || {})[ENTRY_INTEREST]) await api.registerInterest(ENTRY_INTEREST);
+    S.interestJust = ENTRY_INTEREST;
+  }
   render();
+  if(S.interestJust){ toast('You’re on the list for ' + INTEREST[S.interestJust] + '. We’ll tell you first when it launches.'); const el = document.getElementById('pathways'); if(el) setTimeout(() => el.scrollIntoView({behavior:'smooth', block:'start'}), 300); S.interestJust = ''; try{ history.replaceState(null, '', '#overview'); }catch(_){} }
 }
 (async () => {
   try{
     const ok = await api.restore();
-    if(ok) start(); else screenAuth(['#register', '#discover'].includes(location.hash || '') ? 'register' : 'login');
+    if(ok) start(); else screenAuth(['#register', '#discover'].includes(location.hash || '') || ENTRY_INTEREST ? 'register' : 'login');
   }catch(e){
     console.error(e);
     $('#view').innerHTML = '<div class="empty"><b>We couldn’t open the NGL Club Hub</b>Please check your internet connection and refresh the page.</div>';
