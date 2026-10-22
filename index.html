@@ -829,7 +829,7 @@ function screenDiscover(){
           <div class="btn-row"><a class="btn" href="#pathways" data-scroll="pathways">See the pathways</a></div></div></li>
         <li><span class="n">2</span><div><h3>Start an Awards Scheme licence</h3><p>Pre-School, Schools or Recreational. One yearly Club Licence per pathway, priced by the number of gymnasts in it, with 5% off every extra pathway. You start it from that pathway’s hub.</p>
           <div class="btn-row"><a class="btn" href="https://club.nationalgymnasticsleague.co.uk/licences.html" target="_blank" rel="noopener">See licence fees</a><button type="button" class="btn ghost" data-tab="licences">Your licences</button></div></div></li>
-        <li><span class="n">3</span><div><h3>Enter 2027 competitions</h3><p>No licence needed. Reserve places for General League, Performance League and Recreational competitions now. Payment is due three months before each event.</p>
+        <li><span class="n">3</span><div><h3>Enter 2027 competitions</h3><p>No licence needed. Reserve places for General League and Recreational competitions now (Performance League is coming in 2027). Payment is due three months before each event.</p>
           <div class="btn-row"><a class="btn" href="${esc(reserve)}" target="_blank" rel="noopener">Reserve competition places</a></div></div></li>
       </ol>
       <p class="muted" style="margin:10px 0 0">Your Overview tab will show your licences, orders and competition places once you’ve started.</p>
@@ -863,7 +863,7 @@ function screenDiscover(){
       ${pw('schools', 'Ages 4–11 · delivered in local schools', ['Run gymnastics in your local schools under the NGL name', 'Awards books and routine videos for every level', 'A family code so parents can see progress', 'A graduation performance to finish each programme'], ext(LINKS.schoolsHub, 'Explore NGL Schools'))}
       ${pw('recreational', 'Ages 4–16 · recreational classes', ['Tailor the term programme to your club: plans built from your apparatus and term length', 'Tailor every class to your gymnasts: Ruby, Pink, Teal and Indigo versions of every station', 'Four award books, 16 levels, assessed in the last two weeks of term', 'Club competitions where every gymnast medals', 'A family app so parents follow the journey'], ext(LINKS.recHub, 'Explore the sample') + ext(LINKS.recHub + '#licence', 'Licence & pricing', true))}
       ${pw('general', '2–10 hours a week', ['Skills books, assessments and competitions', 'WAG Levels 1–4 and MAG Levels 1–3', '24 clubs across four locations in 2027', 'Builds to the NGL National Finals'], ext(LINKS.reserve, 'Reserve competition places'))}
-      ${pw('performance', '11+ hours a week', ['Run to the British Gymnastics Classic Challenge and Grades rules', 'Extra preparation before British Gymnastics events', 'A place to compete when the usual route doesn’t fit', 'Skills books, assessments and competitions'], ext(LINKS.reserve, 'Reserve competition places'))}
+      ${pw('performance', '11+ hours a week', ['Run to the British Gymnastics Classic Challenge and Grades rules', 'Extra preparation before British Gymnastics events', 'A place to compete when the usual route doesn’t fit', 'Skills books, assessments and competitions'], `<span class="pill soon">Coming 2027</span><button type="button" class="btn" data-act="interest" data-k="performance">Register interest</button>`)}
       ${uniMasters()}
     </div>
 
@@ -1066,7 +1066,7 @@ function pathwayCards(){
   out.push(recStatus().key !== 'none' ? licenceCard('recreational', true)
     : card('recreational', 'Live January 2027', 'soon', `<p class="small muted">Four award levels, Ruby to Indigo, with the lesson planner, assessments and competitions.</p>${price(fromPrice(REC_BANDS))}`, a(q(LINKS.recHub), 'Start NGL Recreational')));
   out.push(card('general', 'Competitions live now', 'ok', `<p class="small muted">Compete locally, score nationally.</p><p class="pw-price">Award books <b>live April 2027</b></p>`, a(q(LINKS.reserve), 'Reserve places')));
-  out.push(card('performance', 'Live 2027', 'soon', `<p class="small muted">Awards, assessments and competitions for your performance squads.</p>`, interest('performance')));
+  out.push(card('performance', 'Coming 2027', 'soon', `<p class="small muted">Awards, assessments and competitions for your performance squads.</p>`, interest('performance')));
   out.push(card('university', 'Coming soon', 'off', `<p class="small muted">Awards, assessments and competitions that keep students in the sport.</p>`, interest('university')));
   out.push(card('masters', 'Coming soon', 'off', `<p class="small muted">Awards, assessments and competitions for adult gymnasts.</p>`, interest('masters')));
   return out.join('');
@@ -1081,12 +1081,15 @@ function preschoolCard(){
     <div class="btn-row"><a class="btn" href="${LINKS.preschoolHub}" target="_blank" rel="noopener">${on ? 'Open Pre-School Hub' : 'Start NGL Pre-School'}</a></div></div>`;
 }
 function screenLicences(){
+  const perfSoon = () => `<div class="card accent" style="--c:${PATHWAYS.performance.c}"><img class="logo" src="${LOGOS.performance}" alt="${esc(PATHWAYS.performance.label)}">
+      <span class="pill soon">Coming 2027</span><p class="small muted">The Performance League is coming in 2027. Register interest and we’ll tell you first when it opens.</p>
+      <div class="btn-row">${((S.club && S.club.interest) || {}).performance ? '<span class="pw-on">✓ You’re on the list</span>' : '<button class="btn" data-act="interest" data-k="performance">Register interest</button>'}</div></div>`;
   const soon = k => `<div class="card accent" style="--c:${PATHWAYS[k].c}"><img class="logo" src="${LOGOS[k]}" alt="${esc(PATHWAYS[k].label)}">
       <span class="pill off">Coming soon</span><p class="small muted">Club Licences for the ${esc(PATHWAYS[k].short)} will be added here. Competition places can be reserved now.</p>
       <div class="btn-row"><a class="btn ghost" href="${LINKS.reserve}" target="_blank" rel="noopener">Reserve places</a></div></div>`;
   return `<h1 class="page">Licences</h1>
     <p class="lead">Each NGL programme is its own licence on your club account. Start, renew or order inside each programme’s hub. <a href="licences.html" target="_blank" rel="noopener">See every licence fee and what you get ↗</a></p>
-    <div class="grid g2">${preschoolCard()}${licenceCard('schools')}${licenceCard('recreational')}${soon('general')}${soon('performance')}</div>`;
+    <div class="grid g2">${preschoolCard()}${licenceCard('schools')}${licenceCard('recreational')}${soon('general')}${perfSoon()}</div>`;
 }
 
 /* ----- Orders ----- */
