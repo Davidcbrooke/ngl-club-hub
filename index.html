@@ -105,6 +105,15 @@ table.list tr.past td{color:var(--muted)}
 /* Reservations */
 .res{display:grid;grid-template-columns:76px 1fr auto;gap:14px;align-items:start;background:#fff;border:1px solid var(--line);border-left:5px solid var(--c,var(--navy));border-radius:8px;padding:14px 16px;margin-bottom:10px}
 .res.past{opacity:.65}
+.cal-month{font-family:var(--cond);font-size:20px;color:#fff;margin:22px 0 8px;letter-spacing:.02em}
+.res.own{border-left-style:dashed}
+.otag{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--navy-3);color:var(--navy)}
+.dlg-bg{position:fixed;inset:0;background:rgba(10,12,40,.55);z-index:80;display:flex;align-items:flex-start;justify-content:center;padding:40px 14px;overflow:auto}
+.dlg{background:#fff;color:var(--ink);border-radius:10px;max-width:520px;width:100%;padding:20px 22px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.dlg h3{margin:0 0 4px;font-family:var(--cond);font-size:24px;color:var(--navy)}
+.dlg .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dlg textarea.f{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:5px;font:inherit;font-size:15px;min-height:80px}
+@media (max-width:520px){ .dlg .two{grid-template-columns:1fr} }
 .date{text-align:center;background:var(--navy-3);border-radius:6px;padding:6px 4px;line-height:1.05}
 .date b{display:block;font-family:var(--cond);font-size:30px;color:var(--navy)}
 .date span{font-size:12.5px;font-weight:700;color:var(--muted);text-transform:uppercase}
@@ -177,7 +186,7 @@ body{background:linear-gradient(180deg,#14254a 0,#1e1a4c 900px,#1e1a4c 100%) #1e
 #view p.lead,#view > .muted,#view > p.small,#view > p{color:#c9cde6}
 #view a:not(.btn):not(.app){color:#fff}
 #view .card a:not(.btn),#view table a:not(.btn){color:var(--navy-2)}
-#view .card,#view .app,#view table,#view .note,#view .demo,#view form,#view dialog{color:var(--ink)}
+#view .card,#view .app,#view table,#view .note,#view .demo,#view form,#view dialog,#view .res,#view .empty{color:var(--ink)}
 #view .card,#view .app{border-color:transparent;box-shadow:0 6px 18px rgba(0,0,0,.18)}
 #view .filters button:not([aria-pressed="true"]){color:var(--navy)}
 #view .filters button[aria-pressed="true"]{background:var(--ngl-red);border-color:var(--ngl-red)}
@@ -670,6 +679,12 @@ const api = {
       return {ok:true};
     }catch(e){ return {ok:false, reason:friendlyAuthError(e)}; }
   },
+  async saveCalendar(list){
+    S.club.calendar = list;
+    if(PREVIEW) return true;
+    try{ const {fs, D} = await fb(); await fs.updateDoc(fs.doc(D, 'clubs', S.uid), {calendar: list}); return true; }
+    catch(e){ console.warn('Calendar not saved', e); return false; }
+  },
   async registerInterest(k){
     S.club.interest = {...(S.club.interest || {}), [k]: new Date()};
     if(PREVIEW) return true;
@@ -766,7 +781,7 @@ function demoAdmin(){
 /* =====================================================================
    SCREENS
    ===================================================================== */
-const TABS = [['discover','Discover NGL'], ['overview','Overview'], ['licences','Licences'], ['orders','Orders'], ['reservations','Reservations'], ['support','Club Support'], ['club','Club']];
+const TABS = [['discover','Discover NGL'], ['overview','Overview'], ['licences','Licences'], ['orders','Orders'], ['reservations','Reservations'], ['calendar','Calendar'], ['support','Club Support'], ['club','Club']];
 function setChrome(signedIn){
   document.body.classList.remove('reg-dark');
   $('#tabs').classList.toggle('hidden', !signedIn);
@@ -786,7 +801,7 @@ function render(){
   setChrome(true);
   const v = $('#view');
   const demo = PREVIEW ? `<div class="demo">Preview mode: sample data for ${S.club ? esc(S.club.name) : 'SAADI Gymnastics'}. Nothing is saved.</div>` : '';
-  const screens = {discover:screenDiscover, music:screenMusic, overview:screenOverview, licences:screenLicences, orders:screenOrders, reservations:screenReservations, support:screenSupport, club:screenClub, admin:screenAdmin};
+  const screens = {discover:screenDiscover, music:screenMusic, overview:screenOverview, licences:screenLicences, orders:screenOrders, reservations:screenReservations, calendar:screenCalendar, support:screenSupport, club:screenClub, admin:screenAdmin};
   document.body.classList.toggle('disc-on', S.tab === 'discover');
   v.innerHTML = demo + (screens[S.tab] || screenOverview)();
   if(S.tab === 'admin' && S.isAdmin) loadAdmin();
@@ -1186,6 +1201,89 @@ function screenReservations(){
       <div id="emailMsg"></div></div>`;
 }
 
+/* ----- Calendar: NGL reservations plus the club's own competitions (stored on clubs/{uid}.calendar) ----- */
+const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+const parseYmd = v => { if(!v) return null; const [y, m, d] = String(v).split('-').map(Number); return y ? new Date(y, (m || 1) - 1, d || 1) : null; };
+function ownEvents(){ return ((S.club && S.club.calendar) || []).map(e => ({...e, own:true, date:parseYmd(e.date), end:parseYmd(e.endDate), past:false})).map(e => ({...e, past: (e.end || e.date) ? (e.end || e.date) < new Date(new Date().toDateString()) : false})); }
+function calendarItems(){
+  const ngl = myReservations().map(r => ({kind:'ngl', id:r.id, name:r.compName || r.comp.name || 'NGL competition', date:r.date, venue:r.comp.venue || '', pathway:r.pathway, past:r.past, r}));
+  const own = ownEvents().map(e => ({kind:'own', ...e}));
+  return [...ngl, ...own].sort((a, b) => (a.date || 0) - (b.date || 0));
+}
+function screenCalendar(){
+  const f = S.calFilter || 'upcoming', all = calendarItems();
+  const list = all.filter(x => f === 'all' ? true : f === 'past' ? x.past : !x.past);
+  const btn = (k, l) => `<button data-cf="${k}" aria-pressed="${f === k}">${l}</button>`;
+  let month = '';
+  const rows = list.map(x => {
+    const m = x.date ? x.date.toLocaleDateString('en-GB', {month:'long', year:'numeric'}) : 'No date';
+    const head = m !== month ? `<div class="cal-month">${esc(m)}</div>` : ''; month = m;
+    const dateBox = x.date ? `<span>${x.date.toLocaleDateString('en-GB', {month:'short'})}</span><b>${x.date.getDate()}</b><span>${x.date.toLocaleDateString('en-GB', {weekday:'short'})}</span>` : '<b>?</b>';
+    if(x.kind === 'ngl'){
+      const p = PATHWAYS[x.pathway] || PATHWAYS.general;
+      return head + `<div class="res${x.past ? ' past' : ''}" style="--c:${p.c}"><div class="date">${dateBox}</div>
+        <div><h4>${esc(x.name)}</h4><div class="meta">${pathTag(x.pathway)} ${x.venue ? '· ' + esc(x.venue) : ''}</div>
+        <p class="small" style="margin:6px 0 0">${x.r.waitlist ? '<span class="pill warn">Waiting list</span>' : `<b>${x.r.spaces || 0}</b> NGL place${x.r.spaces === 1 ? '' : 's'} reserved`}</p></div>
+        <div class="act"><button class="btn ghost small" data-cal-ics="ngl:${esc(x.id)}">Add to calendar</button></div></div>`;
+    }
+    const when = [x.end && +x.end !== +x.date ? 'to ' + fmt(x.end) : '', x.start ? 'Starts ' + esc(x.start) : ''].filter(Boolean).join(' · ');
+    return head + `<div class="res own${x.past ? ' past' : ''}" style="--c:#8a91ad"><div class="date">${dateBox}</div>
+      <div><h4>${esc(x.name)}</h4><div class="meta"><span class="otag">Club event</span>${x.venue ? ' · ' + esc(x.venue) : ''}${when ? ' · ' + when : ''}</div>
+      ${x.address ? `<p class="small" style="margin:6px 0 0"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([x.venue, x.address].filter(Boolean).join(', '))}" target="_blank" rel="noopener">${esc(x.address)}</a></p>` : ''}
+      ${x.notes ? `<p class="small muted" style="margin:6px 0 0;white-space:pre-line">${esc(x.notes)}</p>` : ''}</div>
+      <div class="act"><div class="btn-row" style="margin:0"><button class="btn ghost small" data-cal-ics="own:${esc(x.id)}">Add to calendar</button><button class="btn ghost small" data-cal-edit="${esc(x.id)}">Edit</button></div></div></div>`;
+  }).join('');
+  return `<h1 class="page">Competition calendar</h1>
+    <p class="lead">Your NGL reservations and every other competition your club is going to, in one place.</p>
+    <div class="btn-row" style="margin:0 0 14px"><button class="btn red" data-act="cal-add">+ Add a competition</button>${all.some(x => !x.past) ? '<button class="btn ghost" data-act="cal-ics-all">Add all to my calendar</button>' : ''}</div>
+    <div class="filters">${btn('upcoming', 'Upcoming')}${btn('past', 'Past')}${btn('all', 'All')}</div>
+    ${S.bookingsLoading && !S.bookings.length ? '<p class="muted"><span class="spin"></span>Loading your NGL reservations…</p>' : ''}
+    ${rows || `<div class="empty"><b>${all.length ? 'Nothing here' : 'Your calendar is empty'}</b>${all.length ? 'Try another filter.' : 'NGL reservations appear here automatically. Add any other competitions your club is entering with “Add a competition”.'}</div>`}
+    <p class="small" style="color:#c9cde6;margin-top:16px">“Add to calendar” works with Outlook, Google Calendar and Apple Calendar. NGL reservations come from the booking system; change those in <button class="linkbtn" data-tab="reservations" style="color:#fff">Reservations</button>.</p>`;
+}
+function calDialog(id){
+  const e = id ? ((S.club.calendar || []).find(x => x.id === id) || {}) : {};
+  const bg = document.createElement('div'); bg.className = 'dlg-bg'; bg.id = 'calDlg';
+  bg.innerHTML = `<form class="dlg" id="calForm" data-id="${esc(id || '')}"><h3>${id ? 'Edit competition' : 'Add a competition'}</h3>
+    <p class="small muted" style="margin:0 0 4px">For competitions that aren’t NGL, such as BG regional events or friendly club competitions.</p>
+    <label class="f" for="cName">Competition name</label><input class="f" id="cName" required maxlength="120" value="${esc(e.name || '')}" placeholder="e.g. County Floor & Vault">
+    <div class="two"><div><label class="f" for="cDate">Date</label><input class="f" id="cDate" type="date" required value="${esc(e.date || '')}"></div>
+      <div><label class="f" for="cEnd">End date (if more than one day)</label><input class="f" id="cEnd" type="date" value="${esc(e.endDate || '')}"></div></div>
+    <div class="two"><div><label class="f" for="cStart">Start time</label><input class="f" id="cStart" type="time" value="${esc(e.start || '')}"></div>
+      <div><label class="f" for="cVenue">Venue</label><input class="f" id="cVenue" maxlength="120" value="${esc(e.venue || '')}" placeholder="e.g. Stevenage Arena"></div></div>
+    <label class="f" for="cAddr">Address or postcode</label><input class="f" id="cAddr" maxlength="200" value="${esc(e.address || '')}">
+    <label class="f" for="cNotes">Notes</label><textarea class="f" id="cNotes" maxlength="1000" placeholder="Timings, coaches going, kit, anything useful">${esc(e.notes || '')}</textarea>
+    <div class="err" id="calErr"></div>
+    <div class="btn-row" style="margin-top:14px"><button class="btn" type="submit">${id ? 'Save changes' : 'Save competition'}</button><button class="btn ghost" type="button" data-act="cal-close">Cancel</button>
+    ${id ? `<button class="btn ghost" type="button" data-act="cal-del" data-id="${esc(id)}" style="margin-left:auto;color:var(--bad);border-color:var(--bad)">Delete</button>` : ''}</div></form>`;
+  bg.addEventListener('click', ev => { if(ev.target === bg) bg.remove(); });
+  document.body.appendChild(bg); $('#cName').focus();
+}
+function calendarIcs(items, file){
+  const stamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z', ev = [];
+  items.forEach(x => {
+    if(!x.date) return;
+    if(x.kind === 'ngl'){ ev.push(null); return; }
+    const end = new Date(x.end || x.date); end.setDate(end.getDate() + 1);
+    const timed = x.start && !x.end;
+    const dt = timed ? `DTSTART:${icsDate(x.date)}T${x.start.replace(':', '')}00` : `DTSTART;VALUE=DATE:${icsDate(x.date)}`;
+    const de = timed ? `DTEND:${icsDate(x.date)}T${String((+x.start.slice(0, 2) + 4) % 24).padStart(2, '0')}${x.start.slice(3, 5)}00` : `DTEND;VALUE=DATE:${icsDate(end)}`;
+    const desc = [x.start && !timed ? 'Starts ' + x.start : '', x.notes || ''].filter(Boolean).join('\n');
+    ev.push(['BEGIN:VEVENT', `UID:${x.id}@ngl-club-hub-club`, `DTSTAMP:${stamp}`, dt, de, `SUMMARY:${icsEscape(x.name)}`,
+      desc ? `DESCRIPTION:${icsEscape(desc)}` : '', (x.venue || x.address) ? `LOCATION:${icsEscape([x.venue, x.address].filter(Boolean).join(', '))}` : '', 'END:VEVENT'].filter(Boolean).join('\r\n'));
+  });
+  return ev.filter(Boolean);
+}
+function downloadCalendar(items, file){
+  const own = calendarIcs(items.filter(x => x.kind === 'own'));
+  const ngl = items.filter(x => x.kind === 'ngl').map(x => x.r);
+  if(!own.length && !ngl.length){ toast('Nothing to add.'); return; }
+  if(!own.length) return downloadIcs(ngl, file);
+  const nglText = ngl.length ? icsBody(ngl) : [];
+  const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//NGL Club Hub//EN', 'X-WR-CALNAME:' + icsEscape((S.club ? S.club.name : 'NGL') + ' competitions'), ...nglText, ...own, 'END:VCALENDAR'].join('\r\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([ics], {type:'text/calendar'})); a.download = file + '.ics'; a.click();
+}
+
 /* ----- Club ----- */
 function screenClub(){
   const c = S.club;
@@ -1347,10 +1445,13 @@ function screenAuth(mode, msg){
 document.addEventListener('click', async e => {
   const j = e.target.closest('[data-jump]');
   if(j){ const el = document.getElementById(j.dataset.jump); if(el) el.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'}); return; }
-  const t = e.target.closest('[data-tab],[data-of],[data-rf],[data-act],[data-ics],[data-auth],[data-rm-email],[data-int-f]');
+  const t = e.target.closest('[data-tab],[data-of],[data-rf],[data-act],[data-ics],[data-auth],[data-rm-email],[data-int-f],[data-cf],[data-cal-edit],[data-cal-ics]');
   if(!t) return;
   if(t.dataset.tab){ e.preventDefault(); if(S.club || S.isAdmin) go(t.dataset.tab); return; }
   if(t.dataset.of){ S.orderFilter = t.dataset.of; render(); return; }
+  if(t.dataset.cf){ S.calFilter = t.dataset.cf; render(); return; }
+  if(t.dataset.calEdit){ calDialog(t.dataset.calEdit); return; }
+  if(t.dataset.calIcs){ const [k, id] = t.dataset.calIcs.split(':'); const x = calendarItems().find(i => i.kind === k && String(i.id) === id); if(x) downloadCalendar([x], 'NGL-' + x.name.replace(/\W+/g, '-')); return; }
   if(t.dataset.intF){ S.adminFilter = t.dataset.intF; render(); const el = document.getElementById('admFilter'); if(el) el.scrollIntoView({behavior:'smooth', block:'center'}); return; }
   if(t.dataset.rf){ S.resFilter = t.dataset.rf; render(); return; }
   if(t.dataset.ics){ const r = myReservations().find(x => x.id === t.dataset.ics); if(r) downloadIcs([r], 'NGL-' + (r.compName || 'Competition').replace(/\W+/g, '-')); return; }
@@ -1378,6 +1479,10 @@ document.addEventListener('click', async e => {
       .concat((S.adminMailRows || []).filter(r => (r.c.email || '').includes('@')).map(r => [lc(r.c.email), r.c.name, r.c.contact, r.c.bgNumber, r.joined ? r.joined.toISOString().slice(0, 10) : '', r.c.source || '', r.schOn ? 'active' : '', r.recOn ? 'active' : '', Object.keys(r.c.interest || {}).map(k => (INTEREST[k] || k).replace('NGL ', '')).join('; ')].map(q).join(',')));
     const el = document.createElement('a'); el.href = URL.createObjectURL(new Blob([lines.join('\r\n')], {type:'text/csv'})); el.download = 'NGL-Club-Hub-clubs-' + new Date().toISOString().slice(0, 10) + '.csv'; el.click();
   }
+  if(a === 'cal-add'){ calDialog(); return; }
+  if(a === 'cal-close'){ const d = $('#calDlg'); if(d) d.remove(); return; }
+  if(a === 'cal-del'){ if(!confirm('Delete this competition from your calendar?')) return; const ok = await api.saveCalendar((S.club.calendar || []).filter(x => x.id !== t.dataset.id)); const d = $('#calDlg'); if(d) d.remove(); render(); toast(ok ? 'Deleted.' : 'Sorry, that didn’t save. Please try again.'); return; }
+  if(a === 'cal-ics-all'){ downloadCalendar(calendarItems().filter(x => !x.past), (S.club.name || 'Club').replace(/\W+/g, '-') + '-Competitions'); return; }
   if(a === 'ics-all'){ const list = myReservations().filter(r => !r.past); if(list.length) downloadIcs(list, 'NGL-My-Reservations'); else toast('No upcoming reservations to add.'); }
   if(a === 'retry-bookings'){ await loadBookings(); }
   if(a === 'reset-me'){ const r = await api.resetPassword(S.club.email); $('#resetMsg').innerHTML = `<div class="${r.ok ? 'ok-msg' : 'err'}">${r.ok ? 'Reset link sent. Check your inbox.' : esc(r.reason)}</div>`; }
@@ -1396,6 +1501,20 @@ document.addEventListener('submit', async e => {
       const r = await api.register(d);
       if(r.ok){ if(ENTRY_INTEREST){ S.club.interest = {...(S.club.interest || {}), [ENTRY_INTEREST]: new Date()}; S.newInterest = ENTRY_INTEREST; } { S.tab = 'discover'; S.discoverChecked = true; try{ history.replaceState(null, '', '#discover'); }catch(_){} } start(); } else $('#authErr').textContent = r.reason;
     }
+    if(f.id === 'calForm'){
+      const v = id => ($('#' + id).value || '').trim();
+      const d = {name:v('cName').slice(0, 120), date:v('cDate'), endDate:v('cEnd'), start:v('cStart'), venue:v('cVenue').slice(0, 120), address:v('cAddr').slice(0, 200), notes:v('cNotes').slice(0, 1000)};
+      if(!d.name || !d.date){ $('#calErr').textContent = 'Please add a name and a date.'; return; }
+      if(d.endDate && d.endDate < d.date){ $('#calErr').textContent = 'The end date is before the start date.'; return; }
+      if(!d.endDate || d.endDate === d.date) d.endDate = '';
+      const id = f.dataset.id, list = [...(S.club.calendar || [])];
+      if(id){ const i = list.findIndex(x => x.id === id); if(i >= 0) list[i] = {...list[i], ...d}; }
+      else list.push({id:'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), ...d});
+      if(list.length > 300){ $('#calErr').textContent = 'Your calendar is full. Please delete some past competitions.'; return; }
+      const ok = await api.saveCalendar(list);
+      if(!ok){ $('#calErr').textContent = 'Sorry, that didn’t save. Please try again.'; return; }
+      $('#calDlg').remove(); render(); toast(id ? 'Saved.' : 'Added to your calendar.');
+    }
     if(f.id === 'emailForm'){
       const email = lc($('#newEmail').value);
       if(!email.includes('@')) return;
@@ -1413,6 +1532,12 @@ $('#signOutBtn').addEventListener('click', () => api.signOut());
 function icsDate(d){ return d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0'); }
 function icsEscape(s){ return String(s || '').replace(/[\\;,]/g, m => '\\' + m).replace(/\n/g, '\\n'); }
 function downloadIcs(list, file){
+  const ev = icsBody(list);
+  if(!ev.length){ toast('No dated reservations to add.'); return; }
+  const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//NGL Club Hub//EN', 'X-WR-CALNAME:' + icsEscape((S.club ? S.club.name : 'NGL') + ' NGL competitions'), ...ev, 'END:VCALENDAR'].join('\r\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([ics], {type:'text/calendar'})); a.download = file + '.ics'; a.click();
+}
+function icsBody(list){
   const ev = [];
   list.forEach(r => {
     if(!r.date) return;
@@ -1428,9 +1553,7 @@ function downloadIcs(list, file){
         `DESCRIPTION:${icsEscape(`Reference ${r.reference || r.id}. Complete your entries and payment on JustGo.`)}`, 'END:VEVENT'].join('\r\n'));
     }
   });
-  if(!ev.length){ toast('No dated reservations to add.'); return; }
-  const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//NGL Club Hub//EN', 'X-WR-CALNAME:' + icsEscape((S.club ? S.club.name : 'NGL') + ' NGL competitions'), ...ev, 'END:VCALENDAR'].join('\r\n');
-  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([ics], {type:'text/calendar'})); a.download = file + '.ics'; a.click();
+  return ev;
 }
 
 /* =====================================================================
