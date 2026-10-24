@@ -849,7 +849,8 @@ function render(){
   setChrome(true);
   const v = $('#view');
   const demo = PREVIEW ? `<div class="demo">Preview mode: sample data for ${S.club ? esc(S.club.name) : 'SAADI Gymnastics'}. Nothing is saved.</div>` : '';
-  const screens = {discover:screenDiscover, overview:screenOverview, licences:screenLicences, orders:screenOrders, competitions:screenCompetitions, general:screenCompetitions, music:screenCompetitions, reservations:screenCompetitions, calendar:screenCompetitions, league:screenCompetitions, support:screenSupport, club:screenClub, admin:screenAdmin};
+  const screens = {discover:screenDiscover, overview:screenOverview, licences:screenLicences, orders:screenOrders, competitions:screenCompetitions, comps:screenCompetitions, general:screenCompetitions, music:screenCompetitions, reservations:screenCompetitions, calendar:screenCompetitions, league:screenCompetitions, support:screenSupport, club:screenClub, admin:screenAdmin};
+  Object.keys(COMP_ALIAS).forEach(k => { screens[k] = screenCompetitions; });
   document.body.classList.toggle('disc-on', S.tab === 'discover');
   v.innerHTML = demo + (screens[S.tab] || screenOverview)();
   if(S.tab === 'admin' && S.isAdmin) loadAdmin();
