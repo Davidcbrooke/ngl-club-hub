@@ -171,6 +171,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;padding:20px 16px 30p
 .lic-logo{height:38px;display:block}
 table.lic td{vertical-align:middle}
 table.lic td.act{text-align:right;white-space:nowrap}
+table.lic td.act .btn + .btn{margin-left:6px}
 ul.how{margin:6px 0 12px;padding-left:20px;line-height:1.6}
 .hub .btn-row{margin-top:auto}
 .comp-nav{margin-bottom:18px}
@@ -811,8 +812,8 @@ function demoAdmin(){
    ===================================================================== */
 const TABS = [['discover','Discover NGL'], ['overview','Overview'], ['licences','Awards Scheme Licences'], ['competitions','Competitions'], ['support','Club Support'], ['orders','Orders'], ['club','Club']];
 /* Competitions holds four sections; the old tab names still work as links into them. */
-const COMP_SUBS = [['reservations','Reservations'], ['music','Floor music'], ['calendar','Calendar'], ['league','League tables & rules']];
-const COMP_ALIAS = {competitions:null, general:'league', reservations:'reservations', music:'music', calendar:'calendar', league:'league'};
+const COMP_SUBS = [['comps','Overview'], ['reservations','Reservations'], ['music','Floor music'], ['calendar','Calendar'], ['league','League tables & rules']];
+const COMP_ALIAS = {competitions:null, comps:'comps', general:'league', reservations:'reservations', music:'music', calendar:'calendar', league:'league'};
 const topTab = t => t in COMP_ALIAS ? 'competitions' : t;
 function setChrome(signedIn){
   document.body.classList.remove('reg-dark');
@@ -1198,11 +1199,44 @@ function preschoolCard(){
 }
 /* ----- Competitions: reservations, floor music, calendar, and league tables & rules ----- */
 function screenCompetitions(){
-  const sub = COMP_ALIAS[S.tab] || S.compSub || 'reservations'; S.compSub = sub;
+  const sub = COMP_ALIAS[S.tab] || (S.tab === 'competitions' ? 'comps' : S.compSub) || 'comps'; S.compSub = sub;
   const missing = musicMissing();
   const nav = `<div class="filters comp-nav">${COMP_SUBS.map(([k, l]) => `<button data-tab="${k}" aria-pressed="${sub === k}">${l}${k === 'music' && missing ? ` <span class="count">${missing}</span>` : ''}</button>`).join('')}</div>`;
-  const body = sub === 'music' ? screenMusic() : sub === 'calendar' ? screenCalendar() : sub === 'league' ? screenGeneral() : screenReservations();
+  const body = sub === 'comps' ? compsOverview() : sub === 'music' ? screenMusic() : sub === 'calendar' ? screenCalendar() : sub === 'league' ? screenGeneral() : screenReservations();
   return nav + body;
+}
+/* Competitions overview: one row per pathway, like Awards Scheme Licences */
+function compsOverview(){
+  const em = S.club && S.club.email ? encodeURIComponent(S.club.email) : '';
+  const q = u => em ? u + (u.includes('?') ? '&' : '?') + 'email=' + em : u;
+  const mine = myReservations().filter(r => !r.past && !r.waitlist);
+  const placesFor = k => mine.filter(r => (r.pathway || '') === k).reduce((a, r) => a + (r.spaces || 0), 0);
+  const int = k => ((S.club && S.club.interest) || {})[k];
+  const interest = k => int(k) ? '<span class="pw-on">✓ You’re on the list</span>' : `<button class="btn ghost" data-act="interest" data-k="${k}">Register interest</button>`;
+  const ext = (href, label, ghost) => `<a class="btn${ghost ? ' ghost' : ''}" href="${esc(q(href))}" target="_blank" rel="noopener">${esc(label)}</a>`;
+  const placesTag = k => { const n = placesFor(k); return n ? `<div class="small" style="margin-top:4px"><b>${n}</b> place${n === 1 ? '' : 's'} reserved</div>` : ''; };
+  const row = (k, st, what, act) => `<tr><td><img class="lic-logo" src="${LOGOS[k]}" alt="${esc(PATHWAYS[k].label)}"></td><td>${st}</td><td>${what}${placesTag(k)}</td><td class="act">${act}</td></tr>`;
+  const pill = (t, c) => `<span class="pill ${c}">${esc(t)}</span>`;
+  const rows = [
+    row('preschool', pill('Live April 2027', 'soon'), 'Graduation at the end of each programme', ext(LINKS.preschoolHub, 'Graduations', true)),
+    row('schools', pill('Live now', 'ok'), 'Graduation performance at the end of each programme', ext(LINKS.schoolsHub, 'Graduations', true)),
+    row('recreational', pill('Live January 2027', 'soon'), 'Club competitions at the four award levels. Every gymnast medals.', ext(LINKS.reserve, 'Book now') + ext(LINKS.recHub + '#competition', 'Routines', true)),
+    row('general', pill('Live now', 'ok'), 'The league, the Power League and the NGL National Finals', ext(LINKS.reserve, 'Book now') + `<button class="btn ghost" data-tab="league">Rules &amp; league tables</button>`),
+    row('performance', pill('Coming 2027', 'soon'), 'Classic Challenge and Grades preparation competitions', interest('performance')),
+    row('university', pill('Coming soon', 'off'), 'University League competitions', interest('university')),
+    row('masters', pill('Coming soon', 'off'), 'NGL Masters competitions', interest('masters'))
+  ].join('');
+  return `<h1 class="page">Competitions</h1>
+    <p class="lead">Every pathway’s competitions, booked and managed in one place.</p>
+    <div class="card" style="margin-bottom:16px"><h3>How it works</h3>
+      <ul class="how">
+        <li><b>Reserve places</b> for your club with <b>Book now</b>. No licence needed.</li>
+        <li><b>Complete entries and payment on JustGo</b>, at least 3 months before each event.</li>
+        <li><b>Upload floor music</b> here for every gymnast who needs it.</li>
+        <li>Your competitions appear in your <b>Calendar</b>, ready to add to Google, Outlook or Apple.</li>
+      </ul>
+      <div class="btn-row"><button class="btn" data-tab="reservations">Your reservations</button><button class="btn ghost" data-tab="music">Floor music</button><button class="btn ghost" data-tab="calendar">Calendar</button></div></div>
+    <div class="tablewrap"><table class="list lic"><thead><tr><th>Pathway</th><th>Status</th><th>Competition</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 /* ----- League tables & rules (General League) ----- */
 const GL = {
