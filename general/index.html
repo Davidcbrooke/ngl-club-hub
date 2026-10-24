@@ -41,6 +41,7 @@ h2{font:700 26px/1.1 var(--cond);color:#fff;margin:30px 0 10px}
 .btn.ghost{background:#fff;color:var(--navy)}
 .book{background:#fff;border-radius:12px;overflow:hidden}
 .book iframe{width:100%;height:1150px;border:0;display:block}
+.book{background:#f4f5f8}
 .gal{display:flex;gap:10px;overflow-x:auto;padding:4px 0 8px}
 .gal img{height:180px;border-radius:6px;box-shadow:0 3px 10px rgba(0,0,0,.18);flex:none}
 .soon{display:inline-block;background:#e8f1f8;color:var(--gl);font-weight:800;font-size:13px;padding:3px 10px;border-radius:12px;margin-bottom:8px;align-self:flex-start}
@@ -88,7 +89,7 @@ footer{text-align:center;color:#b9bbdc;font-size:14px;padding:10px 16px 30px}foo
 <script>
 (function(){
   var p = new URLSearchParams(location.search), em = p.get('email') || '', club = p.get('club') || 'our club';
-  document.getElementById('bookFrame').src = 'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-booking-system.html?pathway=general' + (em ? '&email=' + encodeURIComponent(em) : '');
+  document.getElementById('bookFrame').src = 'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-booking-system.html?embed=1&pathway=general' + (em ? '&email=' + encodeURIComponent(em) : '');
   document.getElementById('videoMail').href = 'mailto:admin@nationalgymnasticsleague.co.uk?subject=' + encodeURIComponent('Power League videos: ' + club) + '&body=' + encodeURIComponent('Hi NGL,\n\nHere are our Power League videos.\n\nFor each video: gymnast first name and surname initial, BG number, level, age group, training hours and the challenge.\n\nClub: ' + club + '\n');
 })();
 </script>
@@ -131,5 +132,6 @@ footer{text-align:center;color:#b9bbdc;font-size:14px;padding:10px 16px 30px}foo
 })();
 </script>
 
+<script>window.addEventListener('message', e => { const h = e.data && e.data.nglBookingHeight; const f = document.getElementById('bookFrame'); if(h && f && e.source === f.contentWindow) f.style.height = (h + 4) + 'px'; });</script>
 </body>
 </html>

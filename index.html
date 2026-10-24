@@ -358,6 +358,7 @@ body.reg-dark footer{color:#aeb3d6}body.reg-dark footer a{color:#fff}
   .reg-form{position:static}.reg h1{font-size:36px}.reg-grid{grid-template-columns:1fr 1fr}.reg-video video{max-width:none}
 }
 @media (max-width:480px){.reg-get{grid-template-columns:1fr}.reg-grid{gap:10px}.reg-grid figcaption{font-size:12.5px}}
+.book-frame{display:block;width:100%;height:900px;border:0;border-radius:16px;background:#f4f5f8;margin:4px 0 30px}
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 </head>
@@ -373,7 +374,7 @@ body.reg-dark footer{color:#aeb3d6}body.reg-dark footer a{color:#fff}
     <nav class="tabs hidden" id="tabs"><div class="wrap" role="tablist"></div></nav>
   </div>
 </header>
-<main><div class="wrap" id="view"><p class="muted"><span class="spin"></span>Loading…</p></div></main>
+<main><div class="wrap" id="view"><p class="muted"><span class="spin"></span>Loading…</p></div><div class="wrap" id="bookHost" hidden></div></main>
 <footer>National Gymnastics League · 66 Waveney Road, Harpenden, Herts AL5 4QZ · <a href="mailto:admin@nationalgymnasticsleague.co.uk">admin@nationalgymnasticsleague.co.uk</a></footer>
 
 <script>
@@ -827,8 +828,8 @@ function demoAdmin(){
    ===================================================================== */
 const TABS = [['discover','Discover NGL'], ['overview','Overview'], ['licences','Awards Scheme Licences'], ['competitions','Competitions'], ['support','Club Support'], ['orders','Orders'], ['club','Club']];
 /* Competitions holds four sections; the old tab names still work as links into them. */
-const COMP_SUBS = [['comps','Overview'], ['reservations','Reservations'], ['music','Floor music'], ['calendar','Calendar'], ['league','League tables & rules']];
-const COMP_ALIAS = {competitions:null, comps:'comps', general:'league', reservations:'reservations', music:'music', calendar:'calendar', league:'league'};
+const COMP_SUBS = [['comps','Overview'], ['book','Book places'], ['reservations','Reservations'], ['music','Floor music'], ['calendar','Calendar'], ['league','League tables & rules']];
+const COMP_ALIAS = {competitions:null, comps:'comps', book:'book', general:'league', reservations:'reservations', music:'music', calendar:'calendar', league:'league'};
 const topTab = t => t in COMP_ALIAS ? 'competitions' : t;
 function setChrome(signedIn){
   document.body.classList.remove('reg-dark');
@@ -853,6 +854,7 @@ function render(){
   Object.keys(COMP_ALIAS).forEach(k => { screens[k] = screenCompetitions; });
   document.body.classList.toggle('disc-on', S.tab === 'discover');
   v.innerHTML = demo + (screens[S.tab] || screenOverview)();
+  syncBook();
   if(S.tab === 'admin' && S.isAdmin) loadAdmin();
 }
 function go(tab){ S.tab = tab; render(); window.scrollTo(0, 0); try{ history.replaceState(null, '', '#' + tab); }catch(_){} }
@@ -954,7 +956,7 @@ function screenDiscover(){
         <li><span class="n">2</span><div><h3>Start an Awards Scheme licence</h3><p>Pre-School, Schools or Recreational. One yearly Club Licence per pathway, priced by the number of gymnasts in it, with 5% off every extra pathway. You start it from that pathway’s hub.</p>
           <div class="btn-row"><button type="button" class="btn" data-tab="licences">Licence fees and your licences</button></div></div></li>
         <li><span class="n">3</span><div><h3>Enter 2027 competitions</h3><p>No licence needed. Reserve places for General League and Recreational competitions now (Performance League is coming in 2027). Payment is due three months before each event.</p>
-          <div class="btn-row"><a class="btn" href="${esc(reserve)}" target="_blank" rel="noopener">Reserve competition places</a></div></div></li>
+          <div class="btn-row"><button class="btn" data-book="">Reserve competition places</button></div></div></li>
       </ol>
       <p class="muted" style="margin:10px 0 0">Your Overview tab will show your licences, orders and competition places once you’ve started.</p>
     </section>`;
@@ -989,7 +991,7 @@ function screenDiscover(){
     <div class="apps">
       <a class="app" style="--c:var(--perf)" href="https://davidcbrooke.github.io/GYMNASTICS-RESULTS/NGL_Rotation_Planner.html" target="_blank" rel="noopener"><b>Rotation Planner</b><span>Build your weekly session plan and show it live on a gym screen.</span><em>Open planner ↗</em></a>
       <button type="button" class="app" style="--c:var(--red);text-align:left;font:inherit;cursor:pointer" data-tab="support"><b>Club Support offers</b><span>Partner offers for NGL clubs: HR, coaching, volunteering, JustGo and more.</span><em>See offers →</em></button>
-      <a class="app" style="--c:var(--general)" href="${esc(LINKS.reserve)}" target="_blank" rel="noopener"><b>Competition places</b><span>Reserve places at NGL competitions for your gymnasts.</span><em>Reserve places ↗</em></a>
+      <button type="button" class="app" style="--c:var(--general);text-align:left;font:inherit;cursor:pointer" data-book=""><b>Competition places</b><span>Reserve places at NGL competitions for your gymnasts.</span><em>Reserve places →</em></button>
       <a class="app" style="--c:var(--navy-2)" href="https://www.nationalgymnasticsleague.co.uk/register-to-become-a-remote-judge" target="_blank" rel="noopener"><b>Judging Pathway</b><span>Paid judging and real experience for your coaches and volunteers.</span><em>Share with your judges ↗</em></a>
     </div>
 
@@ -1222,7 +1224,7 @@ function pathwayCards(){
     : card('schools', 'Live now', 'ok', `<p class="small muted">Awards, assessments and graduations in your local schools.</p>${price(fromPrice(SCHOOLS_BANDS))}`, a(q(LINKS.schoolsHub), 'Open Schools Hub') + a(LICENCE_FEES, 'Licence fees', true)));
   out.push(recStatus().key !== 'none' ? licenceCard('recreational', true)
     : card('recreational', 'Live January 2027', 'soon', `<p class="small muted">Four award levels, Ruby to Indigo, with the lesson planner, assessments and competitions.</p>${price(fromPrice(REC_BANDS))}`, a(q(LINKS.recHub), 'Open Recreational Hub') + a(LICENCE_FEES, 'Licence fees', true)));
-  out.push(card('general', 'Competitions live now', 'ok', `<p class="small muted">Compete locally, score nationally. Booking, floor music, league tables, the Power League and the 2027 rules in one place.</p><p class="pw-price">Award books <b>live April 2027</b></p>`, `<button class="btn" data-tab="general">Open General League Hub</button>` + a(q(LINKS.reserve), 'Reserve places', true)));
+  out.push(card('general', 'Competitions live now', 'ok', `<p class="small muted">Compete locally, score nationally. Booking, floor music, league tables, the Power League and the 2027 rules in one place.</p><p class="pw-price">Award books <b>live April 2027</b></p>`, `<button class="btn" data-tab="general">Open General League Hub</button><button class="btn ghost" data-book="general">Reserve places</button>`));
   out.push(card('performance', 'Coming 2027', 'soon', `<p class="small muted">Awards, assessments and competitions for your performance squads.</p>`, interest('performance')));
   out.push(card('university', 'Coming soon', 'off', `<p class="small muted">Awards, assessments and competitions that keep students in the sport.</p>`, interest('university')));
   out.push(card('masters', 'Coming soon', 'off', `<p class="small muted">Awards, assessments and competitions for adult gymnasts.</p>`, interest('masters')));
@@ -1242,9 +1244,28 @@ function screenCompetitions(){
   const sub = COMP_ALIAS[S.tab] || (S.tab === 'competitions' ? 'comps' : S.compSub) || 'comps'; S.compSub = sub;
   const missing = musicMissing();
   const nav = `<div class="filters comp-nav">${COMP_SUBS.map(([k, l]) => `<button data-tab="${k}" aria-pressed="${sub === k}">${l}${k === 'music' && missing ? ` <span class="count">${missing}</span>` : ''}</button>`).join('')}</div>`;
-  const body = sub === 'comps' ? compsOverview() : sub === 'music' ? screenMusic() : sub === 'calendar' ? screenCalendar() : sub === 'league' ? screenGeneral() : screenReservations();
+  const body = sub === 'comps' ? compsOverview() : sub === 'book' ? screenBook() : sub === 'music' ? screenMusic() : sub === 'calendar' ? screenCalendar() : sub === 'league' ? screenGeneral() : screenReservations();
   return nav + body;
 }
+/* Book places: the NGL booking page shown inside the hub. The frame lives outside #view so
+   re-rendering the hub never reloads it or loses a booking half-way through. */
+const BOOK_PATHS = [['', 'All pathways'], ['schools', 'Schools'], ['recreational', 'Recreational'], ['general', 'General League']];
+function screenBook(){
+  const cur = S.bookPath || '';
+  return `<h1 class="page">Book places</h1>
+    <p class="lead">Pick your dates and reserve places for your gymnasts. No payment now: complete entries and payment on JustGo at least 3 months before each event.</p>
+    <div class="filters">${BOOK_PATHS.map(([k, l]) => `<button data-book="${k}" aria-pressed="${cur === k}">${l}</button>`).join('')}</div>`;
+}
+function syncBook(){
+  const host = $('#bookHost'); if(!host) return;
+  const on = !!(S.club || S.isAdmin) && COMP_ALIAS[S.tab] === 'book';
+  host.hidden = !on; if(!on) return;
+  const url = LINKS.reserve + '?embed=1' + (S.bookPath ? '&pathway=' + encodeURIComponent(S.bookPath) : '') + (S.club && S.club.email ? '&email=' + encodeURIComponent(S.club.email) : '') + (S.club && S.club.name ? '&club=' + encodeURIComponent(S.club.name) : '');
+  let f = $('#bookFrame');
+  if(!f){ host.innerHTML = '<iframe id="bookFrame" class="book-frame" title="Book NGL competition places"></iframe>'; f = $('#bookFrame'); }
+  if(f.dataset.url !== url){ f.dataset.url = url; f.style.height = '900px'; f.src = url; }
+}
+window.addEventListener('message', e => { const h = e.data && e.data.nglBookingHeight; const f = document.getElementById('bookFrame'); if(h && f && e.source === f.contentWindow) f.style.height = (h + 4) + 'px'; });
 /* Competitions overview: one row per pathway, like Awards Scheme Licences */
 function compsOverview(){
   const em = S.club && S.club.email ? encodeURIComponent(S.club.email) : '';
@@ -1260,8 +1281,8 @@ function compsOverview(){
   const rows = [
     row('preschool', pill('Live April 2027', 'soon'), 'Graduation at the end of each programme', ext(LINKS.preschoolHub, 'Graduations', true)),
     row('schools', pill('Live now', 'ok'), 'Graduation performance at the end of each programme', ext(LINKS.schoolsHub, 'Graduations', true)),
-    row('recreational', pill('Live January 2027', 'soon'), 'Club competitions at the four award levels. Every gymnast medals.', ext(LINKS.reserve, 'Book now') + ext(LINKS.recHub + '#competition', 'Routines', true)),
-    row('general', pill('Live now', 'ok'), 'The league, the Power League and the NGL National Finals', ext(LINKS.reserve, 'Book now') + `<button class="btn ghost" data-tab="league">Rules &amp; league tables</button>`),
+    row('recreational', pill('Live January 2027', 'soon'), 'Club competitions at the four award levels. Every gymnast medals.', `<button class="btn" data-book="recreational">Book now</button>` + ext(LINKS.recHub + '#competition', 'Routines', true)),
+    row('general', pill('Live now', 'ok'), 'The league, the Power League and the NGL National Finals', `<button class="btn" data-book="general">Book now</button>` + `<button class="btn ghost" data-tab="league">Rules &amp; league tables</button>`),
     row('performance', pill('Coming 2027', 'soon'), 'Classic Challenge and Grades preparation competitions', interest('performance')),
     row('university', pill('Coming soon', 'off'), 'University League competitions', interest('university')),
     row('masters', pill('Coming soon', 'off'), 'NGL Masters competitions', interest('masters'))
@@ -1408,7 +1429,7 @@ function screenReservations(){
       <div class="card stat"><div class="v">${upcoming.length}</div><div class="l">Upcoming competitions</div></div>
       <div class="card stat"><div class="v">${places}</div><div class="l">Gymnast places reserved</div><div class="s">${upcoming.filter(r => r.waitlist).length} on a waiting list</div></div>
     </div>
-    <div class="btn-row" style="margin:0 0 14px">${justgo}<a class="btn ghost" href="${LINKS.reserve}" target="_blank" rel="noopener">Reserve more places</a>${all.length ? '<button class="btn ghost" data-act="ics-all">Add all to my calendar</button>' : ''}</div>
+    <div class="btn-row" style="margin:0 0 14px">${justgo}<button class="btn ghost" data-book="">Reserve more places</button>${all.length ? '<button class="btn ghost" data-act="ics-all">Add all to my calendar</button>' : ''}</div>
     <div class="filters">${btn('upcoming', 'Upcoming')}${btn('past', 'Past')}${btn('all', 'All')}</div>
     ${list.length ? list.map(r => {
       const p = PATHWAYS[r.pathway] || PATHWAYS.general;
@@ -1672,6 +1693,8 @@ function screenAuth(mode, msg){
 document.addEventListener('click', async e => {
   const j = e.target.closest('[data-jump]');
   if(j){ const el = document.getElementById(j.dataset.jump); if(el) el.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'}); return; }
+  const bk = e.target.closest('[data-book]');
+  if(bk){ e.preventDefault(); if(S.club || S.isAdmin){ S.bookPath = bk.dataset.book || ''; go('book'); } return; }
   const t = e.target.closest('[data-tab],[data-of],[data-rf],[data-act],[data-ics],[data-auth],[data-rm-email],[data-int-f],[data-cf],[data-cal-edit],[data-cal-ics]');
   if(!t) return;
   if(t.dataset.tab){ e.preventDefault(); if(S.club || S.isAdmin) go(t.dataset.tab); return; }
