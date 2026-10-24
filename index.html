@@ -413,6 +413,7 @@ const LINKS = {
 };
 const CONTACT_EMAIL = 'admin@nationalgymnasticsleague.co.uk';
 const LICENCE_FEES = 'licences.html';
+const GL_HUB = 'general/';
 window.addEventListener('message', e => { const h = e.data && e.data.nglLicencesHeight; const f = document.getElementById('licFrame'); if(h && f && e.source === f.contentWindow) f.style.height = (h + 4) + 'px'; });
 const BANK = { accountName:'National Gymnastics League', sortCode:'60-84-64', accountNumber:'93416867' };
 const PAYMENT_DUE_MONTHS = 3;   // matches the booking system: payment due 3 months before each event
@@ -902,7 +903,7 @@ function pathwayExplorer(){
     const lic = info.licence ? (licOn(k) ? '<span class="pill ok">Licence live</span>' : '<span class="pill off">Not purchased</span>') : '';
     let btn;
     if(info.interest) btn = ((S.club && S.club.interest) || {})[info.interest] ? '<span class="pw-on">✓ You’re on the list</span>' : `<button class="btn" data-act="interest" data-k="${info.interest}">Register interest</button>`;
-    else if(k === 'general') btn = `<button class="btn" data-tab="competitions">Explore this Club Hub</button>`;
+    else if(k === 'general') btn = `<a class="btn" href="${esc(q(GL_HUB))}" target="_blank" rel="noopener">Explore this Club Hub</a>`;
     else btn = `<a class="btn" href="${esc(q(hub[k]))}" target="_blank" rel="noopener">Explore this Club Hub</a>`;
     return `<div class="card pw2" style="--c:${p.c};--c2:${p.dark ? '#8a6d00' : p.c}">
       <div class="pw2-head"><img class="logo" src="${LOGOS[k]}" alt="${esc(p.label)}"><div class="pw2-tags"><span class="pill ${info.status[1]}">${esc(info.status[0])}</span>${lic}</div></div>
@@ -1026,7 +1027,7 @@ function hubTiles(){
     tile('schools', schoolsStatus().key === 'active', LINKS.schoolsHub, 'Awards, assessments and graduations in your local schools.'),
     tile('recreational', recStatus().key === 'active', LINKS.recHub, 'Lesson planner, four award books, assessments and competitions.'),
     `<div class="card accent hub" style="--c:${PATHWAYS.general.c}"><img class="logo" src="${LOGOS.general}" alt="NGL General League"><span class="pill ok">Competitions live</span>
-      <p class="small muted">Reservations, floor music, calendar, league tables and rules.</p><div class="btn-row"><button class="btn" data-tab="competitions">Open Competitions</button></div></div>`
+      <p class="small muted">Book competitions, floor music, league tables, the Power League and rules.</p><div class="btn-row"><a class="btn" href="${esc(q(GL_HUB))}" target="_blank" rel="noopener">Open General League Hub</a></div></div>`
   ].join('');
 }
 function appTiles(){
