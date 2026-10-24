@@ -361,6 +361,11 @@ body.reg-dark footer{color:#aeb3d6}body.reg-dark footer a{color:#fff}
 }
 @media (max-width:480px){.reg-get{grid-template-columns:1fr}.reg-grid{gap:10px}.reg-grid figcaption{font-size:12.5px}}
 .book-frame{display:block;width:100%;height:900px;border:0;border-radius:16px;background:#f4f5f8;margin:4px 0 30px}
+.rsteps{list-style:none;counter-reset:rs;margin:6px 0 18px;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.rsteps li{counter-increment:rs;background:#fff;color:var(--ink);border-radius:14px;padding:16px 16px 16px 62px;position:relative;line-height:1.4}
+.rsteps li::before{content:counter(rs);position:absolute;left:16px;top:16px;width:34px;height:34px;border-radius:50%;background:var(--ngl-red);color:#fff;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center}
+.rsteps b{display:block;font-size:17px;margin-bottom:4px;color:var(--navy)}.rsteps span{font-size:14.5px;color:#4a5370}
+@media (max-width:900px){.rsteps{grid-template-columns:1fr}}
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 </head>
@@ -830,7 +835,7 @@ function demoAdmin(){
    ===================================================================== */
 const TABS = [['discover','Discover NGL'], ['overview','Overview'], ['licences','Awards Scheme Licences'], ['competitions','Competitions'], ['support','Club Support'], ['orders','Orders'], ['club','Club']];
 /* Competitions holds four sections; the old tab names still work as links into them. */
-const COMP_SUBS = [['comps','Overview'], ['book','Book places'], ['reservations','Reservations'], ['music','Floor music'], ['calendar','Calendar'], ['league','League tables & rules']];
+const COMP_SUBS = [['comps','Overview'], ['book','Reserve places'], ['reservations','Your reserved places'], ['music','Floor music'], ['calendar','Calendar'], ['league','League tables & rules']];
 const COMP_ALIAS = {competitions:null, comps:'comps', book:'book', general:'league', reservations:'reservations', music:'music', calendar:'calendar', league:'league'};
 const topTab = t => t in COMP_ALIAS ? 'competitions' : t;
 function setChrome(signedIn){
@@ -957,7 +962,7 @@ function screenDiscover(){
           <div class="btn-row"><a class="btn" href="#pathways" data-scroll="pathways">See the pathways</a></div></div></li>
         <li><span class="n">2</span><div><h3>Start an Awards Scheme licence</h3><p>Pre-School, Schools or Recreational. One yearly Club Licence per pathway, priced by the number of gymnasts in it, with 5% off every extra pathway. You start it from that pathway’s hub.</p>
           <div class="btn-row"><button type="button" class="btn" data-tab="licences">Licence fees and your licences</button></div></div></li>
-        <li><span class="n">3</span><div><h3>Enter 2027 competitions</h3><p>No licence needed. Reserve places for General League and Recreational competitions now (Performance League is coming in 2027). Payment is due three months before each event.</p>
+        <li><span class="n">3</span><div><h3>Enter 2027 competitions</h3><p>No licence needed. Reserve places for General League and Recreational competitions now (Performance League is coming in 2027). Confirm and buy on JustGo from the private link we send up to 5 months before each event.</p>
           <div class="btn-row"><button class="btn" data-book="">Reserve competition places</button></div></div></li>
       </ol>
       <p class="muted" style="margin:10px 0 0">Your Overview tab will show your licences, orders and competition places once you’ve started.</p>
@@ -1254,8 +1259,12 @@ function screenCompetitions(){
 const BOOK_PATHS = [['', 'All pathways'], ['schools', 'Schools'], ['recreational', 'Recreational'], ['general', 'General League']];
 function screenBook(){
   const cur = S.bookPath || '';
-  return `<h1 class="page">Book places</h1>
-    <p class="lead">Pick your dates and reserve places for your gymnasts. No payment now: complete entries and payment on JustGo at least 3 months before each event.</p>
+  return `<h1 class="page">Reserve places</h1>
+    <ol class="rsteps">
+      <li><b>Reserve your places</b><span>No payment now. Your reservation is your club’s commitment to buy those places.</span></li>
+      <li><b>Confirm and buy on JustGo</b><span>We’ll send you a private link to confirm and buy your places up to 5 months before the competition. You need to be a British Gymnastics club to use the JustGo Events system.</span></li>
+      <li><b>Buy by 3 months before</b><span>Any places not bought by 3 months before the event are automatically offered to clubs on the waiting list.</span></li>
+    </ol>
     <div class="filters">${BOOK_PATHS.map(([k, l]) => `<button data-book="${k}" aria-pressed="${cur === k}">${l}</button>`).join('')}</div>`;
 }
 function syncBook(){
@@ -1294,7 +1303,7 @@ function compsOverview(){
     <div class="card" style="margin-bottom:16px"><h3>How it works</h3>
       <ul class="how">
         <li><b>Reserve places</b> for your club with <b>Book now</b>. No licence needed.</li>
-        <li><b>Complete entries and payment on JustGo</b>, at least 3 months before each event.</li>
+        <li><b>Confirm and buy on JustGo</b> using the private link we send up to 5 months before. Places not bought by 3 months before go to the waiting list.</li>
         <li><b>Upload floor music</b> here for every gymnast who needs it.</li>
         <li>Your competitions appear in your <b>Calendar</b>, ready to add to Google, Outlook or Apple.</li>
       </ul>
@@ -1416,14 +1425,14 @@ document.addEventListener('change', async e => {
 });
 
 function screenReservations(){
-  if(S.bookingsLoading && !S.bookings.length) return `<h1 class="page">Competition reservations</h1><p class="muted"><span class="spin"></span>Loading your reservations…</p>`;
+  if(S.bookingsLoading && !S.bookings.length) return `<h1 class="page">Your reserved places</h1><p class="muted"><span class="spin"></span>Loading your reservations…</p>`;
   const all = myReservations(), f = S.resFilter;
   const list = all.filter(r => f === 'all' ? true : f === 'past' ? r.past : !r.past);
   const upcoming = all.filter(r => !r.past), places = upcoming.filter(r => !r.waitlist).reduce((a, r) => a + (r.spaces || 0), 0);
   const emails = bookingEmails();
   const btn = (k, l) => `<button data-rf="${k}" aria-pressed="${f === k}">${l}</button>`;
   const justgo = LINKS.justgo ? `<a class="btn red" href="${LINKS.justgo}" target="_blank" rel="noopener">Enter on JustGo</a>` : '';
-  return `<h1 class="page">Competition reservations</h1>
+  return `<h1 class="page">Your reserved places</h1>
     <p class="lead">Places your club has reserved for NGL competitions.</p>
     <div class="note warn"><b>These are reservations, not entries.</b> Entries and payment are completed on JustGo. “Add to calendar” includes a reminder to complete each entry.</div>
     ${S.bookingsError ? `<div class="note warn">${esc(S.bookingsError)} <button class="linkbtn" data-act="retry-bookings">Try again</button></div>` : ''}
@@ -1489,7 +1498,7 @@ function screenCalendar(){
     <div class="filters">${btn('upcoming', 'Upcoming')}${btn('past', 'Past')}${btn('all', 'All')}</div>
     ${S.bookingsLoading && !S.bookings.length ? '<p class="muted"><span class="spin"></span>Loading your NGL reservations…</p>' : ''}
     ${rows || `<div class="empty"><b>${all.length ? 'Nothing here' : 'Your calendar is empty'}</b>${all.length ? 'Try another filter.' : 'NGL reservations appear here automatically. Add any other competitions your club is entering with “Add a competition”.'}</div>`}
-    <p class="small" style="color:#c9cde6;margin-top:16px">“Add to calendar” works with Outlook, Google Calendar and Apple Calendar. NGL reservations come from the booking system; change those in <button class="linkbtn" data-tab="reservations" style="color:#fff">Reservations</button>.</p>`;
+    <p class="small" style="color:#c9cde6;margin-top:16px">“Add to calendar” works with Outlook, Google Calendar and Apple Calendar. NGL reservations come from the booking system; change those in <button class="linkbtn" data-tab="reservations" style="color:#fff">Your reserved places</button>.</p>`;
 }
 function calDialog(id){
   const e = id ? ((S.club.calendar || []).find(x => x.id === id) || {}) : {};
