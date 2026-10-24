@@ -174,6 +174,7 @@ table.lic td.act{text-align:right;white-space:nowrap}
 ul.how{margin:6px 0 12px;padding-left:20px;line-height:1.6}
 .hub .btn-row{margin-top:auto}
 .comp-nav{margin-bottom:18px}
+.lic-frame{width:100%;height:1400px;border:0;display:block;background:transparent}
 .pws .card{display:flex;flex-direction:column}
 .pws .card .btn-row{margin-top:auto;padding-top:12px}
 .pws .pill,.pws .logo{align-self:flex-start}
@@ -411,6 +412,7 @@ const LINKS = {
 };
 const CONTACT_EMAIL = 'admin@nationalgymnasticsleague.co.uk';
 const LICENCE_FEES = 'licences.html';
+window.addEventListener('message', e => { const h = e.data && e.data.nglLicencesHeight; const f = document.getElementById('licFrame'); if(h && f && e.source === f.contentWindow) f.style.height = (h + 4) + 'px'; });
 const BANK = { accountName:'National Gymnastics League', sortCode:'60-84-64', accountNumber:'93416867' };
 const PAYMENT_DUE_MONTHS = 3;   // matches the booking system: payment due 3 months before each event
 
@@ -933,7 +935,7 @@ function screenDiscover(){
         <li><span class="n">1</span><div><h3>Explore the pathways</h3><p>See what’s inside each programme: sample lesson plans, award books, medals and the family apps. Every hub uses this same login.</p>
           <div class="btn-row"><a class="btn" href="#pathways" data-scroll="pathways">See the pathways</a></div></div></li>
         <li><span class="n">2</span><div><h3>Start an Awards Scheme licence</h3><p>Pre-School, Schools or Recreational. One yearly Club Licence per pathway, priced by the number of gymnasts in it, with 5% off every extra pathway. You start it from that pathway’s hub.</p>
-          <div class="btn-row"><a class="btn" href="https://club.nationalgymnasticsleague.co.uk/licences.html" target="_blank" rel="noopener">See licence fees</a><button type="button" class="btn ghost" data-tab="licences">Your licences</button></div></div></li>
+          <div class="btn-row"><button type="button" class="btn" data-tab="licences">Licence fees and your licences</button></div></div></li>
         <li><span class="n">3</span><div><h3>Enter 2027 competitions</h3><p>No licence needed. Reserve places for General League and Recreational competitions now (Performance League is coming in 2027). Payment is due three months before each event.</p>
           <div class="btn-row"><a class="btn" href="${esc(reserve)}" target="_blank" rel="noopener">Reserve competition places</a></div></div></li>
       </ol>
@@ -1252,8 +1254,10 @@ function screenLicences(){
         <li>A licence opens the full lesson plans, award book ordering at club prices and the family app for that pathway.</li>
         <li><b>Explore first:</b> every hub shows you what’s inside before you buy. Start or renew a licence inside that hub, using this same login.</li>
       </ul>
-      <div class="btn-row"><a class="btn ghost" href="${LICENCE_FEES}" target="_blank" rel="noopener">See every licence fee ↗</a></div></div>
-    <div class="tablewrap"><table class="list lic"><thead><tr><th>Pathway</th><th>Status</th><th>Licence</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+      </div>
+    <div class="tablewrap"><table class="list lic"><thead><tr><th>Pathway</th><th>Status</th><th>Licence</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+    <h2 class="sec">Licence fees and what you get</h2>
+    <iframe class="lic-frame" id="licFrame" src="${LICENCE_FEES}?embed=1" title="NGL licence fees and what you get" loading="lazy"></iframe>`;
 }
 
 /* ----- Orders ----- */

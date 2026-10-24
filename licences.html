@@ -79,6 +79,9 @@ main h2{color:#fff}
 main .lead,main > .note{color:#c9cde6}
 .tbl td{background:#fff}
 footer{color:#b9bbdc}footer a{color:#fff}
+html.embed body{background:transparent!important;min-height:0}
+html.embed .hub-top,html.embed header,html.embed footer,html.embed .cta,html.embed .embed-hide{display:none!important}
+html.embed main h2:first-child{margin-top:4px}
 </style>
 </head>
 <body>
@@ -190,5 +193,16 @@ footer{color:#b9bbdc}footer a{color:#fff}
 </main>
 <footer>National Gymnastics League · 66 Waveney Road, Harpenden, Herts AL5 4QZ · <a href="mailto:admin@nationalgymnasticsleague.co.uk">admin@nationalgymnasticsleague.co.uk</a></footer>
 <div class="seven"><i style="background:#E84187"></i><i style="background:#F8D438"></i><i style="background:#E88230"></i><i style="background:#0071B3"></i><i style="background:#01AFB8"></i><i style="background:#6AA525"></i><i style="background:#90276A"></i></div>
+<script>
+/* Inside the NGL Club Hub (Awards Scheme Licences tab) this page shows just the fees and what you get. */
+if(/[?&]embed=1/.test(location.search)){
+  document.documentElement.classList.add('embed');
+  let on = false;
+  document.querySelectorAll('main > *').forEach(el => { if(el.tagName === 'H2' && /How it works/i.test(el.textContent)) on = true; if(on) el.classList.add('embed-hide'); });
+  document.querySelectorAll('a[href]').forEach(a => { if(!a.target) a.target = '_top'; });
+  const send = () => parent.postMessage({nglLicencesHeight: document.documentElement.scrollHeight}, '*');
+  new ResizeObserver(send).observe(document.body); window.addEventListener('load', send); send();
+}
+</script>
 </body>
 </html>
