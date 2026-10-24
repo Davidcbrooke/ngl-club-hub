@@ -1710,7 +1710,7 @@ function icsBody(list){
    ===================================================================== */
 async function start(){
   const h = (location.hash || '').slice(1);
-  if(h && [...TABS.map(t => t[0]), 'admin', 'music'].includes(h)) S.tab = h;
+  if(h && [...TABS.map(t => t[0]), 'admin', ...Object.keys(COMP_ALIAS)].includes(h)) S.tab = h;
   if(S.newInterest){ toast('Welcome! You’re on the list for ' + INTEREST[S.newInterest] + '. Have a look around while you wait.'); S.newInterest = ''; setTimeout(() => window.scrollTo(0, 0), 50); }
   else if(ENTRY_INTEREST && S.club){
     S.tab = 'overview'; S.discoverChecked = true;
