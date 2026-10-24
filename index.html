@@ -175,6 +175,19 @@ table.lic td.act .btn + .btn{margin-left:6px}
 ul.how{margin:6px 0 12px;padding-left:20px;line-height:1.6}
 .hub .btn-row{margin-top:auto}
 .comp-nav{margin-bottom:18px}
+.appgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px 12px;margin:6px 0 8px;max-width:900px}
+@media(min-width:760px){.appgrid{grid-template-columns:repeat(7,minmax(0,1fr))}}
+.app2{display:flex;flex-direction:column;align-items:center;text-align:center;text-decoration:none;color:#fff;background:none;border:0;padding:0;font:inherit;cursor:pointer}
+.app2 .ic{position:relative;width:86px;height:86px;border-radius:22.5%;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.08);transition:transform .15s}
+.app2:hover .ic,.app2:focus-visible .ic{transform:translateY(-3px) scale(1.04)}
+.app2 .ic img{width:100%;height:100%;display:block}
+.app2 .ic.soon img{filter:grayscale(.65) brightness(.75)}
+.app2 .ic .dot{position:absolute;top:6px;right:6px;width:12px;height:12px;border-radius:50%;background:#34c759;border:2px solid #fff}
+.app2 b{margin-top:9px;font-size:14px;font-weight:700;letter-spacing:.01em}
+.app2 .st{font-size:12px;color:#aeb6d6;margin-top:1px}.app2 .st.on{color:#7be39a}
+.app2 .ds{font-size:11.5px;line-height:1.3;color:#8f97b8;margin-top:4px;max-width:120px}
+.app-note{margin-top:14px}
+@media(max-width:520px){.app2 .ic{width:68px;height:68px}.app2 .ds{display:none}}
 .lic-frame{width:100%;height:1400px;border:0;display:block;background:transparent}
 .pws .card{display:flex;flex-direction:column}
 .pws .card .btn-row{margin-top:auto;padding-top:12px}
@@ -1007,12 +1020,36 @@ function screenOverview(){
       <div class="card stat"><div class="v">${res.length}</div><div class="l">Upcoming reservations</div><div class="s">${places} gymnast place${places === 1 ? '' : 's'}</div></div>
       <div class="card stat"><div class="v" style="font-size:24px;padding-top:6px">${next ? fmt(next.date) : '–'}</div><div class="l">Next competition</div><div class="s">${next ? esc(next.compName) : (S.bookingsLoading ? 'Loading…' : 'No reservations yet')}</div></div>
     </div>
-    <h2 class="sec">Your Club Hubs</h2>
-    <p class="sec-note">Each Awards Scheme has its own hub, and they all use this same login. Explore any hub before you buy a licence. <button class="linkbtn" data-tab="licences" style="color:#fff">Licences and how they work</button></p>
-    <div class="grid g4 hubs" id="pathways">${hubTiles()}</div>
+    <h2 class="sec">Your Club Hub Apps</h2>
+    <div class="appgrid" id="pathways">${hubApps()}</div>
+    <p class="sec-note app-note">Every app uses this same login. Explore any of them before you buy a licence: with a licence it’s fully open. <button class="linkbtn" data-tab="licences" style="color:#fff">Licences and how they work</button></p>
     <h2 class="sec">Club Tools</h2>
     <div class="apps">${appTiles()}</div>
     <div class="btn-row" style="margin-top:16px"><a class="btn ghost" href="${LINKS.website}" target="_blank" rel="noopener">NGL website</a></div>`;
+}
+/* Home-screen style app icons, one per pathway */
+function hubApps(){
+  const em = S.club && S.club.email ? encodeURIComponent(S.club.email) : '';
+  const q = u => em ? u + (u.includes('?') ? '&' : '?') + 'email=' + em : u;
+  const ps = (S.club && S.club.preschool) || {}, int = (S.club && S.club.interest) || {};
+  const apps = [
+    ['preschool', 'Pre-School', LINKS.preschoolHub, ps.status === 'active', 'Lesson plans, passports and the family app'],
+    ['schools', 'Schools', LINKS.schoolsHub, schoolsStatus().key === 'active', 'Awards and graduations in your schools'],
+    ['recreational', 'Recreational', LINKS.recHub, recStatus().key === 'active', 'Lesson planner, award books and competitions'],
+    ['general', 'General League', GL_HUB, null, 'Book competitions, league tables and rules'],
+    ['performance', 'Performance', null, null, 'Coming 2027'],
+    ['university', 'University', null, null, 'Coming soon'],
+    ['masters', 'Masters', null, null, 'Coming soon']
+  ];
+  return apps.map(([k, name, href, lic, desc]) => {
+    const soon = !href;
+    const status = soon ? (int[k] ? '✓ On the list' : desc) : lic === true ? 'Open' : lic === false ? 'Explore' : 'Open';
+    if(soon) desc = int[k] ? 'We’ll tell you first' : 'Tap to register interest';
+    const inner = `<span class="ic${soon ? ' soon' : ''}"><img src="img/apps/${k}.png" alt="">${lic === true ? '<i class="dot" title="Licence live"></i>' : ''}</span>
+      <b>${esc(name)}</b><small class="st${lic === true ? ' on' : ''}">${esc(status)}</small><small class="ds">${esc(desc)}</small>`;
+    if(soon) return int[k] ? `<div class="app2">${inner}</div>` : `<button type="button" class="app2" data-act="interest" data-k="${k}">${inner}</button>`;
+    return `<a class="app2" href="${esc(q(href))}" target="_blank" rel="noopener">${inner}</a>`;
+  }).join('');
 }
 /* One tile per Awards Scheme hub: open it if licensed, otherwise explore it. */
 function hubTiles(){
