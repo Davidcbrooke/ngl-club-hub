@@ -1,0 +1,25 @@
+{
+  "id": "/general/",
+  "name": "NGL General League Club Hub",
+  "short_name": "NGL General",
+  "description": "Book NGL General League competitions, floor music, league tables and rules.",
+  "start_url": "/general/",
+  "scope": "/general/",
+  "display": "standalone",
+  "background_color": "#14254a",
+  "theme_color": "#0071B3",
+  "icons": [
+    {
+      "src": "/general/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/general/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

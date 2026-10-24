@@ -1,0 +1,25 @@
+{
+  "id": "/preschool/club/",
+  "name": "NGL Pre-School Club Hub",
+  "short_name": "NGL Pre-School",
+  "description": "Lesson plans, the term planner, passports and the family app for NGL Pre-School clubs.",
+  "start_url": "/preschool/club/",
+  "scope": "/preschool/club/",
+  "display": "standalone",
+  "background_color": "#14254a",
+  "theme_color": "#E84187",
+  "icons": [
+    {
+      "src": "/preschool/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/preschool/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
