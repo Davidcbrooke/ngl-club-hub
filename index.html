@@ -172,6 +172,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;padding:20px 16px 30p
 .g3{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
 .lic-logo{height:38px;display:block}
 table.lic td{vertical-align:middle}
+.who-for{display:flex;flex-direction:column;gap:3px;font-size:14px;line-height:1.3;min-width:130px}.who-for span{white-space:nowrap}.who-for .hrs{font-weight:700;color:var(--navy)}
 table.lic td.act{text-align:right;white-space:nowrap}
 table.lic td.act .btn + .btn{margin-left:6px}
 ul.how{margin:6px 0 12px;padding-left:20px;line-height:1.6}
@@ -1287,7 +1288,9 @@ function compsOverview(){
   const interest = k => int(k) ? '<span class="pw-on">✓ You’re on the list</span>' : `<button class="btn ghost" data-act="interest" data-k="${k}">Register interest</button>`;
   const ext = (href, label, ghost) => `<a class="btn${ghost ? ' ghost' : ''}" href="${esc(q(href))}" target="_blank" rel="noopener">${esc(label)}</a>`;
   const placesTag = k => { const n = placesFor(k); return n ? `<div class="small" style="margin-top:4px"><b>${n}</b> place${n === 1 ? '' : 's'} reserved</div>` : ''; };
-  const row = (k, st, what, act) => `<tr><td><img class="lic-logo" src="${LOGOS[k]}" alt="${esc(PATHWAYS[k].label)}"></td><td>${st}</td><td>${what}${placesTag(k)}</td><td class="act">${act}</td></tr>`;
+  const WHO = {preschool:['Ages 3–4'], schools:['Ages 4–11'], recreational:['Ages 4–16', '1–2 hrs a week'], general:['Ages 6–18', '2–10 hrs a week', 'Age groups 6–8 · 9–11 · 12–14 · 15+'], performance:['Ages 6–18', 'Over 10 hrs a week'], university:['Ages 18+', 'Students'], masters:['Ages 18+']};
+  const who = k => `<div class="who-for">${(WHO[k] || []).map((t, i) => `<span${i === 1 ? ' class="hrs"' : ''}>${esc(t)}</span>`).join('')}</div>`;
+  const row = (k, st, what, act) => `<tr><td><img class="lic-logo" src="${LOGOS[k]}" alt="${esc(PATHWAYS[k].label)}"></td><td>${st}</td><td>${who(k)}</td><td>${what}${placesTag(k)}</td><td class="act">${act}</td></tr>`;
   const pill = (t, c) => `<span class="pill ${c}">${esc(t)}</span>`;
   const rows = [
     row('preschool', pill('Live April 2027', 'soon'), 'Graduation at the end of each programme', ext(LINKS.preschoolHub, 'Graduations', true)),
@@ -1308,7 +1311,8 @@ function compsOverview(){
         <li>Your competitions appear in your <b>Calendar</b>, ready to add to Google, Outlook or Apple.</li>
       </ul>
       </div>
-    <div class="tablewrap"><table class="list lic"><thead><tr><th>Pathway</th><th>Status</th><th>Competition</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    <div class="tablewrap"><table class="list lic"><thead><tr><th>Pathway</th><th>Status</th><th>Who it’s for</th><th>Competition</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="small" style="color:#c9cde6;margin-top:10px">Not sure which to enter? Go by weekly training hours: Recreational for 1–2 hours, General League for 2–10 hours (General League girls’ Level 1 is only for 2–5 hours), and Performance League for over 10 hours.</p>`;
 }
 /* ----- League tables & rules (General League) ----- */
 const GL = {
