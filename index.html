@@ -48,6 +48,8 @@ nav.tabs button{flex:0 0 auto;background:rgba(255,255,255,.08);border:1px solid 
 nav.tabs button[aria-selected="true"]{background:var(--ngl-red);border-color:var(--ngl-red)}
 nav.tabs .count{display:inline-block;min-width:20px;padding:0 6px;margin-left:6px;border-radius:10px;background:#fff;color:var(--ngl-red);font-size:12px;line-height:20px;text-align:center}
 nav.tabs button[aria-selected="true"] .count{background:#fff}
+.comp-nav .count{display:inline-block;min-width:20px;padding:0 6px;margin-left:6px;border-radius:10px;background:var(--ngl-red);color:#fff;font-size:12px;font-weight:700;line-height:20px;text-align:center;vertical-align:1px}
+.comp-nav button[aria-pressed="true"] .count{background:#fff;color:var(--ngl-red)}
 
 main{padding:20px 0 40px}
 .demo{background:var(--gold-soft);border:1px solid #ecd28b;color:#5a4300;border-radius:6px;padding:9px 12px;font-size:14px;margin-bottom:16px}
@@ -1243,7 +1245,7 @@ function preschoolCard(){
 function screenCompetitions(){
   const sub = COMP_ALIAS[S.tab] || (S.tab === 'competitions' ? 'comps' : S.compSub) || 'comps'; S.compSub = sub;
   const missing = musicMissing();
-  const nav = `<div class="filters comp-nav">${COMP_SUBS.map(([k, l]) => `<button data-tab="${k}" aria-pressed="${sub === k}">${l}${k === 'music' && missing ? ` <span class="count">${missing}</span>` : ''}</button>`).join('')}</div>`;
+  const nav = `<div class="filters comp-nav">${COMP_SUBS.map(([k, l]) => `<button data-tab="${k}" aria-pressed="${sub === k}">${l}${k === 'music' && missing ? `<span class="count">${missing}</span>` : ''}</button>`).join('')}</div>`;
   const body = sub === 'comps' ? compsOverview() : sub === 'book' ? screenBook() : sub === 'music' ? screenMusic() : sub === 'calendar' ? screenCalendar() : sub === 'league' ? screenGeneral() : screenReservations();
   return nav + body;
 }
@@ -1296,7 +1298,7 @@ function compsOverview(){
         <li><b>Upload floor music</b> here for every gymnast who needs it.</li>
         <li>Your competitions appear in your <b>Calendar</b>, ready to add to Google, Outlook or Apple.</li>
       </ul>
-      <div class="btn-row"><button class="btn" data-tab="reservations">Your reservations</button><button class="btn ghost" data-tab="music">Floor music</button><button class="btn ghost" data-tab="calendar">Calendar</button></div></div>
+      </div>
     <div class="tablewrap"><table class="list lic"><thead><tr><th>Pathway</th><th>Status</th><th>Competition</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 /* ----- League tables & rules (General League) ----- */
