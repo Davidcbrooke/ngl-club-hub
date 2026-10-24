@@ -245,6 +245,25 @@ body.disc-on .disc-hero{background:rgba(255,255,255,.06);border:1px solid rgba(2
 body.disc-on footer{color:#b9bbdc}body.disc-on footer a{color:#fff}
 body.disc-on .card{border-color:transparent;box-shadow:0 6px 18px rgba(0,0,0,.18)}
 @media (min-width:900px){.prob,.disc-pw{grid-template-columns:repeat(3,1fr)}}
+.disc-pw2{display:grid;grid-template-columns:1fr;gap:14px;align-items:start}
+@media (min-width:820px){.disc-pw2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.pw2{border-top:6px solid var(--c);display:flex;flex-direction:column;min-width:0;text-align:left}
+.pw2-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.pw2 .logo{display:block;height:auto;max-width:60%;max-height:60px;object-fit:contain}
+.pw2-tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.pw2 .pw2-who{font-size:13px;font-weight:700;color:var(--c2,var(--c));margin:8px 0 4px;text-align:left;align-self:flex-start}
+.strand{border:1px solid #e3e6ef;border-radius:10px;margin:8px 0 0;background:#fafbfd}
+.strand summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:11px 14px;font-weight:800;color:var(--navy)}
+.strand summary::-webkit-details-marker{display:none}
+.strand summary span{border-left:4px solid var(--c);padding-left:10px}
+.strand summary i{width:10px;height:10px;border-right:2.5px solid var(--navy);border-bottom:2.5px solid var(--navy);transform:rotate(45deg);transition:transform .15s;margin-right:4px}
+.strand[open] summary i{transform:rotate(-135deg)}
+.strand ul{margin:4px 14px 12px 30px;padding:0}.strand li{margin:3px 0}
+.strand .pw-price{margin:0 14px 12px !important;padding:0}
+.pw-gal{display:flex;gap:8px;overflow-x:auto;padding:2px 14px 8px}
+.pw-gal img{height:150px;width:auto;border-radius:6px;box-shadow:0 3px 10px rgba(0,0,0,.15);flex:none}
+.pw-gal.small img{height:70px;box-shadow:none}
+.pw2 .btn-row{margin-top:14px}
 @media (max-width:760px){.disc-hero{grid-template-columns:1fr;padding:20px}.disc-hero h1{font-size:28px}}
 
 /* NGL Pre-School */
@@ -830,6 +849,65 @@ function isNewClub(){
   const ps = (S.club && S.club.preschool) || {};
   return !!S.club && sch.key === 'none' && rec.key === 'none' && ps.status !== 'active' && !allOrders().length;
 }
+/* ----- Pathway explorer (Discover NGL): the same layout for every pathway ----- */
+const PW_IMG = 'img/pathways/', PS_IMG = 'preschool/img/', EM_IMG = 'email/img/';
+const PATHWAY_INFO = {
+  preschool: {who:'Ages 3–4', status:['Live April 2027','soon'], licence:'preschool',
+    awards:{title:'Awards Scheme', imgs:[PS_IMG + 'book-cover.jpg', PS_IMG + 'book-inside.jpg', PS_IMG + 'plan_03_Pirates-thumb.jpg'],
+      points:['Around the World with Somi & Flic: a passport with 20 countries to visit','A medal for every country and an A1 journey poster','40 themed lesson plans with equipment, set-ups and rotations','A term planner and a family app for parents'], from:150},
+    comps:{title:'Graduation', imgs:[PS_IMG + 'medal01.png', PS_IMG + 'medal07.png', PS_IMG + 'medal14.png'], small:true,
+      points:['No competitions at this age','Each programme ends with a Graduation where every child is celebrated','The 20 passport levels lead straight into NGL Recreational']}},
+  schools: {who:'Ages 4–11 · delivered in local schools', status:['Live now','ok'], licence:'schools',
+    awards:{title:'Awards Scheme', imgs:[PW_IMG + 'schools-cover.jpg'],
+      points:['Run gymnastics in your local schools under the NGL name','Awards books and routine videos for every level','A family code so parents can see progress'], from:'schools'},
+    comps:{title:'Graduation', imgs:[],
+      points:['A graduation performance to finish each programme','Parents see their child perform what they have learned','A natural next step into your club’s classes']}},
+  recreational: {who:'Ages 4–16 · recreational classes', status:['Live January 2027','soon'], licence:'recreational',
+    awards:{title:'Awards Scheme', imgs:[PW_IMG + 'recreational-cover.jpg', EM_IMG + 'award-books.jpg', EM_IMG + 'coach-app.jpg', EM_IMG + 'parent-app.jpg'],
+      points:['Four award books, Ruby to Indigo, 16 levels, assessed in the last two weeks of term','A term plan built from your apparatus and term length','Ruby, Pink, Teal and Indigo versions of every station','A coach app and a family app so parents follow the journey'], from:'recreational'},
+    comps:{title:'Competitions', imgs:[PW_IMG + 'comp-medal.jpg', PW_IMG + 'comp-podium.jpg'],
+      points:['Club competitions at the same four levels as the award books','2-piece or 4-piece, scored positively out of 10.0','Every gymnast gets a medal']}},
+  general: {who:'2–10 hours a week', status:['Competitions live now','ok'],
+    awards:{title:'Skills Books', imgs:[PW_IMG + 'general-cover.jpg', PW_IMG + 'general-book-1.jpg', PW_IMG + 'general-book-2.jpg'],
+      points:['A skills book for every General League level, aligned to the competition','Bronze, Silver and Gold ticks for every skill','Live April 2027']},
+    comps:{title:'Competitions', imgs:[PW_IMG + 'comp-hero.jpg', PW_IMG + 'comp-judges.jpg', PW_IMG + 'comp-spectators.jpg'],
+      points:['Local competitions across four regional venues, 24 clubs in 2027','Girls Levels 1–4 and boys Levels 1–4','Live scores and a National League Table, building to the NGL National Finals','The Power League for boys: challenges filmed in training, with an NGL Player Card']}},
+  performance: {who:'11+ hours a week', status:['Coming 2027','soon'], interest:'performance',
+    awards:{title:'Skills Books', imgs:[PW_IMG + 'performance-cover.jpg'],
+      points:['Skills books for Performance League levels','Coming 2027']},
+    comps:{title:'Competitions', imgs:[PW_IMG + 'comp-beam.jpg', PW_IMG + 'comp-filming.jpg'],
+      points:['Girls: preparation competitions run to the British Gymnastics Classic Challenge and Grades rules','Boys: a competition that relaxes the age rules while keeping the challenging level','A place to compete when the usual route doesn’t fit']}},
+  university: {who:'Students', status:['Coming soon','off'], interest:'university',
+    awards:{title:'Awards Scheme', imgs:[PW_IMG + 'university-cover.jpg'], points:['Awards and skills that keep students in the sport']},
+    comps:{title:'Competitions', imgs:[], points:['A University League for students']}},
+  masters: {who:'Adults', status:['Coming soon','off'], interest:'masters',
+    awards:{title:'Awards Scheme', imgs:[PW_IMG + 'masters-cover.jpg'], points:['Awards and skills for adult gymnasts']},
+    comps:{title:'Competitions', imgs:[], points:['NGL Masters competitions for adult gymnasts']}}
+};
+function pathwayExplorer(){
+  const em = S.club && S.club.email ? encodeURIComponent(S.club.email) : '';
+  const q = u => em ? u + (u.includes('?') ? '&' : '?') + 'email=' + em : u;
+  const hub = {preschool:LINKS.preschoolHub, schools:LINKS.schoolsHub, recreational:LINKS.recHub};
+  const licOn = k => k === 'preschool' ? ((S.club && S.club.preschool) || {}).status === 'active' : k === 'schools' ? schoolsStatus().key === 'active' : k === 'recreational' ? recStatus().key === 'active' : false;
+  const priceOf = f => f == null ? '' : `<p class="pw-price">Annual licence from <b>${gbp(f === 'schools' ? fromPrice(SCHOOLS_BANDS) : f === 'recreational' ? fromPrice(REC_BANDS) : f)}</b></p>`;
+  const gallery = (imgs, small) => imgs.length ? `<div class="pw-gal${small ? ' small' : ''}">${imgs.map(src => `<img src="${esc(src)}" alt="" loading="lazy">`).join('')}</div>` : '';
+  const strand = (st, extra) => `<details class="strand"><summary><span>${esc(st.title)}</span><i aria-hidden="true"></i></summary>
+      ${gallery(st.imgs, st.small)}<ul>${st.points.map(x => `<li>${esc(x)}</li>`).join('')}</ul>${extra || ''}</details>`;
+  return Object.keys(PATHWAY_INFO).map(k => {
+    const p = PATHWAYS[k], info = PATHWAY_INFO[k];
+    const lic = info.licence ? (licOn(k) ? '<span class="pill ok">Licence live</span>' : '<span class="pill off">Not purchased</span>') : '';
+    let btn;
+    if(info.interest) btn = ((S.club && S.club.interest) || {})[info.interest] ? '<span class="pw-on">✓ You’re on the list</span>' : `<button class="btn" data-act="interest" data-k="${info.interest}">Register interest</button>`;
+    else if(k === 'general') btn = `<button class="btn" data-tab="competitions">Explore this Club Hub</button>`;
+    else btn = `<a class="btn" href="${esc(q(hub[k]))}" target="_blank" rel="noopener">Explore this Club Hub</a>`;
+    return `<div class="card pw2" style="--c:${p.c};--c2:${p.dark ? '#8a6d00' : p.c}">
+      <div class="pw2-head"><img class="logo" src="${LOGOS[k]}" alt="${esc(p.label)}"><div class="pw2-tags"><span class="pill ${info.status[1]}">${esc(info.status[0])}</span>${lic}</div></div>
+      <p class="pw2-who">${esc(info.who)}</p>
+      ${strand(info.awards, priceOf(info.awards.from))}
+      ${strand(info.comps)}
+      <div class="btn-row">${btn}</div></div>`;
+  }).join('');
+}
 function screenDiscover(){
   const club = S.club ? S.club.name : 'your club';
   const talk = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('NGL: a quick call for ' + club)}&body=${encodeURIComponent('Hi Dave,\n\nWe’d like to hear more about the NGL. A good time to call is:\n\nClub: ' + club + '\n')}`;
@@ -884,14 +962,8 @@ function screenDiscover(){
     </div>
 
     <h2 class="sec" id="pathways">Seven pathways, one framework</h2>
-    <div class="grid g2 disc-pw">
-      ${pw('preschool', 'Ages 3–4', ['Around the World with Somi & Flic: a passport with 20 countries to visit', 'A medal for every country and an A1 journey poster', 'Themed lesson plans with equipment, set-ups and rotations', 'A term planner and a family app for parents'], ext(LINKS.preschoolHub, 'Explore NGL Pre-School'))}
-      ${pw('schools', 'Ages 4–11 · delivered in local schools', ['Run gymnastics in your local schools under the NGL name', 'Awards books and routine videos for every level', 'A family code so parents can see progress', 'A graduation performance to finish each programme'], ext(LINKS.schoolsHub, 'Explore NGL Schools'))}
-      ${pw('recreational', 'Ages 4–16 · recreational classes', ['Tailor the term programme to your club: plans built from your apparatus and term length', 'Tailor every class to your gymnasts: Ruby, Pink, Teal and Indigo versions of every station', 'Four award books, 16 levels, assessed in the last two weeks of term', 'Club competitions where every gymnast medals', 'A family app so parents follow the journey'], ext(LINKS.recHub, 'Explore the sample') + ext(LINKS.recHub + '#licence', 'Licence & pricing', true))}
-      ${pw('general', '2–10 hours a week', ['Skills books, assessments and competitions', 'WAG Levels 1–4 and MAG Levels 1–3', '24 clubs across four locations in 2027', 'Builds to the NGL National Finals'], ext(LINKS.reserve, 'Reserve competition places'))}
-      ${pw('performance', '11+ hours a week', ['Run to the British Gymnastics Classic Challenge and Grades rules', 'Extra preparation before British Gymnastics events', 'A place to compete when the usual route doesn’t fit', 'Skills books, assessments and competitions'], `<span class="pill soon">Coming 2027</span><button type="button" class="btn" data-act="interest" data-k="performance">Register interest</button>`)}
-      ${uniMasters()}
-    </div>
+    <p class="sec-note" style="color:#c9cde6">Every pathway has two connected strands: an <b>Awards Scheme</b> (Skills Books in the General and Performance Leagues) and <b>Competitions</b>. Open each one to see inside, then explore that pathway’s Club Hub. With a licence the hub is fully open; without one you see the competitions and samples of the awards.</p>
+    <div class="disc-pw2">${pathwayExplorer()}</div>
 
     <h2 class="sec">Free to use today</h2>
     <div class="apps">
