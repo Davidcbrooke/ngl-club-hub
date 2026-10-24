@@ -385,6 +385,7 @@ const LINKS = {
   website:    'https://www.nationalgymnasticsleague.co.uk'
 };
 const CONTACT_EMAIL = 'admin@nationalgymnasticsleague.co.uk';
+const LICENCE_FEES = 'licences.html';
 const BANK = { accountName:'National Gymnastics League', sortCode:'60-84-64', accountNumber:'93416867' };
 const PAYMENT_DUE_MONTHS = 3;   // matches the booking system: payment due 3 months before each event
 
@@ -801,7 +802,7 @@ function render(){
   setChrome(true);
   const v = $('#view');
   const demo = PREVIEW ? `<div class="demo">Preview mode: sample data for ${S.club ? esc(S.club.name) : 'SAADI Gymnastics'}. Nothing is saved.</div>` : '';
-  const screens = {discover:screenDiscover, music:screenMusic, overview:screenOverview, licences:screenLicences, orders:screenOrders, reservations:screenReservations, calendar:screenCalendar, support:screenSupport, club:screenClub, admin:screenAdmin};
+  const screens = {discover:screenDiscover, general:screenGeneral, music:screenMusic, overview:screenOverview, licences:screenLicences, orders:screenOrders, reservations:screenReservations, calendar:screenCalendar, support:screenSupport, club:screenClub, admin:screenAdmin};
   document.body.classList.toggle('disc-on', S.tab === 'discover');
   v.innerHTML = demo + (screens[S.tab] || screenOverview)();
   if(S.tab === 'admin' && S.isAdmin) loadAdmin();
@@ -1045,7 +1046,7 @@ function licenceCard(k, compact){
         ${compact ? '' : `<dt>Family code</dt><dd class="mono">${esc(S.club.accessCode || '–')} ${S.club.codeActive ? '<span class="pill ok">Live</span>' : '<span class="pill off">Off</span>'}</dd>`}
       </dl>
       ${compact ? '' : '<p class="small muted">Your Schools Club Licence switches on your family code and lets you order Awards Books, certificates and t-shirts. It runs for 12 months from activation.</p>'}
-      <div class="btn-row"><a class="btn" href="${LINKS.schoolsHub}" target="_blank" rel="noopener">${s.key === 'none' ? 'Start NGL Schools' : s.key === 'expired' || (s.key === 'active' && s.days <= 45) ? 'Renew in the Schools Hub' : 'Open Schools Hub'}</a></div></div>`;
+      <div class="btn-row"><a class="btn" href="${LINKS.schoolsHub}" target="_blank" rel="noopener">Open Schools Hub</a></div></div>`;
   }
   const r = recStatus();
   return `<div class="card accent" style="--c:var(--rec)"><img class="logo" src="${LOGOS.recreational}" alt="NGL Recreational">
@@ -1057,7 +1058,7 @@ function licenceCard(k, compact){
       ${compact ? '' : `<dt>Family code</dt><dd class="mono">${esc(S.club.recCode || '–')}</dd>`}
     </dl>
     ${compact ? '' : '<p class="small muted">Your Club Licence opens the lesson planner, award books, warm-ups and ordering in the Recreational Hub. It runs for 12 months from activation.</p>'}
-    <div class="btn-row"><a class="btn" href="${LINKS.recHub}" target="_blank" rel="noopener">${r.key === 'none' ? 'Start NGL Recreational' : r.key === 'expired' || (r.key === 'active' && r.days <= 45) ? 'Renew in the Recreational Hub' : 'Open Recreational Hub'}</a></div></div>`;
+    <div class="btn-row"><a class="btn" href="${LINKS.recHub}" target="_blank" rel="noopener">Open Recreational Hub</a></div></div>`;
 }
 /* ---------- Your Pathways: one card per pathway, same order as the NGL Club Hub box ---------- */
 const PRESCHOOL_FROM = 150;   // must match the lowest band in preschool/club/index.html
@@ -1069,18 +1070,18 @@ function pathwayCards(){
       <span class="pill ${cls}">${esc(pill)}</span>${lines}<div class="btn-row">${btn}</div></div>`;
   const price = n => `<p class="pw-price">Annual licence from <b>${gbp(n)}</b></p>`;
   const a = (href, label, ghost) => `<a class="btn${ghost ? ' ghost' : ''}" href="${esc(href)}" target="_blank" rel="noopener">${esc(label)}</a>`;
-  const interest = k => ((S.club && S.club.interest) || {})[k]
-    ? `<span class="pw-on">✓ You’re on the list</span><span class="small muted">We’ll tell you first when it launches.</span>`
-    : `<button class="btn" data-act="interest" data-k="${k}">Register interest</button>`;
+  const interest = (k, ghost) => ((S.club && S.club.interest) || {})[k]
+    ? `<span class="pw-on">✓ You’re on the list</span>${ghost ? '' : '<span class="small muted">We’ll tell you first when it launches.</span>'}`
+    : `<button class="btn${ghost ? ' ghost' : ''}" data-act="interest" data-k="${k}">Register interest</button>`;
   const out = [];
   const ps = (S.club && S.club.preschool) || {};
   out.push(ps.status === 'active' ? preschoolCard()
-    : card('preschool', 'Live April 2027', 'soon', `<p class="small muted">Lesson plans, the term planner, passport awards and the family app.</p>${price(PRESCHOOL_FROM)}`, interest('preschool') + a(q(LINKS.preschoolHub), 'See what’s inside', true)));
+    : card('preschool', 'Live April 2027', 'soon', `<p class="small muted">Lesson plans, the term planner, passport awards and the family app.</p>${price(PRESCHOOL_FROM)}`, a(q(LINKS.preschoolHub), 'Open Pre-School Hub') + interest('preschool', true)));
   out.push(schoolsStatus().key !== 'none' ? licenceCard('schools', true)
-    : card('schools', 'Live now', 'ok', `<p class="small muted">Awards, assessments and graduations in your local schools.</p>${price(fromPrice(SCHOOLS_BANDS))}`, a(q(LINKS.schoolsHub), 'Start NGL Schools')));
+    : card('schools', 'Live now', 'ok', `<p class="small muted">Awards, assessments and graduations in your local schools.</p>${price(fromPrice(SCHOOLS_BANDS))}`, a(q(LINKS.schoolsHub), 'Open Schools Hub') + a(LICENCE_FEES, 'Licence fees', true)));
   out.push(recStatus().key !== 'none' ? licenceCard('recreational', true)
-    : card('recreational', 'Live January 2027', 'soon', `<p class="small muted">Four award levels, Ruby to Indigo, with the lesson planner, assessments and competitions.</p>${price(fromPrice(REC_BANDS))}`, a(q(LINKS.recHub), 'Start NGL Recreational')));
-  out.push(card('general', 'Competitions live now', 'ok', `<p class="small muted">Compete locally, score nationally.</p><p class="pw-price">Award books <b>live April 2027</b></p>`, a(q(LINKS.reserve), 'Reserve places')));
+    : card('recreational', 'Live January 2027', 'soon', `<p class="small muted">Four award levels, Ruby to Indigo, with the lesson planner, assessments and competitions.</p>${price(fromPrice(REC_BANDS))}`, a(q(LINKS.recHub), 'Open Recreational Hub') + a(LICENCE_FEES, 'Licence fees', true)));
+  out.push(card('general', 'Competitions live now', 'ok', `<p class="small muted">Compete locally, score nationally. Booking, floor music, league tables, the Power League and the 2027 rules in one place.</p><p class="pw-price">Award books <b>live April 2027</b></p>`, `<button class="btn" data-tab="general">Open General League Hub</button>` + a(q(LINKS.reserve), 'Reserve places', true)));
   out.push(card('performance', 'Coming 2027', 'soon', `<p class="small muted">Awards, assessments and competitions for your performance squads.</p>`, interest('performance')));
   out.push(card('university', 'Coming soon', 'off', `<p class="small muted">Awards, assessments and competitions that keep students in the sport.</p>`, interest('university')));
   out.push(card('masters', 'Coming soon', 'off', `<p class="small muted">Awards, assessments and competitions for adult gymnasts.</p>`, interest('masters')));
@@ -1095,13 +1096,45 @@ function preschoolCard(){
     <p class="small muted">Your Pre-School licence opens the 40 weekly lesson plans, the term planner and the family app in the Pre-School Hub.</p>
     <div class="btn-row"><a class="btn" href="${LINKS.preschoolHub}" target="_blank" rel="noopener">${on ? 'Open Pre-School Hub' : 'Start NGL Pre-School'}</a></div></div>`;
 }
+/* ----- General League Hub: everything a club needs for the General League in one place ----- */
+const GL = {
+  table:   'https://www.nationalgymnasticsleague.co.uk/2027-season-results-and-league-table',
+  power:   'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-power-league.html',
+  wag:     'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-rules-2027-numbered-update/NGL_General_League_WAG_Rules_2027.pdf',
+  mag:     'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-rules-2027-numbered-update/NGL_General_League_MAG_Rules_2027.pdf'
+};
+function screenGeneral(){
+  const club = S.club ? S.club.name : 'your club';
+  const up = myReservations().filter(r => !r.past), places = up.filter(r => !r.waitlist).reduce((a, r) => a + (r.spaces || 0), 0);
+  const missing = musicMissing();
+  const ext = (href, label, ghost) => `<a class="btn${ghost ? ' ghost' : ''}" href="${esc(href)}" target="_blank" rel="noopener">${esc(label)}</a>`;
+  const tile = (title, body, btns) => `<div class="card"><h3>${title}</h3><p class="small muted">${body}</p><div class="btn-row">${btns}</div></div>`;
+  const videoMail = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Power League videos: ' + club)}&body=${encodeURIComponent('Hi NGL,\n\nHere are our Power League videos.\n\nFor each video: gymnast first name and surname initial, BG number, level, age group, training hours and the challenge.\n\nClub: ' + club + '\n')}`;
+  return `<div class="card accent pw-card" style="--c:${PATHWAYS.general.c};margin-bottom:16px"><img class="logo" src="${LOGOS.general}" alt="NGL General League">
+      <span class="pill ok">Competitions live now</span>
+      <p class="small muted" style="margin-top:8px">Compete locally, score nationally. Everything your club needs for the General League is here.</p></div>
+    <h1 class="page">General League Hub</h1>
+    <p class="lead">Book your places, send floor music, follow the league tables and the Power League, and keep the 2027 rules to hand.</p>
+    <div class="grid g3">
+      ${tile('Book competitions', up.length ? `You have <b>${places}</b> place${places === 1 ? '' : 's'} reserved across <b>${up.length}</b> competition${up.length === 1 ? '' : 's'}.` : 'Reserve places for the 2027 season now. Entries and payment are completed on JustGo.',
+        ext(LINKS.reserve, 'Reserve places') + `<button class="btn ghost" data-tab="reservations">Your reservations</button>`)}
+      ${tile('Floor music', S.music.length ? (missing ? `<b>${missing}</b> gymnast${missing === 1 ? '' : 's'} still need floor music uploading.` : 'All your floor music is uploaded.') : 'Upload opens here for each competition you’ve entered that has floor.',
+        S.music.length ? `<button class="btn" data-tab="music">Upload floor music</button>` : '<span class="pill off">Nothing to upload yet</span>')}
+      ${tile('Calendar', 'Your NGL competitions alongside your own club events, ready to add to Google, Outlook or Apple calendars.', `<button class="btn" data-tab="calendar">Open calendar</button>`)}
+      ${tile('League table', 'Live results, the National League Table and regional qualification for National Finals.', ext(GL.table, 'See the league table'))}
+      ${tile('Power League · Boys', 'Nine strength, speed and power challenges filmed in training. Send us the videos and every valid result goes into the table and onto the boy’s NGL Player Card.', ext(GL.power, 'Power League table') + `<a class="btn ghost" href="${videoMail}">Email videos to NGL</a>`)}
+      ${tile('Rules 2027', 'General League rules and common deductions: girls Levels 1–4, boys Levels 1–4.', ext(GL.wag, 'Girls rules (PDF)') + ext(GL.mag, 'Boys rules (PDF)', true))}
+      ${tile('General Awards Book', 'Skills books for every General League level, aligned to the competition. Live April 2027.', '<span class="pill soon">Live April 2027</span>')}
+    </div>
+    <p style="margin-top:14px"><button class="btn ghost" data-tab="overview">← Back to Overview</button></p>`;
+}
 function screenLicences(){
   const perfSoon = () => `<div class="card accent" style="--c:${PATHWAYS.performance.c}"><img class="logo" src="${LOGOS.performance}" alt="${esc(PATHWAYS.performance.label)}">
       <span class="pill soon">Coming 2027</span><p class="small muted">The Performance League is coming in 2027. Register interest and we’ll tell you first when it opens.</p>
       <div class="btn-row">${((S.club && S.club.interest) || {}).performance ? '<span class="pw-on">✓ You’re on the list</span>' : '<button class="btn" data-act="interest" data-k="performance">Register interest</button>'}</div></div>`;
   const soon = k => `<div class="card accent" style="--c:${PATHWAYS[k].c}"><img class="logo" src="${LOGOS[k]}" alt="${esc(PATHWAYS[k].label)}">
       <span class="pill off">Coming soon</span><p class="small muted">Club Licences for the ${esc(PATHWAYS[k].short)} will be added here. Competition places can be reserved now.</p>
-      <div class="btn-row"><a class="btn ghost" href="${LINKS.reserve}" target="_blank" rel="noopener">Reserve places</a></div></div>`;
+      <div class="btn-row"><button class="btn" data-tab="general">Open General League Hub</button><a class="btn ghost" href="${LINKS.reserve}" target="_blank" rel="noopener">Reserve places</a></div></div>`;
   return `<h1 class="page">Licences</h1>
     <p class="lead">Each NGL programme is its own licence on your club account. Start, renew or order inside each programme’s hub. <a href="licences.html" target="_blank" rel="noopener">See every licence fee and what you get ↗</a></p>
     <div class="grid g2">${preschoolCard()}${licenceCard('schools')}${licenceCard('recreational')}${soon('general')}${perfSoon()}</div>`;
