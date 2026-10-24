@@ -851,6 +851,7 @@ function isNewClub(){
 }
 /* ----- Pathway explorer (Discover NGL): the same layout for every pathway ----- */
 const PW_IMG = 'img/pathways/', PS_IMG = 'preschool/img/', EM_IMG = 'email/img/';
+const YT = id => 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';   // routine video stills
 const PATHWAY_INFO = {
   preschool: {who:'Ages 3–4', status:['Live April 2027','soon'], licence:'preschool',
     awards:{title:'Awards Scheme', imgs:[PS_IMG + 'book-cover.jpg', PS_IMG + 'book-inside.jpg', PS_IMG + 'plan_03_Pirates-thumb.jpg'],
@@ -858,15 +859,15 @@ const PATHWAY_INFO = {
     comps:{title:'Graduation', imgs:[PS_IMG + 'medal01.png', PS_IMG + 'medal07.png', PS_IMG + 'medal14.png'], small:true,
       points:['No competitions at this age','Each programme ends with a Graduation where every child is celebrated','The 20 passport levels lead straight into NGL Recreational']}},
   schools: {who:'Ages 4–11 · delivered in local schools', status:['Live now','ok'], licence:'schools',
-    awards:{title:'Awards Scheme', imgs:[PW_IMG + 'schools-cover.jpg'],
-      points:['Run gymnastics in your local schools under the NGL name','Awards books and routine videos for every level','A family code so parents can see progress'], from:'schools'},
+    awards:{title:'Awards Scheme', imgs:[PW_IMG + 'schools-cover.jpg', YT('RNUwhMXiYis'), YT('svkVbP3FZ3g'), YT('Tk9rSyeja-4')],
+      points:['Run gymnastics in your local schools under the NGL name','Six levels across Floor, Bench and Vault, with a routine video for every level','Awards books and Bronze, Silver and Gold certificates','A family code so parents can watch the routines at home'], from:'schools'},
     comps:{title:'Graduation', imgs:[],
       points:['A graduation performance to finish each programme','Parents see their child perform what they have learned','A natural next step into your club’s classes']}},
   recreational: {who:'Ages 4–16 · recreational classes', status:['Live January 2027','soon'], licence:'recreational',
-    awards:{title:'Awards Scheme', imgs:[PW_IMG + 'recreational-cover.jpg', EM_IMG + 'award-books.jpg', EM_IMG + 'coach-app.jpg', EM_IMG + 'parent-app.jpg'],
-      points:['Four award books, Ruby to Indigo, 16 levels, assessed in the last two weeks of term','A term plan built from your apparatus and term length','Ruby, Pink, Teal and Indigo versions of every station','A coach app and a family app so parents follow the journey'], from:'recreational'},
-    comps:{title:'Competitions', imgs:[PW_IMG + 'comp-medal.jpg', PW_IMG + 'comp-podium.jpg'],
-      points:['Club competitions at the same four levels as the award books','2-piece or 4-piece, scored positively out of 10.0','Every gymnast gets a medal']}},
+    awards:{title:'Awards Scheme', imgs:[PW_IMG + 'recreational-cover.jpg', EM_IMG + 'award-books.jpg', PW_IMG + 'rec-ipad-run.jpg', PW_IMG + 'rec-ipad-books.jpg', PW_IMG + 'rec-phone-fortnight.jpg', PW_IMG + 'rec-phone-progress.jpg'],
+      points:['Four award books, Ruby to Indigo, 16 levels, assessed in the last two weeks of term','A term plan built from your apparatus and term length','Ruby, Pink, Teal and Indigo versions of every station','The coach app on an iPad runs each class station by station','A family app shows parents this fortnight’s skills and their child’s progress'], from:'recreational'},
+    comps:{title:'Competitions', imgs:[PW_IMG + 'comp-medal.jpg', PW_IMG + 'rec-ipad-comp.jpg', YT('QUmO-2VM4jQ'), YT('cXcmczamdLs'), PW_IMG + 'rec-phone-comps.jpg', PW_IMG + 'comp-podium.jpg'],
+      points:['Club competitions at the same four levels as the award books','2-piece or 4-piece, scored positively out of 10.0','Every gymnast gets a medal','Routine videos for every level in the coach and family apps']}},
   general: {who:'2–10 hours a week', status:['Competitions live now','ok'],
     awards:{title:'Skills Books', imgs:[PW_IMG + 'general-cover.jpg', PW_IMG + 'general-book-1.jpg', PW_IMG + 'general-book-2.jpg'],
       points:['A skills book for every General League level, aligned to the competition','Bronze, Silver and Gold ticks for every skill','Live April 2027']},
