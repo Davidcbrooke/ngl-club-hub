@@ -337,6 +337,11 @@ body.reg-dark footer{color:#aeb3d6}body.reg-dark footer a{color:#fff}
 .reg-k{font-weight:700;font-size:13px;letter-spacing:2.5px;text-transform:uppercase;color:#F8D438;margin-bottom:8px}
 .reg h1{font-family:var(--cond);font-size:46px;line-height:1.02;margin:0 0 12px;color:#fff}.reg h1 span{white-space:nowrap}
 .reg-lead{font-size:17.5px;color:#d9dbf2;margin:0 0 16px}
+.reg-mission{font-size:22px;line-height:1.25;font-weight:700;color:#fff;margin:0 0 14px}.reg-mission em{font-style:normal;color:#F8D438}
+.reg-proof{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 16px}
+.reg-proof div{border-left:4px solid #F8D438;padding:2px 0 2px 10px}.reg-proof b{display:block;font:700 30px/1 var(--cond);color:#fff}.reg-proof span{font-size:13.5px;color:#c9cbee}
+@media (max-width:560px){.reg-proof{grid-template-columns:1fr 1fr}}
+.reg-jump{display:none}@media (max-width:860px){.reg-jump{display:block;text-align:center;margin:0 0 16px;background:#C9142E;border-color:#C9142E;font-size:17px;padding:13px}}
 .reg-free{background:rgba(59,170,74,.16);border:1px solid rgba(59,170,74,.55);border-left:6px solid #3BAA4A;border-radius:10px;padding:12px 14px;font-size:15.5px;color:#e9f6eb;margin-bottom:14px}
 .reg-free b{color:#fff}
 .reg-int{background:rgba(232,85,154,.18);border:1px solid rgba(232,85,154,.6);border-left:6px solid #E8559A;border-radius:10px;padding:12px 14px;font-size:15.5px;color:#fde8f1;margin-bottom:14px}.reg-int b{display:block;color:#fff;font-size:19px;margin-bottom:2px}.reg-int .linkbtn{color:#fff;text-decoration:underline}
@@ -1643,6 +1648,26 @@ async function loadAdmin(){
 }
 
 /* ----- Sign in / register ----- */
+/* Live sign-up proof on the register page: same numbers as the NGL homepage (public booking data) */
+let REG_PROOF = null;
+function loadRegProof(){
+  const show = () => { if(!REG_PROOF) return; const a = $('#regClubs'), b = $('#regPlaces'); if(a && REG_PROOF.clubs) a.textContent = REG_PROOF.clubs.toLocaleString('en-GB'); if(b && REG_PROOF.places) b.textContent = REG_PROOF.places.toLocaleString('en-GB'); };
+  if(REG_PROOF) return show();
+  const KEY = BOOKINGS_CONFIG.apiKey, BASE = 'https://firestore.googleapis.com/v1/projects/saadi-rotation/databases/(default)/documents/';
+  const val = f => !f ? undefined : 'stringValue' in f ? f.stringValue : 'integerValue' in f ? +f.integerValue : 'doubleValue' in f ? +f.doubleValue : 'booleanValue' in f ? f.booleanValue : undefined;
+  const all = async col => { const out = []; let tok = '';
+    do { const r = await fetch(BASE + col + '?pageSize=300&key=' + KEY + (tok ? '&pageToken=' + encodeURIComponent(tok) : '')); if(!r.ok) throw new Error(col);
+      const j = await r.json(); (j.documents || []).forEach(d => { const o = {id:d.name.split('/').pop()}; for(const k in (d.fields || {})) o[k] = val(d.fields[k]); out.push(o); }); tok = j.nextPageToken || ''; } while(tok);
+    return out; };
+  Promise.all([all('ngl_competitions'), all('ngl_bookings')]).then(([comps, books]) => {
+    const ids = new Set(comps.map(c => c.id)), live = books.filter(b => ids.has(b.compId));
+    const clubs = new Set(live.map(b => b.club).filter(Boolean)).size;
+    let places = 0;
+    comps.forEach(c => { const max = typeof c.maxPlaces === 'number' && !isNaN(c.maxPlaces) ? c.maxPlaces : 20;
+      places += Math.min(max, live.filter(b => b.compId === c.id && !b.waitlist).reduce((s, b) => s + (parseInt(b.spaces, 10) || 1), 0)); });
+    REG_PROOF = {clubs, places}; show();
+  }).catch(e => console.warn('Register page numbers not loaded', e));
+}
 function screenAuth(mode, msg){
   setChrome(false);
   const v = $('#view');
@@ -1663,16 +1688,21 @@ function screenAuth(mode, msg){
         ${ENTRY_INTEREST ? `<div class="reg-int"><b>Register interest in ${INTEREST[ENTRY_INTEREST]}</b>Create your free club account and you’re on the list: we’ll tell you first when it launches. Already have an NGL account? <button class="linkbtn" data-auth="login">Log in</button> and you’re done.</div>` : ''}
         <div class="reg-k">For British Gymnastics clubs · #ItsAllConnected</div>
         <h1>Register your club with the NGL <span>(it’s free)</span></h1>
+        <p class="reg-mission">Helping Britain’s gymnastics clubs become the <em>first choice</em> for every parent.</p>
+        <div class="reg-proof" aria-live="polite"><div><b id="regClubs">29</b><span>clubs already booked for 2027</span></div><div><b id="regPlaces">1,369</b><span>gymnast places reserved</span></div><div><b>30+</b><span>competitions across the UK in 2027</span></div></div>
+        <a class="btn reg-jump" href="#" onclick="event.preventDefault();document.getElementById('regBox').scrollIntoView({behavior:'smooth',block:'start'});document.getElementById('rName').focus({preventScroll:true})">Register your club now ↓</a>
         <p class="reg-lead">Seven connected pathways, from a child’s first class to adult gymnastics: lesson plans, awards, competitions, judges and parents, all in one place. Register to see it all for yourself.</p>
         <div class="reg-free"><b>No commitment.</b> Registering doesn’t sign you up to anything. There’s nothing to pay and no licence to buy. You only pay if you later choose an Awards Scheme licence or enter a competition.</div>
         <ul class="reg-get">
           <li><b>Samples of every pathway</b> Pre-School, Schools, Recreational, General and Performance League</li>
           <li><b>Free club tools</b> including the Rotation Planner</li>
           <li><b>Club Support</b> business help and partner offers for your club</li>
-          <li><b>2027 competition reservations</b> reserve now, pay 3 months before the event</li>
+          <li><b>2027 competition reservations</b> reserve now: no payment and no commitment to buy</li>
+          <li><b>A parents’ link and QR code</b> so your families can follow results and league tables</li>
+          <li><b>Your competition calendar</b> NGL dates alongside your own events, for Google, Outlook or Apple</li>
         </ul>
       </div>
-      <div class="reg-form" id="regBox"><div class="card"><h2>Create your free club account</h2><p class="small muted" style="margin:0 0 10px">Takes about two minutes.</p>
+      <div class="reg-form" id="regBox"><div class="card"><h2>Create your free club account</h2><p class="small muted" style="margin:0 0 10px">Takes about a minute. All you need is your British Gymnastics club number.</p>
         <form id="regForm">
         <label class="f" for="rName">Club name</label><input class="f" id="rName" required autocomplete="organization">
         <label class="f" for="rBg">British Gymnastics club number</label><input class="f" id="rBg" required>
@@ -1682,12 +1712,13 @@ function screenAuth(mode, msg){
         <div class="btn-row"><button class="btn" type="submit">Create club account</button></div>
         <div class="err" id="authErr"></div></form>
         <p class="small" style="margin-top:14px">Already registered for NGL Schools or Recreational? <button class="linkbtn" data-auth="login">Log in with the same details</button></p></div></div>
-      <div class="reg-video"><video src="img/reg/ngl-tour.mp4" poster="img/reg/ngl-tour-poster.jpg" autoplay muted loop playsinline controls preload="metadata"></video><p>The NGL in 78 seconds</p></div>
+      <div class="reg-video"><video src="img/reg/ngl-what-is-the-ngl.mp4" poster="img/reg/ngl-what-is-the-ngl-poster.jpg" autoplay muted loop playsinline controls preload="metadata"></video><p>What is the NGL? <a href="img/reg/ngl-tour.mp4" target="_blank" rel="noopener" style="color:#fff">Watch the full 78-second tour</a></p></div>
       <div class="reg-gallery"><h2>Here’s what you’ll see when you register</h2>
         <div class="reg-grid">${G.map(([img, c, t, d]) => `<figure style="--c:${c}"><div class="ph"><img src="img/reg/${img}" alt="${t}" loading="lazy"></div><figcaption><b>${t}</b>${d}</figcaption></figure>`).join('')}</div>
         <div class="reg-cta"><a class="btn reg-btn" href="#" onclick="event.preventDefault();document.getElementById('regBox').scrollIntoView({behavior:'smooth',block:'start'});document.getElementById('rName').focus({preventScroll:true})">Register your club (it’s free)</a></div>
       </div>
     </div>`;
+    loadRegProof();
     return;
   }
   v.innerHTML = `<div class="auth"><h1 class="page">NGL Club Hub</h1><p class="lead">Your licences, orders and competition reservations in one place.</p>
