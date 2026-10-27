@@ -596,8 +596,19 @@ const CLUB_HUB = 'https://club.nationalgymnasticsleague.co.uk/';
 const LICENCES = 'https://club.nationalgymnasticsleague.co.uk/licences.html';
 const CONTACT = 'admin@nationalgymnasticsleague.co.uk';
 const PRICE = {pack:100, seasonal:50};
-const INVOICE = {businessName:'National Gymnastics League', addressLines:['66 Waveney Road', 'Harpenden', 'Hertfordshire', 'AL5 4QZ'], email:CONTACT, termsDays:14,
-  vatNote:'No VAT charged: National Gymnastics League is not VAT registered.', bank:{accountName:'National Gymnastics League', sortCode:'60-84-64', accountNumber:'93416867'}};
+const INVOICE = {businessName:'SAADI Gymnastics Ltd trading as National Gymnastics League', get vatNumber(){ return VAT_NUMBER; }, addressLines:['66 Waveney Road', 'Harpenden', 'Hertfordshire', 'AL5 4QZ'], email:CONTACT, termsDays:14,
+  vatNote:'', bank:{accountName:'National Gymnastics League', sortCode:'60-84-64', accountNumber:'93416867'}};
+/* VAT: NGL trades as part of SAADI Gymnastics Ltd. VAT at 20% applies to licence fees only
+   (not books, medals, certificates, t-shirts or postage). VAT is added once VAT_NUMBER is filled in. */
+const VAT_NUMBER = '';   // SAADI Gymnastics Ltd VAT registration number, e.g. 'GB 123 4567 89'
+const VAT_RATE = VAT_NUMBER ? 0.2 : 0;
+const VAT_KINDS = ['club', 'licence', 'pack', 'discount'];
+function withVat(lines){
+  if(!VAT_RATE || (lines || []).some(l => l.kind === 'vat')) return lines;
+  const net = lines.filter(l => VAT_KINDS.includes(l.kind)).reduce((a, l) => a + l.qty * l.unit, 0);
+  if(net <= 0) return lines;
+  return [...lines, {kind:'vat', desc:`VAT at ${Math.round(VAT_RATE * 100)}% on licence fees`, qty:1, unit:Math.round(net * VAT_RATE * 100) / 100}];
+}
 const EMAILJS = {serviceId:'service_3qlufgh', templateId:'template_8i40iia', publicKey:'ZSjEpECoOMHkWNB1D'};
 const SHOP_PRICE = {passport:5, medal:2};   // to clubs; RRP passport £10, medal £4
 const POSTAGE = [{upTo:20, price:4}, {upTo:100, price:8}, {upTo:Infinity, price:12}];
@@ -937,13 +948,13 @@ function invoiceHTML(o, club){
   const issued = toDate(o.createdAt), due = new Date(issued.getTime() + INVOICE.termsDays * 864e5), paid = o.status === 'paid' || o.status === 'sent';
   return `<div class="inv"><div class="inv-top"><div class="inv-brand">National Gymnastics League<small>NGL PRE-SCHOOL</small></div>
       <div class="inv-title"><div class="inv-h">INVOICE</div><div class="inv-no">${esc(o.id)}</div>${paid ? '<div class="inv-paid">PAID</div>' : ''}</div></div>
-    <div class="inv-cols"><div><div class="inv-label">From</div><b>${esc(INVOICE.businessName)}</b><br>${INVOICE.addressLines.map(esc).join('<br>')}<br>${esc(INVOICE.email)}</div>
+    <div class="inv-cols"><div><div class="inv-label">From</div><b>${esc(INVOICE.businessName)}</b><br>${INVOICE.addressLines.map(esc).join('<br>')}<br>${esc(INVOICE.email)}${INVOICE.vatNumber ? '<br>VAT no. ' + esc(INVOICE.vatNumber) : ''}</div>
       <div><div class="inv-label">Bill to</div><b>${esc(club.name || o.clubName || '')}</b><br>${club.contact ? esc(club.contact) + '<br>' : ''}${club.email ? esc(club.email) + '<br>' : ''}${club.bgNumber ? 'BG club no. ' + esc(club.bgNumber) : ''}</div>
       ${o.delivery ? `<div><div class="inv-label">Deliver to</div>${esc(o.delivery).replace(/\n/g, '<br>')}</div>` : ''}
       <div><div class="inv-label">Invoice date</div>${fmtDate(issued)}<div class="inv-label" style="margin-top:10px">Payment due</div>${fmtDate(due)}</div></div>
     <table class="inv-table"><thead><tr><th>Description</th><th class="num">Qty</th><th class="num">Unit price</th><th class="num">Amount</th></tr></thead>
       <tbody>${(o.lines || []).map(l => `<tr><td>${esc(l.desc)}</td><td class="num">${l.qty}</td><td class="num">${l.unit ? money(l.unit) : 'Free'}</td><td class="num">${money(l.qty * l.unit)}</td></tr>`).join('')}</tbody>
-      <tfoot><tr><td colspan="3" class="num">${esc(INVOICE.vatNote)}</td><td></td></tr><tr class="inv-total"><td colspan="3" class="num">Total due</td><td class="num">${money(orderTotal(o))}</td></tr></tfoot></table>
+      <tfoot>${INVOICE.vatNote ? `<tr><td colspan="3" class="num">${esc(INVOICE.vatNote)}</td><td></td></tr>` : ''}<tr class="inv-total"><td colspan="3" class="num">Total due</td><td class="num">${money(orderTotal(o))}</td></tr></tfoot></table>
     <div class="inv-pay"><div class="inv-label">How to pay: bank transfer</div>
       <table><tr><td>Account name</td><td><b>${esc(INVOICE.bank.accountName)}</b></td></tr><tr><td>Sort code</td><td><b>${esc(INVOICE.bank.sortCode)}</b></td></tr>
       <tr><td>Account number</td><td><b>${esc(INVOICE.bank.accountNumber)}</b></td></tr><tr><td>Payment reference</td><td><b class="mono">${esc(o.id)}</b></td></tr></table>
@@ -981,6 +992,7 @@ function showInvoice(o, club){
 }
 async function placeAndConfirm(order, btn){
   if(btn){ btn.disabled = true; btn.textContent = 'Placing order…'; }
+  order = Object.assign({}, order, {lines: withVat(order.lines || [])});
   let o; try{ o = await api.placeOrder(order); }catch(e){ console.error(e); if(btn){ btn.disabled = false; btn.textContent = 'Try again'; } toast('Couldn’t place the order. Please try again.'); return null; }
   const m = modal(`<h2>Order ${esc(o.id)} placed</h2><p class="muted">${money(orderTotal(o))}. Pay by bank transfer within ${INVOICE.termsDays} days quoting <b class="mono">${esc(o.id)}</b>. ${o.kind === 'supplies' ? 'We’ll post it to you as soon as payment arrives.' : 'It unlocks as soon as payment arrives.'}</p>
     <div class="btn-row"><button class="btn" data-act="invoice" data-order="${esc(o.id)}">View invoice</button><button class="btn ghost" data-close>Done</button></div>
