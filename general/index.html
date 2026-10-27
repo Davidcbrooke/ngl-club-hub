@@ -376,13 +376,12 @@ function screenPower(){
   const boys = myBoys(), club = S.club.name || '';
   const mail = 'mailto:admin@nationalgymnasticsleague.co.uk?subject=' + encodeURIComponent('Training League videos: ' + club) + '&body=' + encodeURIComponent('Hi NGL,\n\nHere are our Training League videos.\n\nFor each video: gymnast first name and surname initial, BG number, level, age group, training hours and the challenge.\n\nClub: ' + club + '\n');
   return `<h1 class="page">Training League</h1>
-    <p class="lead">Nine strength, speed and power challenges for boys, filmed in training and open all season. Every valid result goes into the table and onto the boy’s NGL Profile Card.</p>
-    <div class="grid">
-      <div class="card"><h3>1. Film in training</h3><p>Fixed camera side-on, whole body in shot, one continuous take. Say the gymnast’s name and the challenge at the start.</p></div>
-      <div class="card"><h3>2. Send it to NGL</h3><p>Include each boy’s first name and surname initial, BG number, level, age group and training hours.</p><div class="btns"><a class="btn blue" href="${mail}">Email your videos</a></div></div>
-      <div class="card"><h3>3. Watch the table</h3><p>${boys.length ? `<b>${boys.length}</b> of your boys ${boys.length === 1 ? 'is' : 'are'} in the table.` : 'Your boys appear in the table once their first result is in.'} Their cards build as each challenge is added.</p></div>
-    </div>
-    <h2 class="sec">The table${boys.length ? ' · showing your club' : ''}</h2>
+    <p class="lead">Nine conditioning challenges for boys, filmed in training and open all season. Every result goes into the live table and onto the boy’s NGL Profile Card.</p>
+    <ol class="rsteps">
+      <li><b>Film in training</b><span>Phone side-on, whole body in shot, one take. Say the gymnast’s name and the challenge at the start.</span></li>
+      <li><b>Send it to NGL</b><span>First name, surname initial, BG number, level, age group and training hours.</span><a class="btn blue small" style="margin-top:8px;align-self:flex-start" href="${mail}">Email your videos</a></li>
+      <li><b>Watch the table</b><span>${boys.length ? `<b style="display:inline">${boys.length}</b> of your boys ${boys.length === 1 ? 'is' : 'are'} in the table.` : 'Your boys appear once their first result is in.'} Their cards build with every challenge.</span></li>
+    </ol>
     <iframe class="frame" id="plFrame" title="Training League table" src="${LINKS.powerLeague}?embed=1${boys.length ? '&club=' + encodeURIComponent(club) : ''}"></iframe>`;
 }
 
