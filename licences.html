@@ -78,6 +78,17 @@ header{background:transparent;padding:18px 0 10px}
 main h2{color:#fff}
 main .lead,main > .note{color:#c9cde6}
 .tbl td{background:#fff}
+.mfees{display:none}
+@media(max-width:700px){.tbl{display:none}.mfees{display:block}}
+.mfees .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:rgba(255,255,255,.1);border-radius:999px;padding:4px;margin:0 0 12px}
+.mfees .seg button{border:0;border-radius:999px;padding:10px 4px;font-family:inherit;font-weight:700;font-size:14px;color:#fff;background:none;cursor:pointer}
+.mfees .seg button[aria-pressed="true"]{background:#fff;color:#14254a}
+.mfees ul{list-style:none;margin:0;padding:0;background:#fff;border-radius:14px;overflow:hidden}
+.mfees li{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-top:1px solid #e9ecf3;color:#14254a;font-size:16px}
+.mfees li:first-child{border-top:0}
+.mfees li span{color:#5d6782}.mfees li b{font-size:19px}
+.mfees li small{display:block;color:#5d6782;font-size:12px;font-weight:600}
+
 footer{color:#b9bbdc}footer a{color:#fff}
 html.embed body{background:transparent!important;min-height:0}
 html.embed .hub-top,html.embed header,html.embed footer,html.embed .cta,html.embed .embed-hide{display:none!important}
@@ -111,6 +122,26 @@ html.embed main h2:first-child{margin-top:4px}
       <tr><td>400–599</td><td><b>£1,250</b></td><td><b>£1,500</b></td></tr>
       <tr><td>600+</td><td><b>£1,500</b></td><td><b>£2,000</b></td></tr>
     </tbody></table></div>
+  <div class="mfees" id="mfees">
+    <div class="seg" role="group" aria-label="Pathway"><button type="button" data-p="pre" aria-pressed="false">Pre-School</button><button type="button" data-p="sch" aria-pressed="false">Schools</button><button type="button" data-p="rec" aria-pressed="true">Recreational</button></div>
+    <ul id="mfeesList"></ul>
+  </div>
+  <script>
+  (function(){
+    var B = ['1–24','25–49','50–99','100–249','250–399','400–599','600+'];
+    var P = {pre:[150,250,400,750], sch:[150,250,400,750,1000,1250,1500], rec:[200,300,500,1000,1250,1500,2000]};
+    var gbp = function(n){ return '£' + n.toLocaleString('en-GB'); };
+    function show(k){
+      document.querySelectorAll('#mfees .seg button').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.p === k); });
+      document.getElementById('mfeesList').innerHTML = P[k].map(function(v, i){
+        var band = (k === 'pre' && i === 3) ? '100+' : B[i];
+        return '<li><span>' + band + ' gymnasts</span><b>' + gbp(v) + '<small>a year + VAT</small></b></li>';
+      }).join('');
+    }
+    document.querySelectorAll('#mfees .seg button').forEach(function(b){ b.onclick = function(){ show(b.dataset.p); }; });
+    show('rec');
+  })();
+  </script>
   <p class="note">All licence fees are shown excluding VAT. VAT at 20% is added to your invoice. The General League is a competition league: reserve places now, with Club Licences to follow. The Performance League is coming in 2027.</p>
 
   <h2>What you get</h2>
