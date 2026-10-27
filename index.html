@@ -907,7 +907,7 @@ const PATHWAY_INFO = {
     awards:{title:'Skills Books', imgs:[PW_IMG + 'general-cover.jpg', PW_IMG + 'general-book-1.jpg', PW_IMG + 'general-book-2.jpg'],
       points:['A skills book for every General League level, aligned to the competition','Bronze, Silver and Gold ticks for every skill','Live April 2027']},
     comps:{title:'Competitions', imgs:[PW_IMG + 'comp-hero.jpg', PW_IMG + 'comp-judges.jpg', PW_IMG + 'comp-spectators.jpg'],
-      points:['Local competitions across four regional venues, 24 clubs in 2027','Girls Levels 1–4 and boys Levels 1–4','Live scores and a National League Table, building to the NGL National Finals','The Power League for boys: challenges filmed in training, with an NGL Player Card']}},
+      points:['Local competitions across four regional venues, 24 clubs in 2027','Girls Levels 1–4 and boys Levels 1–4','Live scores and a National League Table, building to the NGL National Finals','The Training League for boys: challenges filmed in training, with an NGL Player Card']}},
   performance: {who:'11+ hours a week', status:['Coming 2027','soon'], interest:'performance',
     awards:{title:'Skills Books', imgs:[PW_IMG + 'performance-cover.jpg'],
       points:['Skills books for Performance League levels','Coming 2027']},
@@ -1082,7 +1082,7 @@ function hubTiles(){
     tile('schools', schoolsStatus().key === 'active', LINKS.schoolsHub, 'Awards, assessments and graduations in your local schools.'),
     tile('recreational', recStatus().key === 'active', LINKS.recHub, 'Lesson planner, four award books, assessments and competitions.'),
     `<div class="card accent hub" style="--c:${PATHWAYS.general.c}"><img class="logo" src="${LOGOS.general}" alt="NGL General League"><span class="pill ok">Competitions live</span>
-      <p class="small muted">Book competitions, floor music, league tables, the Power League and rules.</p><div class="btn-row"><a class="btn" href="${esc(q(GL_HUB))}" target="_blank" rel="noopener">Open General League Hub</a></div></div>`
+      <p class="small muted">Book competitions, floor music, league tables, the Training League and rules.</p><div class="btn-row"><a class="btn" href="${esc(q(GL_HUB))}" target="_blank" rel="noopener">Open General League Hub</a></div></div>`
   ].join('');
 }
 function appTiles(){
@@ -1238,7 +1238,7 @@ function pathwayCards(){
     : card('schools', 'Live now', 'ok', `<p class="small muted">Awards, assessments and graduations in your local schools.</p>${price(fromPrice(SCHOOLS_BANDS))}`, a(q(LINKS.schoolsHub), 'Open Schools Hub') + a(LICENCE_FEES, 'Licence fees', true)));
   out.push(recStatus().key !== 'none' ? licenceCard('recreational', true)
     : card('recreational', 'Live January 2027', 'soon', `<p class="small muted">Four award levels, Ruby to Indigo, with the lesson planner, assessments and competitions.</p>${price(fromPrice(REC_BANDS))}`, a(q(LINKS.recHub), 'Open Recreational Hub') + a(LICENCE_FEES, 'Licence fees', true)));
-  out.push(card('general', 'Competitions live now', 'ok', `<p class="small muted">Compete locally, score nationally. Booking, floor music, league tables, the Power League and the 2027 rules in one place.</p><p class="pw-price">Award books <b>live April 2027</b></p>`, `<a class="btn" href="general/">Open General League Hub</a><button class="btn ghost" data-book="general">Reserve places</button>`));
+  out.push(card('general', 'Competitions live now', 'ok', `<p class="small muted">Compete locally, score nationally. Booking, floor music, league tables, the Training League and the 2027 rules in one place.</p><p class="pw-price">Award books <b>live April 2027</b></p>`, `<a class="btn" href="general/">Open General League Hub</a><button class="btn ghost" data-book="general">Reserve places</button>`));
   out.push(card('performance', 'Coming 2027', 'soon', `<p class="small muted">Awards, assessments and competitions for your performance squads.</p>`, interest('performance')));
   out.push(card('university', 'Coming soon', 'off', `<p class="small muted">Awards, assessments and competitions that keep students in the sport.</p>`, interest('university')));
   out.push(card('masters', 'Coming soon', 'off', `<p class="small muted">Awards, assessments and competitions for adult gymnasts.</p>`, interest('masters')));
@@ -1302,7 +1302,7 @@ function compsOverview(){
     row('preschool', pill('Live April 2027', 'soon'), 'Graduation at the end of each programme', ext(LINKS.preschoolHub, 'Graduations', true)),
     row('schools', pill('Live now', 'ok'), 'Graduation performance at the end of each programme', ext(LINKS.schoolsHub, 'Graduations', true)),
     row('recreational', pill('Live January 2027', 'soon'), 'Club competitions at the four award levels. Every gymnast medals.', `<button class="btn" data-book="recreational">Book now</button>` + ext(LINKS.recHub + '#competition', 'Routines', true)),
-    row('general', pill('Live now', 'ok'), 'The league, the Power League and the NGL National Finals', `<button class="btn" data-book="general">Book now</button>` + `<button class="btn ghost" data-tab="league">Rules &amp; league tables</button>`),
+    row('general', pill('Live now', 'ok'), 'The league, the Training League and the NGL National Finals', `<button class="btn" data-book="general">Book now</button>` + `<button class="btn ghost" data-tab="league">Rules &amp; league tables</button>`),
     row('performance', pill('Coming 2027', 'soon'), 'Classic Challenge and Grades preparation competitions', interest('performance')),
     row('university', pill('Coming soon', 'off'), 'University League competitions', interest('university')),
     row('masters', pill('Coming soon', 'off'), 'NGL Masters competitions', interest('masters'))
@@ -1323,7 +1323,7 @@ function compsOverview(){
 /* ----- League tables & rules (General League) ----- */
 const GL = {
   table:   'https://www.nationalgymnasticsleague.co.uk/2027-season-results-and-league-table',
-  power:   'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-power-league.html',
+  power:   'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-training-league.html',
   wag:     'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-rules-2027-numbered-update/NGL_General_League_WAG_Rules_2027.pdf',
   mag:     'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-rules-2027-numbered-update/NGL_General_League_MAG_Rules_2027.pdf'
 };
@@ -1331,12 +1331,12 @@ function screenGeneral(){
   const club = S.club ? S.club.name : 'your club';
   const ext = (href, label, ghost) => `<a class="btn${ghost ? ' ghost' : ''}" href="${esc(href)}" target="_blank" rel="noopener">${esc(label)}</a>`;
   const tile = (title, body, btns) => `<div class="card"><h3>${title}</h3><p class="small muted">${body}</p><div class="btn-row">${btns}</div></div>`;
-  const videoMail = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Power League videos: ' + club)}&body=${encodeURIComponent('Hi NGL,\n\nHere are our Power League videos.\n\nFor each video: gymnast first name and surname initial, BG number, level, age group, training hours and the challenge.\n\nClub: ' + club + '\n')}`;
+  const videoMail = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Training League videos: ' + club)}&body=${encodeURIComponent('Hi NGL,\n\nHere are our Training League videos.\n\nFor each video: gymnast first name and surname initial, BG number, level, age group, training hours and the challenge.\n\nClub: ' + club + '\n')}`;
   return `<h1 class="page">League tables &amp; rules</h1>
-    <p class="lead">Follow the league tables and the Power League, and keep the 2027 rules to hand.</p>
+    <p class="lead">Follow the league tables and the Training League, and keep the 2027 rules to hand.</p>
     <div class="grid g3">
       ${tile('League table', 'Live results, the National League Table and regional qualification for National Finals.', ext(GL.table, 'See the league table'))}
-      ${tile('Power League · Boys', 'Nine strength, speed and power challenges filmed in training. Send us the videos and every valid result goes into the table and onto the boy’s NGL Player Card.', ext(GL.power, 'Power League table') + `<a class="btn ghost" href="${videoMail}">Email videos to NGL</a>`)}
+      ${tile('Training League · Boys', 'Nine strength, speed and power challenges filmed in training. Send us the videos and every valid result goes into the table and onto the boy’s NGL Player Card.', ext(GL.power, 'Training League table') + `<a class="btn ghost" href="${videoMail}">Email videos to NGL</a>`)}
       ${tile('Rules 2027', 'General League rules and common deductions: girls Levels 1–4, boys Levels 1–4.', ext(GL.wag, 'Girls rules (PDF)') + ext(GL.mag, 'Boys rules (PDF)', true))}
     </div>`;
 }
