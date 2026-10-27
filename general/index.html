@@ -361,7 +361,7 @@ function screenLeague(){
     <div class="grid">
       <div class="card"><h3>2027 league table</h3><p>Live results and the National League Table for the 2027 season.</p><div class="btns"><a class="btn blue" href="${LINKS.league2027}" target="_blank" rel="noopener">Open league table</a></div></div>
       <div class="card"><h3>2026 results</h3><p>Last season’s results, league table and National Qualifiers.</p><div class="btns"><a class="btn ghost" href="${LINKS.results2026}" target="_blank" rel="noopener">2026 results</a><a class="btn ghost" href="${LINKS.qualifiers}" target="_blank" rel="noopener">Qualifiers</a></div></div>
-      ${g === 'boys' ? `<div class="card"><h3>Training League</h3><p>Nine challenges filmed in training, building every boy’s NGL Profile Card.</p><div class="btns"><button class="btn" data-tab="power">Open Training League</button></div></div>` : ''}
+      ${g === 'boys' ? `<div class="card"><h3>Training League</h3><p>13 challenges filmed in training, building every boy’s NGL Profile Card.</p><div class="btns"><button class="btn" data-tab="power">Open Training League</button></div></div>` : ''}
     </div>
     <h2 class="sec">Rules 2027 · ${R.label} (${R.name})</h2>
     <div class="filters">${['1', '2', '3', '4'].map(k => `<button data-level="${k}" aria-pressed="${lv === k}">Level ${k}</button>`).join('')}<a class="btn ghost small" style="margin-left:auto" href="${R.pdf}" target="_blank" rel="noopener">Download all levels (PDF)</a></div>
@@ -376,7 +376,7 @@ function screenPower(){
   const boys = myBoys(), club = S.club.name || '';
   const mail = 'mailto:admin@nationalgymnasticsleague.co.uk?subject=' + encodeURIComponent('Training League videos: ' + club) + '&body=' + encodeURIComponent('Hi NGL,\n\nHere are our Training League videos.\n\nFor each video: gymnast first name and surname initial, BG number, age group, training hours and the challenge.\n\nClub: ' + club + '\n');
   return `<h1 class="page">Training League</h1>
-    <p class="lead">Nine conditioning challenges for boys, filmed in training and open all season. Every result goes into the live table and onto the boy’s NGL Profile Card.</p>
+    <p class="lead">13 conditioning challenges for boys, filmed in training and open all season. Every result goes into the live table and onto the boy’s NGL Profile Card.</p>
     <ol class="rsteps">
       <li><b>Film in training</b><span>Phone side-on, whole body in shot, one take. Say the gymnast’s name and the challenge at the start.</span></li>
       <li><b>Send it to NGL</b><span>First name, surname initial, BG number, age group and training hours.</span><a class="btn blue small" style="margin-top:8px;align-self:flex-start" href="${mail}">Email your videos</a></li>
