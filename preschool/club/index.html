@@ -728,7 +728,7 @@ function programmeHTML(inside){
       <a href="${DIR}img/plan01-p1.jpg" target="_blank" rel="noopener"><img src="${DIR}img/plan01-p1.jpg" alt="Week 1, page 1" loading="lazy"></a>
       <a href="${DIR}img/plan01-p2.jpg" target="_blank" rel="noopener"><img src="${DIR}img/plan01-p2.jpg" alt="Week 1, page 2" loading="lazy"></a></div></div>
     <div class="section"><h2>A social post for every theme</h2><div class="ps-strip ps-posts">${all.map(t => `<img src="${DIR}img/post_${t.file}.jpg" alt="${esc(t.name)} week" loading="lazy">`).join('')}</div></div>
-    ${inside ? '' : `<div class="section card" style="text-align:center"><h2>Licensed to British Gymnastics clubs</h2><p class="muted">One yearly Club Licence, from £150 a year depending on how many Pre-School gymnasts you have. It includes the poster, the term planner, the family app and Lesson Plans 1–10. Lesson Plan Packs are £${PRICE.pack} each and the Seasonal Pack is £${PRICE.seasonal}.</p>
+    ${inside ? '' : `<div class="section card" style="text-align:center"><h2>Licensed to British Gymnastics clubs</h2><p class="muted">One yearly Club Licence, from £150 a year + VAT, depending on how many Pre-School gymnasts you have. It includes the poster, the term planner, the family app and Lesson Plans 1–10. Lesson Plan Packs are £${PRICE.pack} each and the Seasonal Pack is £${PRICE.seasonal}.</p>
       <div class="btn-row" style="justify-content:center"><a class="btn" href="${CLUB_HUB}#register">Register your club</a><a class="btn ghost" href="${LICENCES}" target="_blank" rel="noopener">See all licence fees ↗</a></div></div>`}`;
 }
 function screenLanding(){ render(programmeHTML(false) + `<p class="note" style="text-align:center;margin-top:24px">Questions? <a href="mailto:${CONTACT}">${CONTACT}</a></p>`); }
@@ -769,11 +769,11 @@ function licenceCard(){
   return `<div class="card lic-card"><p class="eyebrow">Pre-School Club Licence</p><h2>Start your Pre-School licence</h2>
     <p class="muted">The licence includes a free A1 Around the World poster, Lesson Plans 1–10, the term planner and the family app. Until then you can explore the programme and the Week 1 sample.</p>
     <p class="note">An NGL Recreational or Schools licence doesn’t include Pre-School.</p>
-    ${tab === 'licence' ? `<div class="table-wrap" style="margin:6px 0 14px"><table><thead><tr><th>Pre-School gymnasts</th><th class="num">Club Licence a year</th><th></th></tr></thead><tbody>
+    ${tab === 'licence' ? `<div class="table-wrap" style="margin:6px 0 14px"><table><thead><tr><th>Pre-School gymnasts</th><th class="num">Club Licence a year (+ VAT)</th><th></th></tr></thead><tbody>
       ${BANDS.map(b => `<tr><td>${esc(b.label)}</td><td class="num"><b>${gbp(b.price)}</b></td><td class="num"><button class="btn small" data-act="lic-order" data-band="${b.k}">Choose</button></td></tr>`).join('')}
       </tbody></table></div>
-      <p class="note">Runs for 12 months from the day it starts. 5% off if it isn’t your club’s most expensive NGL licence. Lesson Plan Packs and the Seasonal Pack are below. <a href="https://club.nationalgymnasticsleague.co.uk/licences.html" target="_blank" rel="noopener">Every NGL licence fee ↗</a></p>`
-    : `<p class="muted">From <b>${gbp(BANDS[0].price)} a year</b>, depending on how many Pre-School gymnasts you have.</p>
+      <p class="note">Prices exclude VAT, which is added at 20%. Runs for 12 months from the day it starts. 5% off if it isn’t your club’s most expensive NGL licence. Lesson Plan Packs and the Seasonal Pack are below. <a href="https://club.nationalgymnasticsleague.co.uk/licences.html" target="_blank" rel="noopener">Every NGL licence fee ↗</a></p>`
+    : `<p class="muted">From <b>${gbp(BANDS[0].price)} a year + VAT</b>, depending on how many Pre-School gymnasts you have.</p>
     <div class="btn-row"><button class="btn" data-tab="licence">See prices and start</button></div>`}</div>`;
 }
 function screenDashboard(){

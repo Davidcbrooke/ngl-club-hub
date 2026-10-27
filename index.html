@@ -1350,7 +1350,7 @@ function screenLicences(){
   const btnOpen = (on, k, href) => `<a class="btn${on ? '' : ' ghost'}" href="${esc(q(href))}" target="_blank" rel="noopener">${on ? 'Open ' + esc(PATHWAYS[k].short) + ' Hub' : 'Explore ' + esc(PATHWAYS[k].short)}</a>`;
   const interest = k => int(k) ? '<span class="pw-on">✓ You’re on the list</span>' : `<button class="btn ghost" data-act="interest" data-k="${k}">Register interest</button>`;
   const row = (k, st, from, act) => `<tr><td><img class="lic-logo" src="${LOGOS[k]}" alt="${esc(PATHWAYS[k].label)}"></td><td>${st}</td><td>${from}</td><td class="act">${act}</td></tr>`;
-  const from = n => `from <b>${gbp(n)}</b> a year`;
+  const from = n => `from <b>${gbp(n)}</b> a year + VAT`;
   const rows = [
     row('preschool', ps.status === 'active' ? status(true) : status(false), from(PRESCHOOL_FROM), btnOpen(ps.status === 'active', 'preschool', LINKS.preschoolHub)),
     row('schools', status(live(sch), live(sch) ? sch.exp : null), from(fromPrice(SCHOOLS_BANDS)), btnOpen(live(sch), 'schools', LINKS.schoolsHub)),
