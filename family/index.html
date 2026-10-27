@@ -129,7 +129,7 @@ const APPS = [
    about:'Their award book level, what they\'re learning this week and how it links to competitions.',
    open:c => 'https://nglrecreational.co.uk/families/?code=' + encodeURIComponent(c.code)},
   {k:'general', name:'General League', ages:'Ages 6–18', icon:'/img/apps/general.png', open:null,
-   about:'Results, the National League Table and the Training League. Each gymnast\'s own General League Hub is coming soon.'}
+   about:'Results, the National League Table, National Finals qualifiers and the Training League, all in the General League Hub.'}
 ];
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -187,7 +187,7 @@ function render(){
   $('apps').innerHTML = APPS.map(a => {
     const c = S[a.k], on = a.open && c;
     const head = `<div class="ic"><img src="${a.icon}" alt=""><div><b>${a.name}</b><small>${a.ages}</small></div></div>`;
-    if(a.k === 'general') return `<div class="app">${head}<div class="bd"><span class="club">Open to every family</span><p>${a.about}</p><div class="acts"><a class="btn small red" href="general/">Open General League</a></div></div></div>`;
+    if(a.k === 'general') return `<div class="app">${head}<div class="bd"><span class="club">Open to every family</span><p>${a.about}</p><div class="acts"><a class="btn small red" href="general/">Open General League Hub</a></div></div></div>`;
     if(on) return `<div class="app">${head}<div class="bd"><span class="club">✓ ${esc(c.club || 'Your club')}</span><p>${a.about}</p><div class="acts"><a class="btn small red" href="${esc(a.open(c))}">Open ${a.name} app</a><button class="rm" data-rm="${a.k}">Remove</button></div></div></div>`;
     return `<div class="app locked">${head}<div class="bd"><span class="lock">🔒 Needs your club's ${a.k === 'preschool' ? 'family link' : 'family code'}</span><p>${a.about}</p><p style="margin:0;font-size:13.5px"><b style="color:var(--navy)">Contact your club</b> for its ${a.name} ${a.k === 'preschool' ? 'family link' : 'family code'}, then add it above.</p></div></div>`;
   }).join('');
