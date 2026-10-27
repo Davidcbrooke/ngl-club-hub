@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>General League · NGL Family Hub</title>
+<meta name="description" content="NGL General League for families: live league tables, results, the Training League and National Finals qualifiers.">
+<meta name="theme-color" content="#0071B3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="NGL Family">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/ngl-favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/ngl-favicon-192.png">
+<link rel="apple-touch-icon" href="/icons/ngl-apple-touch-icon.png">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#14254a;--gl:#0071B3;--red:#C9142E;--cond:'Roboto Condensed','Arial Narrow',sans-serif;--body:'Roboto',system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{display:flex;flex-direction:column;font:16px/1.5 var(--body);color:#fff;background:#14254a}
+.strap{background:var(--gl);text-align:center;font-weight:800;font-size:13px;letter-spacing:.04em;padding:6px 16px}
+header{background:linear-gradient(180deg,#29235c,#14254a);padding:10px 12px 0}
+.row{display:flex;align-items:center;gap:12px;max-width:1200px;margin:0 auto}
+.back{flex:none;display:inline-flex;align-items:center;gap:6px;color:#fff;text-decoration:none;font:700 14px var(--body);padding:8px 14px 8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.35)}
+.back svg{width:18px;height:18px}
+.ttl{display:flex;align-items:center;gap:10px;min-width:0}
+.ttl img{width:40px;height:40px;border-radius:10px;flex:none}
+.ttl b{display:block;font:700 24px/1 var(--cond);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ttl small{display:block;color:#c9cde6;font-size:12.5px}
+nav{display:flex;gap:6px;overflow-x:auto;max-width:1200px;margin:10px auto 0;padding:0 0 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+nav::-webkit-scrollbar{display:none}
+nav a{flex:none;color:#dfe3f5;text-decoration:none;font:700 14px var(--body);padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+nav a.on{background:var(--gl);border-color:var(--gl);color:#fff}
+main{flex:1;position:relative;min-height:0;background:#0a1440}
+main iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:none;background:#fff}
+main iframe.on{display:block}
+main iframe.dark{background:#0a1440}
+@media(max-width:520px){.ttl small{display:none}.ttl b{font-size:21px}.back span{display:none}.back{padding:8px 10px}}
+</style>
+</head>
+<body>
+<div class="strap">NGL Family Hub · General League</div>
+<header>
+  <div class="row">
+    <a class="back" href="../" aria-label="Back to the Family Hub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg><span>Family Hub</span></a>
+    <div class="ttl"><img src="/img/apps/general.png" alt=""><div><b>General League</b><small>Results, league tables and the Training League</small></div></div>
+  </div>
+  <nav id="tabs" aria-label="General League sections"></nav>
+</header>
+<main id="view"></main>
+<script>
+const GH = 'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/';
+const TABS = [
+  {k:'league', label:'2027 league table', src: GH + 'ngl-live-league-2027.html?family=1'},
+  {k:'training', label:'Training League', src: GH + 'ngl-training-league.html?site=1', dark:true},
+  {k:'results2026', label:'2026 results', src: GH + 'RESULTS-VIEWER.HTML'},
+  {k:'qualifiers', label:'National Finals qualifiers', src: GH + 'national-qualifier.html?family=1'}
+];
+const tabs = document.getElementById('tabs'), view = document.getElementById('view');
+tabs.innerHTML = TABS.map(t => `<a href="#${t.k}" data-k="${t.k}">${t.label}</a>`).join('');
+function show(){
+  const k = (location.hash || '').slice(1), t = TABS.find(x => x.k === k) || TABS[0];
+  tabs.querySelectorAll('a').forEach(a => { const on = a.dataset.k === t.k; a.classList.toggle('on', on); if(on) a.scrollIntoView({block:'nearest', inline:'nearest'}); });
+  let f = view.querySelector(`iframe[data-k="${t.k}"]`);
+  if(!f){ f = document.createElement('iframe'); f.dataset.k = t.k; f.title = t.label; f.src = t.src; if(t.dark) f.className = 'dark'; view.appendChild(f); }
+  view.querySelectorAll('iframe').forEach(x => x.classList.toggle('on', x === f));
+}
+addEventListener('hashchange', show); show();
+</script>
+</body>
+</html>
