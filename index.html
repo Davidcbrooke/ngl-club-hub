@@ -907,7 +907,7 @@ const PATHWAY_INFO = {
     awards:{title:'Skills Books', imgs:[PW_IMG + 'general-cover.jpg', PW_IMG + 'general-book-1.jpg', PW_IMG + 'general-book-2.jpg'],
       points:['A skills book for every General League level, aligned to the competition','Bronze, Silver and Gold ticks for every skill','Live April 2027']},
     comps:{title:'Competitions', imgs:[PW_IMG + 'comp-hero.jpg', PW_IMG + 'comp-judges.jpg', PW_IMG + 'comp-spectators.jpg'],
-      points:['Local competitions across four regional venues, 24 clubs in 2027','Girls Levels 1–4 and boys Levels 1–4','Live scores and a National League Table, building to the NGL National Finals','The Training League for boys: challenges filmed in training, with an NGL Player Card']}},
+      points:['Local competitions across four regional venues, 24 clubs in 2027','Girls Levels 1–4 and boys Levels 1–4','Live scores and a National League Table, building to the NGL National Finals','The Training League for boys: challenges filmed in training, with an NGL Profile Card']}},
   performance: {who:'11+ hours a week', status:['Coming 2027','soon'], interest:'performance',
     awards:{title:'Skills Books', imgs:[PW_IMG + 'performance-cover.jpg'],
       points:['Skills books for Performance League levels','Coming 2027']},
@@ -1336,7 +1336,7 @@ function screenGeneral(){
     <p class="lead">Follow the league tables and the Training League, and keep the 2027 rules to hand.</p>
     <div class="grid g3">
       ${tile('League table', 'Live results, the National League Table and regional qualification for National Finals.', ext(GL.table, 'See the league table'))}
-      ${tile('Training League · Boys', 'Nine strength, speed and power challenges filmed in training. Send us the videos and every valid result goes into the table and onto the boy’s NGL Player Card.', ext(GL.power, 'Training League table') + `<a class="btn ghost" href="${videoMail}">Email videos to NGL</a>`)}
+      ${tile('Training League · Boys', 'Nine strength, speed and power challenges filmed in training. Send us the videos and every valid result goes into the table and onto the boy’s NGL Profile Card.', ext(GL.power, 'Training League table') + `<a class="btn ghost" href="${videoMail}">Email videos to NGL</a>`)}
       ${tile('Rules 2027', 'General League rules and common deductions: girls Levels 1–4, boys Levels 1–4.', ext(GL.wag, 'Girls rules (PDF)') + ext(GL.mag, 'Boys rules (PDF)', true))}
     </div>`;
 }
