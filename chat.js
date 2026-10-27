@@ -3,7 +3,7 @@
 (function(){
   var WHATSAPP = '447962141932';          // international format, digits only, e.g. '447700900123' (UK 07700 900123)
   if(!WHATSAPP || window.self !== window.top || /[?&]embed=1\b/.test(location.search)) return;
-  var css = '.ngl-chat{position:fixed;right:16px;bottom:16px;z-index:2147482000;display:flex;align-items:center;gap:9px;background:#25D366;color:#fff;text-decoration:none;font:700 15px/1 Barlow,system-ui,-apple-system,sans-serif;padding:12px 18px 12px 14px;border-radius:999px;box-shadow:0 10px 26px -8px rgba(0,0,0,.55);transition:transform .15s ease}' +
+  var css = '.ngl-chat{position:fixed;right:16px;bottom:16px;z-index:2147482000;display:flex;align-items:center;gap:9px;background:#25D366;color:#fff;text-decoration:none;font:700 15px/1 Roboto,system-ui,-apple-system,sans-serif;padding:12px 18px 12px 14px;border-radius:999px;box-shadow:0 10px 26px -8px rgba(0,0,0,.55);transition:transform .15s ease}' +
     '.ngl-chat:hover{transform:translateY(-2px)}.ngl-chat svg{width:24px;height:24px;flex:none}' +
     '@media(max-width:600px){.ngl-chat{padding:13px}.ngl-chat span{display:none}}' +
     '@media print{.ngl-chat{display:none}}';
