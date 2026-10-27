@@ -510,6 +510,7 @@ function newAccessCode(name){ const r = new Uint32Array(4); crypto.getRandomValu
    STATE
    ===================================================================== */
 const S = {music:[], uid:null, isAdmin:false, club:null, schoolsOrders:[], recOrders:[], bookings:[], comps:{}, bookingsError:'', extraEmails:[], tab:'overview', orderFilter:'all', resFilter:'upcoming', admin:null};
+window.nglChatClub = () => S.club && S.club.name;
 const season = currentSeason();
 
 /* ---------- Licence status ---------- */
@@ -1917,5 +1918,6 @@ async function start(){
 })();
 </script>
 
+<script src="/chat.js?v=1"></script>
 </body>
 </html>

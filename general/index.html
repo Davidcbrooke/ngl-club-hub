@@ -177,6 +177,7 @@ const PREVIEW = /[?&]demo\b/.test(location.search);
 const TABS = [['dashboard','Dashboard'], ['league','League competitions'], ['power','Power League'], ['book','Reserve places'], ['reserved','Your reserved places'], ['music','Floor music'], ['family','Family Hub'], ['licence','Skills book licence']];
 
 const S = {tab:'dashboard', club:null, uid:null, comps:{}, bookings:[], music:[], pl:[], gender:'girls', level:'1', resFilter:'upcoming', loading:true};
+window.nglChatClub = () => S.club && S.club.name;
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const lc = s => String(s || '').trim().toLowerCase();
@@ -617,5 +618,6 @@ window.addEventListener('message', e => {
 })();
 </script>
 
+<script src="/chat.js?v=1"></script>
 </body>
 </html>
