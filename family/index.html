@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NGL Family Hub</title>
+<meta name="description" content="Results, league tables and your gymnast's NGL family apps in one place.">
+<meta name="theme-color" content="#C9142E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="NGL Family">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/ngl-favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/ngl-favicon-192.png">
+<link rel="apple-touch-icon" href="/icons/ngl-apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#14254a;--ink:#16213a;--muted:#5d6782;--line:#e3e6ef;--red:#C9142E;--ok:#1f8a4c;--cond:'Barlow Condensed','Arial Narrow',sans-serif;--body:'Barlow',system-ui,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.55 var(--body);color:var(--ink);background:linear-gradient(180deg,#14254a 0,#1e1a4c 900px,#1e1a4c 100%) #1e1a4c;min-height:100vh}
+.wrap{max-width:1000px;margin:0 auto;padding:0 16px}
+.top{background:var(--red)}
+.strap{text-align:center;color:#fff;font-weight:800;font-size:13px;letter-spacing:.04em;padding:7px 16px}
+.band{background:linear-gradient(180deg,#29235c 0%,#29235c 40%,#14254a 100%);border-top-right-radius:120px 38px;padding-bottom:4px}
+@media(min-width:700px){.band{border-top-right-radius:220px 46px}}
+.row{display:flex;align-items:center;gap:10px;min-height:76px;padding:10px 16px}
+.logo{margin-right:auto;display:block}.logo img{height:50px;display:block}
+@media(min-width:700px){.logo img{height:60px}}
+.tbtn{display:inline-block;color:#fff;text-decoration:none;font:700 14px var(--body);padding:8px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.35)}
+main{padding:20px 0 60px}
+h1{font:700 44px/1.02 var(--cond);color:#fff;margin:6px 0 8px;text-transform:uppercase}
+.lead{color:#d9daf2;max-width:720px;margin:0 0 20px;font-size:17px}
+h2{font:700 28px/1.1 var(--cond);color:#fff;margin:34px 0 4px;text-transform:uppercase}
+.sub{color:#c9cde6;margin:0 0 14px;font-size:15px}
+.join{background:#fff;border-radius:16px;padding:20px 22px;border-top:6px solid var(--red);box-shadow:0 18px 40px -24px rgba(0,0,0,.6)}
+.join h3{margin:0 0 4px;font:700 24px/1.1 var(--cond);color:var(--navy);text-transform:uppercase}
+.join p{margin:0 0 12px;color:var(--muted);font-size:15px}
+.join form{display:flex;gap:8px;flex-wrap:wrap}
+.join input{flex:1 1 220px;min-width:0;font:700 18px var(--body);letter-spacing:.06em;text-transform:uppercase;padding:12px 14px;border:2px solid var(--line);border-radius:12px;color:var(--navy)}
+.join input:focus{outline:none;border-color:var(--red)}
+.join input::placeholder{text-transform:none;letter-spacing:0;font-weight:500;color:#9aa0b5}
+.btn{display:inline-block;background:var(--navy);color:#fff;text-decoration:none;font:700 15px var(--body);padding:11px 18px;border-radius:999px;border:1px solid var(--navy);cursor:pointer;margin:0}
+.btn.red{background:var(--red);border-color:var(--red)}
+.btn.ghost{background:#fff;color:var(--navy);border-color:#cfd5e3}
+.btn.small{font-size:14px;padding:7px 13px}
+.btn[disabled]{opacity:.6;cursor:wait}
+.msg{margin:10px 0 0;font-weight:600;font-size:15px}.msg.bad{color:var(--red)}.msg.ok{color:var(--ok)}
+.privacy{margin:12px 0 0;font-size:13.5px;color:var(--muted)}
+.apps{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(225px,1fr))}
+@media(min-width:960px){.apps{grid-template-columns:repeat(4,minmax(0,1fr))}.app .ic b{font-size:20px}}
+.app{background:#fff;border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.app .ic{display:flex;align-items:center;gap:12px;padding:14px 16px 0}
+.app .ic img{width:58px;height:58px;border-radius:14px;flex:none}
+.app .ic{min-width:0}.app .ic > div{min-width:0}
+.app .ic b{display:block;font:700 21px/1.05 var(--cond);color:var(--navy);text-transform:uppercase}
+.app .ic small{display:block;font:600 13px var(--body);color:var(--muted);text-transform:none}
+.app .bd{padding:10px 16px 16px;display:flex;flex-direction:column;flex:1}
+.app p{margin:0 0 12px;color:var(--muted);font-size:14.5px;flex:1}
+.app .club{display:inline-flex;align-items:center;gap:6px;background:#e4f4ea;color:var(--ok);font-weight:800;font-size:13.5px;padding:4px 10px;border-radius:999px;margin:0 0 10px;align-self:flex-start}
+.app .lock{display:inline-flex;align-items:center;gap:6px;background:#f1f2f7;color:#5d6782;font-weight:800;font-size:13.5px;padding:4px 10px;border-radius:999px;margin:0 0 10px;align-self:flex-start}
+.app .acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.app .rm{background:none;border:0;color:var(--muted);font:600 13px var(--body);text-decoration:underline;cursor:pointer;padding:4px}
+.app.locked .ic img{filter:grayscale(.35);opacity:.85}
+.links{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.lk{display:block;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:16px;color:#fff;text-decoration:none;transition:transform .12s ease,background .12s ease}
+.lk:hover{transform:translateY(-2px);background:rgba(255,255,255,.11)}
+.lk b{display:block;font:700 20px/1.1 var(--cond);text-transform:uppercase;margin-bottom:4px}
+.lk span{display:block;color:#c9cde6;font-size:14px;line-height:1.45}
+.lk i{font-style:normal;display:inline-block;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#f2a900;margin-bottom:6px}
+.help{margin-top:34px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:16px 18px;color:#d9daf2;font-size:15px}
+.help b{color:#fff}
+.help a{color:#fff}
+footer{text-align:center;color:#9ea3c9;font-size:13px;padding:0 16px 30px}
+footer a{color:#fff}
+</style>
+</head>
+<body>
+<header class="top"><div class="strap">NGL Family Hub</div><div class="band"><div class="wrap row">
+  <a class="logo" href="./" aria-label="NGL Family Hub"><img src="https://davidcbrooke.github.io/GYMNASTICS-RESULTS/brand/ngl-logo-full.png" alt="National Gymnastics League"></a>
+  <a class="tbtn" href="https://www.nationalgymnasticsleague.co.uk/" target="_top">NGL website</a>
+</div></div></header>
+
+<main class="wrap">
+  <h1>Your NGL Family Hub</h1>
+  <p class="lead">Results, league tables and your gymnast's NGL family apps, all in one place. Add your club's family code once and your apps open straight from here.</p>
+
+  <section class="join" aria-labelledby="joinH">
+    <h3 id="joinH">Register with your club's family code</h3>
+    <p>Your club gives you a family code for each NGL pathway your gymnast is on, for example <b>SAADI-7K4P</b>. For Pre-School, paste the family link your club sent you.</p>
+    <form id="joinForm" autocomplete="off">
+      <input id="code" name="code" placeholder="Family code or Pre-School link" aria-label="Family code or Pre-School link" autocapitalize="characters" spellcheck="false">
+      <button class="btn red" type="submit" id="joinBtn">Add code</button>
+    </form>
+    <div class="msg" id="msg" role="status" aria-live="polite"></div>
+    <p class="privacy">Your codes are saved on this phone or computer only. No account, and we don't store any details about you or your child.</p>
+  </section>
+
+  <h2>Your family apps</h2>
+  <p class="sub">See what your gymnast is learning, their awards and what comes next. Each app opens with your club's code.</p>
+  <div class="apps" id="apps"></div>
+
+  <h2>Results &amp; league tables</h2>
+  <p class="sub">Open to every NGL family, no code needed.</p>
+  <div class="links">
+    <a class="lk" href="https://www.nationalgymnasticsleague.co.uk/2027-season-results-and-league-table" target="_top"><i>2027 season</i><b>Results &amp; league table</b><span>Live scores and the National League Table for the 2027 season.</span></a>
+    <a class="lk" href="https://www.nationalgymnasticsleague.co.uk/resultsandleaguetable" target="_top"><i>2026 season</i><b>Results &amp; league table</b><span>This season's results and National League Table.</span></a>
+    <a class="lk" href="https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-power-league.html" target="_blank" rel="noopener"><i>General League · Boys</i><b>Power League</b><span>Nine strength, speed and power challenges, with a league table and player cards.</span></a>
+    <a class="lk" href="https://davidcbrooke.github.io/GYMNASTICS-RESULTS/national-qualifier.html" target="_blank" rel="noopener"><i>General League</i><b>National Finals qualifiers</b><span>Who has qualified to represent their region at the NGL National Finals.</span></a>
+  </div>
+
+  <div class="help"><b>No code yet?</b> Ask your gymnast's club. Clubs find their family codes in their NGL hub. If your club isn't in the NGL yet, tell them about it: registering is free at <a href="https://club.nationalgymnasticsleague.co.uk/#register" target="_top">club.nationalgymnasticsleague.co.uk</a>.</div>
+</main>
+<footer>National Gymnastics League · <a href="mailto:admin@nationalgymnasticsleague.co.uk">admin@nationalgymnasticsleague.co.uk</a></footer>
+
+<script src="/preschool/data.js"></script>
+<script>
+const FS = 'https://firestore.googleapis.com/v1/projects/ngl-schools/databases/(default)/documents/';
+const KEY = 'AIzaSyBK8gNFh4lYv6829YRFm-7Ia0tzh_RwMKQ';
+const STORE = 'ngl-family-hub';
+const PS_STORE = 'ngl-family-ps';   // written by the Pre-School family app when a family opens their club's link
+const APPS = [
+  {k:'preschool', name:'Pre-School', ages:'Ages 3–4', icon:'/img/apps/preschool.png',
+   about:'This week\'s theme, the skills your child is learning and their passport progress.',
+   open:c => c.link},
+  {k:'schools', name:'Schools', ages:'Ages 4–11', icon:'/img/apps/schools.png',
+   about:'The skills, certificates and Graduation for gymnastics in your child\'s school.',
+   open:c => 'https://nglschools.co.uk/?code=' + encodeURIComponent(c.code)},
+  {k:'recreational', name:'Recreational', ages:'Ages 4–16', icon:'/img/apps/recreational.png',
+   about:'Their award book level, what they\'re learning this week and how it links to competitions.',
+   open:c => 'https://nglrecreational.co.uk/families/?code=' + encodeURIComponent(c.code)},
+  {k:'general', name:'General League', ages:'Ages 6–18', icon:'/img/apps/general.png', open:null,
+   about:'Results, the National League Table and the boys\' Power League. Each gymnast\'s own General League Hub is coming soon.'}
+];
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function load(){ try{ return JSON.parse(localStorage.getItem(STORE)) || {}; }catch(e){ return {}; } }
+function save(s){ try{ localStorage.setItem(STORE, JSON.stringify(s)); }catch(e){} }
+let S = load();
+// pick up a Pre-School link the family has already opened on this device
+try{ const ps = JSON.parse(localStorage.getItem(PS_STORE) || 'null'); if(ps && ps.link && !(S.preschool && S.preschool.link === ps.link)){ S.preschool = {link:ps.link, club:ps.club || ''}; save(S); } }catch(e){}
+
+function normaliseCode(raw){
+  let s = String(raw || '').toUpperCase().replace(/[^A-Z0-9-]/g, '');
+  if(!s.includes('-') && s.length > 6) s = s.slice(0, -4) + '-' + s.slice(-4);
+  return s.slice(0, 15);
+}
+async function getCode(col, code){
+  const r = await fetch(FS + col + '/' + encodeURIComponent(code) + '?key=' + KEY);
+  if(r.status === 404) return null;
+  if(!r.ok) throw new Error('lookup ' + r.status);
+  const f = (await r.json()).fields || {}, v = x => x ? (x.stringValue ?? x.timestampValue ?? x.integerValue ?? x.booleanValue) : undefined;
+  return {status:v(f.status), expires:v(f.expires), clubName:v(f.clubName) || ''};
+}
+const activeNow = d => d && d.status === 'active' && (!d.expires || new Date(d.expires) > new Date());
+
+async function addCode(raw){
+  const msg = $('msg'); msg.className = 'msg'; msg.textContent = '';
+  raw = String(raw || '').trim();
+  if(!raw) return;
+  // Pre-School: the club shares a link rather than a code
+  const m = raw.match(/preschool\/?#p=([A-Za-z0-9_\-]+)/);
+  if(m){
+    const cfg = window.NGLPS && NGLPS.decode(m[1]);
+    if(!cfg) { msg.className = 'msg bad'; msg.textContent = 'That Pre-School link doesn\'t look right. Please copy it again from your club\'s message.'; return; }
+    S.preschool = {link:'https://club.nationalgymnasticsleague.co.uk/preschool/#p=' + m[1], club:cfg.club || ''}; save(S); render();
+    msg.className = 'msg ok'; msg.textContent = '✓ Pre-School added' + (cfg.club ? ' for ' + cfg.club : '') + '.'; $('code').value = ''; return;
+  }
+  const code = normaliseCode(raw);
+  if(code.length < 5){ msg.className = 'msg bad'; msg.textContent = 'Please type the full code your club gave you.'; return; }
+  const b = $('joinBtn'); b.disabled = true; b.textContent = 'Checking…';
+  try{
+    const [rec, sch] = await Promise.all([getCode('recCodes', code), getCode('accessCodes', code)]);
+    const found = [];
+    if(rec){ if(!activeNow(rec)) throw {friendly:'This code isn\'t active at the moment. Please check with your club.'}; S.recreational = {code, club:rec.clubName}; found.push('Recreational'); }
+    if(sch){ if(!activeNow(sch)) throw {friendly:'This code isn\'t active at the moment. Please check with your club.'}; S.schools = {code, club:sch.clubName}; found.push('Schools'); }
+    if(!found.length) throw {friendly:'We couldn\'t find that code. Please check it with your club.'};
+    save(S); render();
+    const club = (S.recreational && S.recreational.code === code && S.recreational.club) || (S.schools && S.schools.code === code && S.schools.club) || '';
+    msg.className = 'msg ok'; msg.textContent = '✓ ' + found.join(' and ') + ' added' + (club ? ' for ' + club : '') + '. Open it below.';
+    $('code').value = '';
+  }catch(e){
+    msg.className = 'msg bad'; msg.textContent = e && e.friendly ? e.friendly : 'We couldn\'t check the code just now. Please check your connection and try again.';
+  }finally{ b.disabled = false; b.textContent = 'Add code'; }
+}
+
+function render(){
+  $('apps').innerHTML = APPS.map(a => {
+    const c = S[a.k], on = a.open && c;
+    const head = `<div class="ic"><img src="${a.icon}" alt=""><div><b>${a.name}</b><small>${a.ages}</small></div></div>`;
+    if(a.k === 'general') return `<div class="app">${head}<div class="bd"><span class="club">Open to every family</span><p>${a.about}</p><div class="acts"><a class="btn small" href="https://www.nationalgymnasticsleague.co.uk/2027-season-results-and-league-table" target="_top">League tables</a><a class="btn small ghost" href="https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-power-league.html" target="_blank" rel="noopener">Power League</a></div></div></div>`;
+    if(on) return `<div class="app">${head}<div class="bd"><span class="club">✓ ${esc(c.club || 'Your club')}</span><p>${a.about}</p><div class="acts"><a class="btn small red" href="${esc(a.open(c))}">Open ${a.name} app</a><button class="rm" data-rm="${a.k}">Remove</button></div></div></div>`;
+    return `<div class="app locked">${head}<div class="bd"><span class="lock">🔒 Needs your club's ${a.k === 'preschool' ? 'family link' : 'family code'}</span><p>${a.about}</p><p style="margin:0;font-size:13.5px"><b style="color:var(--navy)">Contact your club</b> for its ${a.name} ${a.k === 'preschool' ? 'family link' : 'family code'}, then add it above.</p></div></div>`;
+  }).join('');
+}
+document.addEventListener('click', e => { const r = e.target.closest('[data-rm]'); if(!r) return; delete S[r.getAttribute('data-rm')]; save(S); render(); });
+$('joinForm').addEventListener('submit', e => { e.preventDefault(); addCode($('code').value); });
+render();
+// a club can share https://club.nationalgymnasticsleague.co.uk/family/?code=XXXX
+(function(){ const q = new URLSearchParams(location.search).get('code'); if(q){ $('code').value = q; addCode(q); history.replaceState(null, '', location.pathname); } })();
+</script>
+
+<!-- Add to Home Screen -->
+<style>
+.a2hs{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:2147483000;width:min(420px,calc(100% - 24px));background:#fff;color:#16213a;border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.35);padding:14px 16px 14px 14px;font:15px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;display:none}
+.a2hs.on{display:block}
+.a2hs .h{display:flex;gap:12px;align-items:center}
+.a2hs img{width:52px;height:52px;border-radius:12px;flex:none;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.a2hs .h b{display:block;font-size:16px}.a2hs li b{display:inline;font-size:inherit}
+.a2hs p{margin:2px 0 0;color:#5d6782;font-size:13.5px}
+.a2hs ol{margin:10px 0 0;padding-left:22px;font-size:14px}.a2hs ol li{margin:3px 0}
+.a2hs .r{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.a2hs button{font:inherit;font-weight:700;border-radius:10px;padding:8px 14px;cursor:pointer;border:1px solid #d6dbe6;background:#fff;color:#16213a}
+.a2hs button.go{background:#C9142E;border-color:#C9142E;color:#fff}
+.a2hs .x{position:absolute;top:6px;right:8px;border:0;background:none;font-size:20px;line-height:1;color:#8a90a6;padding:4px}
+</style>
+<div class="a2hs" id="a2hs" role="dialog" aria-label="Add NGL Family Hub to your Home Screen"></div>
+<script>
+(function(){
+  if(window.self !== window.top) return;
+  var NAME = 'NGL Family Hub', ICON = '/icons/ngl-favicon-192.png', KEY = 'a2hs-family';
+  var standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  if(standalone) return;
+  try{ var t = +localStorage.getItem(KEY) || 0; if(Date.now() - t < 14 * 86400000) return; }catch(e){}
+  var ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var safari = /safari/i.test(navigator.userAgent) && !/crios|fxios|edgios|chrome/i.test(navigator.userAgent);
+  var el = document.getElementById('a2hs'), evt = null;
+  function hide(){ el.classList.remove('on'); try{ localStorage.setItem(KEY, String(Date.now())); }catch(e){} }
+  function show(html){ el.innerHTML = '<button class="x" aria-label="Not now">×</button>' + html; el.classList.add('on');
+    el.querySelector('.x').onclick = hide; var n = el.querySelector('.no'); if(n) n.onclick = hide;
+    var g = el.querySelector('.go'); if(g) g.onclick = function(){ if(!evt) return hide(); evt.prompt(); evt.userChoice.finally(function(){ evt = null; hide(); }); }; }
+  var head = '<div class="h"><img src="' + ICON + '" alt=""><div><b>Add ' + NAME + ' to your Home Screen</b><p>Your results, league tables and family apps, one tap away.</p></div></div>';
+  window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); evt = e; setTimeout(function(){ show(head + '<div class="r"><button class="no">Not now</button><button class="go">Install</button></div>'); }, 2500); });
+  if(ios && safari) setTimeout(function(){
+    var share = '<svg width="14" height="16" viewBox="0 0 14 18" style="vertical-align:-2px" aria-label="Share"><path d="M7 1v11M3 5l4-4 4 4M1 9v8h12V9" fill="none" stroke="#0a84ff" stroke-width="1.8"/></svg>';
+    show(head + '<ol><li>Tap the Share button ' + share + ' in Safari</li><li>Scroll down and tap <b>Add to Home Screen</b></li></ol><div class="r"><button class="no">Got it</button></div>');
+  }, 2500);
+  window.addEventListener('appinstalled', hide);
+})();
+</script>
+</body>
+</html>

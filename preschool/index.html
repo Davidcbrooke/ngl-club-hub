@@ -98,6 +98,8 @@ let cfg = null, rows = [], idx = 0, demo = false;
 function load(){
   const h = new URLSearchParams(location.hash.slice(1));
   if(h.get('p')) cfg = P.decode(h.get('p'));
+  // remember this club's link so the NGL Family Hub (same site) can show the Pre-School app
+  if(cfg){ try{ localStorage.setItem('ngl-family-ps', JSON.stringify({link: location.origin + location.pathname + '#p=' + h.get('p'), club: cfg.club || ''})); }catch(e){} }
   if(!cfg && (h.has('demo') || new URLSearchParams(location.search).has('demo'))){ cfg = SAMPLE; demo = true; }
   if(!cfg){ return empty(); }
   rows = P.plan(cfg);
