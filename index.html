@@ -1398,7 +1398,7 @@ function screenGeneral(){
   const club = S.club ? S.club.name : 'your club';
   const ext = (href, label, ghost) => `<a class="btn${ghost ? ' ghost' : ''}" href="${esc(href)}" target="_blank" rel="noopener">${esc(label)}</a>`;
   const tile = (title, body, btns) => `<div class="card"><h3>${title}</h3><p class="small muted">${body}</p><div class="btn-row">${btns}</div></div>`;
-  const videoMail = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Training League videos: ' + club)}&body=${encodeURIComponent('Hi NGL,\n\nHere are our Training League videos.\n\nFor each video: gymnast first name and surname initial, BG number, level, age group, training hours and the challenge.\n\nClub: ' + club + '\n')}`;
+  const videoMail = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Training League videos: ' + club)}&body=${encodeURIComponent('Hi NGL,\n\nHere are our Training League videos.\n\nFor each video: gymnast first name and surname initial, BG number, age group, training hours and the challenge.\n\nClub: ' + club + '\n')}`;
   return `<h1 class="page">League tables &amp; rules</h1>
     <p class="lead">Follow the league tables and the Training League, and keep the 2027 rules to hand.</p>
     <div class="grid g3">

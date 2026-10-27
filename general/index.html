@@ -374,12 +374,12 @@ function screenLeague(){
 
 function screenPower(){
   const boys = myBoys(), club = S.club.name || '';
-  const mail = 'mailto:admin@nationalgymnasticsleague.co.uk?subject=' + encodeURIComponent('Training League videos: ' + club) + '&body=' + encodeURIComponent('Hi NGL,\n\nHere are our Training League videos.\n\nFor each video: gymnast first name and surname initial, BG number, level, age group, training hours and the challenge.\n\nClub: ' + club + '\n');
+  const mail = 'mailto:admin@nationalgymnasticsleague.co.uk?subject=' + encodeURIComponent('Training League videos: ' + club) + '&body=' + encodeURIComponent('Hi NGL,\n\nHere are our Training League videos.\n\nFor each video: gymnast first name and surname initial, BG number, age group, training hours and the challenge.\n\nClub: ' + club + '\n');
   return `<h1 class="page">Training League</h1>
     <p class="lead">Nine conditioning challenges for boys, filmed in training and open all season. Every result goes into the live table and onto the boy’s NGL Profile Card.</p>
     <ol class="rsteps">
       <li><b>Film in training</b><span>Phone side-on, whole body in shot, one take. Say the gymnast’s name and the challenge at the start.</span></li>
-      <li><b>Send it to NGL</b><span>First name, surname initial, BG number, level, age group and training hours.</span><a class="btn blue small" style="margin-top:8px;align-self:flex-start" href="${mail}">Email your videos</a></li>
+      <li><b>Send it to NGL</b><span>First name, surname initial, BG number, age group and training hours.</span><a class="btn blue small" style="margin-top:8px;align-self:flex-start" href="${mail}">Email your videos</a></li>
       <li><b>Watch the table</b><span>${boys.length ? `<b style="display:inline">${boys.length}</b> of your boys ${boys.length === 1 ? 'is' : 'are'} in the table.` : 'Your boys appear once their first result is in.'} Their cards build with every challenge.</span></li>
     </ol>
     <iframe class="frame" id="plFrame" title="Training League table" src="${LINKS.powerLeague}?embed=1${boys.length ? '&club=' + encodeURIComponent(club) : ''}"></iframe>`;
