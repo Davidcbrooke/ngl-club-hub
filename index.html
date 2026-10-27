@@ -969,7 +969,7 @@ const PATHWAY_INFO = {
     awards:{title:'Skills Books', imgs:[PW_IMG + 'general-cover.jpg', PW_IMG + 'general-book-1.jpg', PW_IMG + 'general-book-2.jpg'],
       points:['A skills book for every General League level, aligned to the competition','Bronze, Silver and Gold ticks for every skill','Live April 2027']},
     comps:{title:'Competitions', imgs:[PW_IMG + 'comp-hero.jpg', PW_IMG + 'comp-judges.jpg', PW_IMG + 'comp-spectators.jpg'],
-      points:['Local competitions across four regional venues, 24 clubs in 2027','Girls Levels 1–4 and boys Levels 1–4','Live scores and a National League Table, building to the NGL National Finals','The Training League for boys: challenges filmed in training, with an NGL Profile Card']}},
+      points:['Local competitions across four regional venues, 24 clubs in 2027','Girls Levels 1–4 and boys Levels 1–4','Live scores and a National League Table, building to the NGL National Finals','The Training League for boys and girls: challenges filmed in training, with an NGL Profile Card']}},
   performance: {who:'11+ hours a week', status:['Coming 2027','soon'], interest:'performance',
     awards:{title:'Skills Books', imgs:[PW_IMG + 'performance-cover.jpg'],
       points:['Skills books for Performance League levels','Coming 2027']},
@@ -1398,12 +1398,12 @@ function screenGeneral(){
   const club = S.club ? S.club.name : 'your club';
   const ext = (href, label, ghost) => `<a class="btn${ghost ? ' ghost' : ''}" href="${esc(href)}" target="_blank" rel="noopener">${esc(label)}</a>`;
   const tile = (title, body, btns) => `<div class="card"><h3>${title}</h3><p class="small muted">${body}</p><div class="btn-row">${btns}</div></div>`;
-  const videoMail = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Training League videos: ' + club)}&body=${encodeURIComponent('Hi NGL,\n\nHere are our Training League videos.\n\nFor each video: gymnast first name and surname initial, BG number, age group, training hours and the challenge.\n\nClub: ' + club + '\n')}`;
+  const videoMail = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Training League videos: ' + club)}&body=${encodeURIComponent('Hi NGL,\n\nHere are our Training League videos.\n\nFor each video: gymnast first name and surname initial, boy or girl, BG number, age group, training hours and the challenge.\n\nWe confirm parent consent has been given for every gymnast in these videos.\n\nClub: ' + club + '\n')}`;
   return `<h1 class="page">League tables &amp; rules</h1>
     <p class="lead">Follow the league tables and the Training League, and keep the 2027 rules to hand.</p>
     <div class="grid g3">
       ${tile('League table', 'Live results, the National League Table and regional qualification for National Finals.', ext(GL.table, 'See the league table'))}
-      ${tile('Training League · Boys', '13 strength, speed and power challenges filmed in training. Send us the videos and every valid result goes into the table and onto the boy’s NGL Profile Card.', ext(GL.power, 'Training League table') + `<a class="btn ghost" href="${videoMail}">Email videos to NGL</a>`)}
+      ${tile('Training League · Boys &amp; Girls', '13 strength, speed and power challenges filmed in training. Send us the videos and every valid result goes into the table and onto the gymnast’s NGL Profile Card.', ext(GL.power, 'Training League table') + `<a class="btn ghost" href="${videoMail}">Email videos to NGL</a>`)}
       ${tile('Rules 2027', 'General League rules and common deductions: girls Levels 1–4, boys Levels 1–4.', ext(GL.wag, 'Girls rules (PDF)') + ext(GL.mag, 'Boys rules (PDF)', true))}
     </div>`;
 }

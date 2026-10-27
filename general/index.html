@@ -336,7 +336,7 @@ function screenDashboard(){
       <div class="card stat go" data-tab="reserved"><div class="v">${places}</div><div class="l">Places reserved</div><div class="s">${res.length} upcoming competition${res.length === 1 ? '' : 's'}${res.some(r => r.waitlist) ? ' · ' + res.filter(r => r.waitlist).length + ' on a waiting list' : ''}</div></div>
       <div class="card stat go" data-tab="reserved"><div class="v">${next ? esc(next.date.toLocaleDateString('en-GB', {day:'numeric', month:'short'})) : '–'}</div><div class="l">Next competition</div><div class="s">${next ? esc(next.compName || next.comp.name || '') : 'Nothing reserved yet'}</div></div>
       <div class="card stat go" data-tab="music" style="border-top-color:${miss ? 'var(--red)' : 'var(--ok)'}"><div class="v">${miss}</div><div class="l">Floor music to upload</div><div class="s">${S.music.length ? (miss ? 'Across ' + S.music.length + ' competition' + (S.music.length === 1 ? '' : 's') : 'All uploaded ✓') : 'Nothing needed right now'}</div></div>
-      <div class="card stat go" data-tab="power"><div class="v">${boys.length}</div><div class="l">Boys in the Training League</div><div class="s">${boys.length ? 'See their table and profile cards' : 'Film the challenges in training'}</div></div>
+      <div class="card stat go" data-tab="power"><div class="v">${boys.length}</div><div class="l">Gymnasts in the Training League</div><div class="s">${boys.length ? 'See their table and profile cards' : 'Film the challenges in training'}</div></div>
     </div>
     <h2 class="sec">Coming up</h2>
     ${upcoming.length ? upcoming.map(c => compRow(c, `<span class="small muted">${genderLabel(c.gender)}</span><br>${mine.has(c.id) ? '<span class="ok-pill">Reserved</span>' : '<button class="btn small blue" data-tab="book">Reserve places</button>'}`)).join('') : '<div class="empty"><b>No dates yet</b>The 2027 General League dates will appear here.</div>'}
@@ -361,7 +361,7 @@ function screenLeague(){
     <div class="grid">
       <div class="card"><h3>2027 league table</h3><p>Live results and the National League Table for the 2027 season.</p><div class="btns"><a class="btn blue" href="${LINKS.league2027}" target="_blank" rel="noopener">Open league table</a></div></div>
       <div class="card"><h3>2026 results</h3><p>Last season’s results, league table and National Qualifiers.</p><div class="btns"><a class="btn ghost" href="${LINKS.results2026}" target="_blank" rel="noopener">2026 results</a><a class="btn ghost" href="${LINKS.qualifiers}" target="_blank" rel="noopener">Qualifiers</a></div></div>
-      ${g === 'boys' ? `<div class="card"><h3>Training League</h3><p>13 challenges filmed in training, building every boy’s NGL Profile Card.</p><div class="btns"><button class="btn" data-tab="power">Open Training League</button></div></div>` : ''}
+      <div class="card"><h3>Training League</h3><p>13 challenges filmed in training, for boys and girls, building every gymnast’s NGL Profile Card.</p><div class="btns"><button class="btn" data-tab="power">Open Training League</button></div></div>
     </div>
     <h2 class="sec">Rules 2027 · ${R.label} (${R.name})</h2>
     <div class="filters">${['1', '2', '3', '4'].map(k => `<button data-level="${k}" aria-pressed="${lv === k}">Level ${k}</button>`).join('')}<a class="btn ghost small" style="margin-left:auto" href="${R.pdf}" target="_blank" rel="noopener">Download all levels (PDF)</a></div>
@@ -374,12 +374,12 @@ function screenLeague(){
 
 function screenPower(){
   const boys = myBoys(), club = S.club.name || '';
-  const mail = 'mailto:admin@nationalgymnasticsleague.co.uk?subject=' + encodeURIComponent('Training League videos: ' + club) + '&body=' + encodeURIComponent('Hi NGL,\n\nHere are our Training League videos.\n\nFor each video: gymnast first name and surname initial, BG number, age group, training hours and the challenge.\n\nClub: ' + club + '\n');
+  const mail = 'mailto:admin@nationalgymnasticsleague.co.uk?subject=' + encodeURIComponent('Training League videos: ' + club) + '&body=' + encodeURIComponent('Hi NGL,\n\nHere are our Training League videos.\n\nFor each video: gymnast first name and surname initial, boy or girl, BG number, age group, training hours and the challenge.\n\nWe confirm parent consent has been given for every gymnast in these videos.\n\nClub: ' + club + '\n');
   return `<h1 class="page">Training League</h1>
-    <p class="lead">13 conditioning challenges for boys, filmed in training and open all season. Every result goes into the live table and onto the boy’s NGL Profile Card.</p>
+    <p class="lead">13 conditioning challenges for boys and girls, filmed in training and open all season. Every result goes into the live table and onto the gymnast’s NGL Profile Card.</p>
     <ol class="rsteps">
-      <li><b>Film in training</b><span>Phone side-on, whole body in shot, one take. Say the gymnast’s name and the challenge at the start.</span></li>
-      <li><b>Send it to NGL</b><span>First name, surname initial, BG number, age group and training hours.</span><a class="btn blue small" style="margin-top:8px;align-self:flex-start" href="${mail}">Email your videos</a></li>
+      <li><b>Film in training</b><span>Phone side-on, whole body in shot, one take. Say the gymnast’s name and the challenge at the start.</span><a class="btn ghost small" style="margin-top:8px;align-self:flex-start" href="https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-training-league-coach-guide.pdf" target="_blank" rel="noopener">Print the coach guide</a></li>
+      <li><b>Send it to NGL</b><span>First name, surname initial, boy or girl, BG number, age group and training hours. Confirm parent consent has been given.</span><a class="btn blue small" style="margin-top:8px;align-self:flex-start" href="${mail}">Email your videos</a></li>
       <li><b>Watch the table</b><span>${boys.length ? `<b style="display:inline">${boys.length}</b> of your boys ${boys.length === 1 ? 'is' : 'are'} in the table.` : 'Your boys appear once their first result is in.'} Their cards build with every challenge.</span></li>
     </ol>
     <iframe class="frame" id="plFrame" title="Training League table" src="${LINKS.powerLeague}?embed=1${boys.length ? '&club=' + encodeURIComponent(club) : ''}"></iframe>`;
@@ -448,7 +448,7 @@ function screenMusic(){
 function parentsLink(){ return LINKS.parents; }
 function parentMessage(){
   const club = S.club.name || 'our club';
-  return `Hi everyone,\n\n${club} competes in the NGL General League. You can follow every result, the National League Table and the boys’ Training League here:\n${parentsLink()}\n\nSave it to your phone’s home screen so it’s always to hand.\n\nThank you,\n${club}`;
+  return `Hi everyone,\n\n${club} competes in the NGL General League. You can follow every result, the National League Table and the Training League here:\n${parentsLink()}\n\nSave it to your phone’s home screen so it’s always to hand.\n\nThank you,\n${club}`;
 }
 function screenFamily(){
   return `<h1 class="page">Family Hub</h1>
@@ -463,7 +463,7 @@ function screenFamily(){
     <h2 class="sec">What parents can see</h2>
     <div class="grid">
       <div class="card"><h3>Results &amp; league tables</h3><p>Live results from every competition and the National League Table.</p></div>
-      <div class="card"><h3>Training League</h3><p>The boys’ table and their NGL Profile Card ratings, updated all season.</p></div>
+      <div class="card"><h3>Training League</h3><p>The table and every gymnast’s NGL Profile Card ratings, updated all season.</p></div>
       <div class="card"><span class="soon">Coming soon</span><h3>Their gymnast’s hub</h3><p>Each gymnast’s own General League Hub: their profile card, scores, stats and competitions.</p></div>
     </div>`;
 }
