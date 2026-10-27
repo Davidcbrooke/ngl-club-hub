@@ -1002,7 +1002,7 @@ function screenDiscover(){
 
     <h2 class="sec">Free to use today</h2>
     <div class="apps">
-      <a class="app" style="--c:var(--perf)" href="https://davidcbrooke.github.io/GYMNASTICS-RESULTS/NGL_Rotation_Planner.html" target="_blank" rel="noopener"><b>Rotation Planner</b><span>Build your weekly session plan and show it live on a gym screen.</span><em>Open planner ↗</em></a>
+      <a class="app" style="--c:var(--perf)" href="https://club.nationalgymnasticsleague.co.uk/rotation-planner/" target="_blank" rel="noopener"><b>Rotation Planner</b><span>Build your weekly session plan and show it live on a gym screen.</span><em>Open planner ↗</em></a>
       <button type="button" class="app" style="--c:var(--red);text-align:left;font:inherit;cursor:pointer" data-tab="support"><b>Club Support offers</b><span>Partner offers for NGL clubs: HR, coaching, volunteering, JustGo and more.</span><em>See offers →</em></button>
       <button type="button" class="app" style="--c:var(--general);text-align:left;font:inherit;cursor:pointer" data-book=""><b>Competition places</b><span>Reserve places at NGL competitions for your gymnasts.</span><em>Reserve places →</em></button>
       <a class="app" style="--c:var(--navy-2)" href="https://www.nationalgymnasticsleague.co.uk/register-to-become-a-remote-judge" target="_blank" rel="noopener"><b>Judging Pathway</b><span>Paid judging and real experience for your coaches and volunteers.</span><em>Share with your judges ↗</em></a>
@@ -1089,7 +1089,7 @@ function appTiles(){
   const q = u => em ? u + (u.includes('?') ? '&' : '?') + 'email=' + em : u;
   const ext = (c, title, text, href, cta) => `<a class="app" style="--c:${c}" href="${esc(href)}" target="_blank" rel="noopener"><b>${esc(title)}</b><span>${esc(text)}</span><em>${esc(cta)} ↗</em></a>`;
   return [
-    ext('var(--perf)', 'Rotation Planner', 'Free: build your weekly session plan and show it live on a gym screen.', 'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/NGL_Rotation_Planner.html', 'Open planner'),
+    ext('var(--perf)', 'Rotation Planner', 'Free: build your weekly session plan and show it live on a gym screen.', 'https://club.nationalgymnasticsleague.co.uk/rotation-planner/', 'Open planner'),
     ext('var(--navy-2)', 'Judging Pathway', 'For your coaches and volunteers who want to judge. Each judge registers themselves.', 'https://www.nationalgymnasticsleague.co.uk/register-to-become-a-remote-judge', 'Share with your judges'),
     `<button type="button" class="app" style="--c:var(--red);text-align:left;font:inherit;cursor:pointer" data-tab="support"><b>Make Your Club Better</b><span>Club Support: partner offers under the five pillars: HR, coaching, safeguarding and more.</span><em>See offers →</em></button>`
   ].join('');
@@ -1107,7 +1107,7 @@ const SUPPORT = [
       actions:[{l:'Book a JustGo demo', href:'https://justgo.com/book-a-demo/'}]},
      {name:'NGL Rotation Planner', kind:'Free NGL tool', headline:'Free for every NGL club',
       text:'Build your weekly session plan once, then show it live on any screen in your gym. It follows the clock, so coaches and gymnasts always know which apparatus they should be on.',
-      actions:[{l:'Open the planner', href:'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/NGL_Rotation_Planner.html'},{l:'How to use it', href:'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/NGL_Rotation_Planner_Guide.html', ghost:true}]}
+      actions:[{l:'Open the planner', href:'https://club.nationalgymnasticsleague.co.uk/rotation-planner/'},{l:'How to use it', href:'https://club.nationalgymnasticsleague.co.uk/rotation-planner/guide/', ghost:true}]}
    ]},
   {id:'coach', name:'Coach Better', c:'#c8202f', tag:'Our coaches are our business',
    intro:'Great clubs are built by great coaches. Coach Better makes development more accessible and more connected, from young leaders and club CPD to high-performance expertise, so knowledge stays in your club and coaches stay in the sport.',
