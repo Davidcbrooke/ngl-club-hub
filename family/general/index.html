@@ -52,10 +52,10 @@ main iframe.dark{background:#0a1440}
 <script>
 const GH = 'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/';
 const TABS = [
-  {k:'league', label:'2027 league table', src: GH + 'ngl-live-league-2027.html?family=1'},
-  {k:'training', label:'Training League', src: GH + 'ngl-training-league.html?site=1', dark:true},
   {k:'results2026', label:'2026 results', src: GH + 'RESULTS-VIEWER.HTML'},
-  {k:'qualifiers', label:'National Finals qualifiers', src: GH + 'national-qualifier.html?family=1'}
+  {k:'league', label:'2027 league table', src: GH + 'ngl-live-league-2027.html?family=1'},
+  {k:'qualifiers', label:'National Finals qualifiers', src: GH + 'national-qualifier.html?family=1'},
+  {k:'training', label:'Training League', src: GH + 'ngl-training-league.html?site=1', dark:true}
 ];
 const tabs = document.getElementById('tabs'), view = document.getElementById('view');
 tabs.innerHTML = TABS.map(t => `<a href="#${t.k}" data-k="${t.k}">${t.label}</a>`).join('');
