@@ -133,9 +133,23 @@ const APPS = [
 ];
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function load(){ try{ return JSON.parse(localStorage.getItem(STORE)) || {}; }catch(e){ return {}; } }
-function save(s){ try{ localStorage.setItem(STORE, JSON.stringify(s)); }catch(e){} }
+/* Codes are saved three ways on this device (local storage, a long-life cookie and IndexedDB), because iPhone
+   Home Screen apps can lose one of them. Whichever survives is used and the others are filled in again. */
+const COOKIE = 'nglfam';
+const readCookie = () => { try{ const m = document.cookie.match(new RegExp('(?:^|; )' + COOKIE + '=([^;]*)')); return m ? JSON.parse(decodeURIComponent(m[1])) : null; }catch(e){ return null; } };
+const idb = mode => new Promise((res, rej) => { try{ const r = indexedDB.open('ngl-family', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result.transaction('kv', mode).objectStore('kv')); r.onerror = () => rej(r.error); }catch(e){ rej(e); } });
+const idbGet = () => idb('readonly').then(st => new Promise(res => { const q = st.get(STORE); q.onsuccess = () => res(q.result || null); q.onerror = () => res(null); })).catch(() => null);
+const idbSet = v => idb('readwrite').then(st => st.put(v, STORE)).catch(() => {});
+const has = o => o && typeof o === 'object' && Object.keys(o).length > 0;
+function load(){ let v = null; try{ v = JSON.parse(localStorage.getItem(STORE)); }catch(e){} if(!has(v)) v = readCookie(); return has(v) ? v : {}; }
+function save(s){ const j = JSON.stringify(s);
+  try{ localStorage.setItem(STORE, j); }catch(e){}
+  try{ document.cookie = COOKIE + '=' + encodeURIComponent(j) + '; Max-Age=34560000; Path=/; SameSite=Lax; Secure'; }catch(e){}
+  idbSet(j); }
 let S = load();
+try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
+/* If local storage and the cookie were both cleared, restore from IndexedDB */
+idbGet().then(j => { if(has(S)) { save(S); return; } try{ const v = JSON.parse(j || 'null'); if(has(v)){ S = v; save(S); render(); } }catch(e){} });
 // pick up a Pre-School link the family has already opened on this device
 try{ const ps = JSON.parse(localStorage.getItem(PS_STORE) || 'null'); if(ps && ps.link && !(S.preschool && S.preschool.link === ps.link)){ S.preschool = {link:ps.link, club:ps.club || ''}; save(S); } }catch(e){}
 
