@@ -74,6 +74,7 @@ footer{text-align:center;font-size:12px;color:var(--muted);padding:10px 16px 30p
 footer a{color:var(--pink-d)}
 .bk{display:flex;gap:6px;background:var(--pink-l);border-radius:30px;padding:4px;margin-bottom:14px}.bk button{flex:1;border:0;background:transparent;padding:8px;border-radius:24px;font:700 15px 'Roboto Condensed';letter-spacing:.06em;text-transform:uppercase;color:var(--pink-d);cursor:pointer}.bk button.on{background:var(--pink);color:#fff}
 .demo{background:#fff6d6;color:#6b5400;font-size:13px;text-align:center;padding:8px 12px;border-radius:12px;margin-bottom:12px}
+.halfterm{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#C8202F;color:#fff;border-radius:14px;padding:10px 14px;margin:0 0 14px;font-size:15px;font-weight:600}.halfterm b{background:#fff;color:#C8202F;border-radius:999px;padding:4px 12px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;font-weight:900}
 </style>
 </head>
 <body>
@@ -111,6 +112,8 @@ function load(){
   // current week: the last week that has started (or the first upcoming one)
   const today = P.iso(new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())));
   idx = 0; rows.forEach((r, i) => { if(r.date <= today) idx = i; });
+  // During half term or the holidays, show the week classes restart, with a clear notice
+  BRK = P.breakNow(rows, today); if(BRK) idx = BRK.next;
   render();
 }
 function empty(){
@@ -120,6 +123,7 @@ function empty(){
     <p class="note">Ask your club for their NGL Pre-School family link, or have a look at a sample class.</p>
     <p style="margin-top:16px"><a class="btn" href="#demo" onclick="setTimeout(load)">See a sample</a></p></div>`;
 }
+let BRK = null;
 let book = 1; try{ book = +localStorage.getItem('ngl-ps-book') || 1; }catch(_){}
 function setBook(b){ book = b; try{ localStorage.setItem('ngl-ps-book', b); }catch(_){}; render(); }
 function render(){
@@ -145,11 +149,12 @@ function render(){
     </div>`;
   $('#app').innerHTML = `
     ${demo ? '<div class="demo">Sample class: your club’s link will show your child’s own class.</div>' : ''}
+    ${BRK && idx === BRK.next ? `<div class="halfterm"><b>${BRK.half ? 'Half term' : 'Holidays'}</b><span>No classes this week. Classes restart ${fmt(BRK.back, {weekday:'long', day:'numeric', month:'long'})}.</span></div>` : ''}
     <div class="card">
       <div class="nav"><button id="prev" aria-label="Previous week" ${idx ? '' : 'disabled'}>‹</button>
         <div class="when"><b>${esc(r.term)} · Week ${r.week}</b><span>${fmt(r.date)} – ${fmt(end, {day:'numeric', month:'short', year:'numeric'})}</span></div>
         <button id="next" aria-label="Next week" ${idx < rows.length - 1 ? '' : 'disabled'}>›</button></div>
-      <div class="tt"><span class="chip">This week’s theme</span><h2>${esc(t.name)}</h2></div><div class="theme" style="background-image:url(img/post_${t.file}.jpg)"></div>
+      <div class="tt"><span class="chip">${BRK && idx === BRK.next ? 'Next week’s theme' : 'This week’s theme'}</span><h2>${esc(t.name)}</h2></div><div class="theme" style="background-image:url(img/post_${t.file}.jpg)"></div>
     </div>
     ${skillsCard}
     <div class="card"><h3>Try at home</h3><ul class="home">${t.home.map(h => `<li>${esc(h)}</li>`).join('')}</ul>

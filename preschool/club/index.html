@@ -33,6 +33,7 @@
   .logo-mark{font-weight:900;font-size:22px;letter-spacing:.02em;line-height:1;}
   .logo-mark small{display:block;font-size:11px;letter-spacing:.22em;color:var(--rec);font-weight:800;margin-top:3px;}
   .top-actions{margin-left:auto;display:flex;gap:8px;align-items:center;}
+.halfterm{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#C8202F;color:#fff;border-radius:14px;padding:10px 14px;margin:0 0 14px;font-size:15px;font-weight:600}.halfterm b{background:#fff;color:#C8202F;border-radius:999px;padding:4px 12px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;font-weight:900}
 .nglhome{display:inline-flex;align-items:center;gap:4px;color:#fff;text-decoration:none;font:700 13.5px/1 Roboto,system-ui,sans-serif;padding:8px 12px 8px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.1);white-space:nowrap;flex:none}.nglhome svg{width:15px;height:15px;flex:none}.nglhome:hover{background:rgba(255,255,255,.2)}.topbar-row .nglhome{margin-left:auto}.topbar-row .nglhome + .top-actions{margin-left:0}.top-actions .btn,.top-actions a,.top-actions button{white-space:nowrap}@media(max-width:420px){.topbar-row{gap:8px}.nglhome{padding:7px 10px 7px 7px;font-size:13px}}
 
   @media(max-width:600px){.top-actions .pill{display:none;}}
@@ -762,7 +763,7 @@ function screenLogin(msg){
 }
 
 /* ---------- club screens ---------- */
-function thisWeek(){ const rows = P.plan(cfg()), today = P.iso(new Date()); let i = -1; rows.forEach((r, k) => { if(r.date <= today) i = k; }); return {rows, i: i < 0 ? 0 : i, started: i >= 0}; }
+function thisWeek(){ const rows = P.plan(cfg()), today = P.iso(new Date()); let i = -1; rows.forEach((r, k) => { if(r.date <= today) i = k; }); const brk = P.breakNow(rows, today); return {rows, i: brk ? brk.next : (i < 0 ? 0 : i), started: i >= 0, brk}; }
 function weekCard(r){
   if(!r) return '';
   if(r.seasonal) return `<div class="card ps-week"><img src="${DIR}img/post_${r.theme.file}.jpg" alt=""><div><p class="eyebrow">${esc(r.term)} · week ${r.week}</p><h2>${esc(r.theme.name)} (Seasonal)</h2><p class="muted">No new passport skills this week. The journey carries on next week.</p>
@@ -793,9 +794,10 @@ function licenceCard(){
     <div class="btn-row"><button class="btn" data-tab="licence">See prices and start</button></div>`}</div>`;
 }
 function screenDashboard(){
-  const {rows, i, started} = thisWeek();
+  const {rows, i, started, brk} = thisWeek();
   render(`${licenceCard()}
-    <div class="section"><h2>${started ? 'This week' : 'Your first week'}</h2>${weekCard(rows[i])}</div>
+    ${brk ? `<div class="halfterm"><b>${brk.half ? 'Half term' : 'Holidays'}</b><span>No classes this week. Classes restart ${P.parse(brk.back).toLocaleDateString('en-GB', {timeZone:'UTC', weekday:'long', day:'numeric', month:'long'})}.</span></div>` : ''}
+    <div class="section"><h2>${brk ? 'Next week' : started ? 'This week' : 'Your first week'}</h2>${weekCard(rows[i])}</div>
     <div class="grid4">
       <button class="card" data-tab="planner" style="text-align:left;cursor:pointer"><h3>Term planner</h3><p class="muted" style="margin:0">Your terms, week by week, with the plan and both books’ skills.</p></button>
       <button class="card" data-tab="plans" style="text-align:left;cursor:pointer"><h3>Lesson plans</h3><p class="muted" style="margin:0">40 weekly plans, the Seasonal Pack and a social post for each.</p></button>

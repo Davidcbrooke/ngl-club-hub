@@ -118,5 +118,15 @@
   function encode(cfg){ return btoa(unescape(encodeURIComponent(JSON.stringify(cfg)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
   function decode(s){ try{ s = s.replace(/-/g, '+').replace(/_/g, '/'); return JSON.parse(decodeURIComponent(escape(atob(s)))); }catch(e){ return null; } }
 
-  root.NGLPS = {COUNTRIES, THEMES, SEASONAL, plan, weekInfo, encode, decode, iso, parse};
+  /* Is today in a break between teaching weeks? Half term = the break is inside a term; holiday = between terms.
+     Returns {half, holiday, next (row index of the week classes restart), back ('YYYY-MM-DD')} or null. */
+  function breakNow(rows, today){
+    let i = -1; rows.forEach((r, k) => { if(r.date <= today) i = k; });
+    if(i < 0 || i >= rows.length - 1) return null;
+    const ends = iso(new Date(parse(rows[i].date).getTime() + 6 * DAY));
+    if(today <= ends) return null;
+    const half = rows[i + 1].termIndex === rows[i].termIndex;
+    return {half, holiday: !half, next: i + 1, back: rows[i + 1].date};
+  }
+  root.NGLPS = {COUNTRIES, THEMES, SEASONAL, plan, weekInfo, encode, decode, iso, parse, breakNow};
 })(typeof window !== 'undefined' ? window : globalThis);
