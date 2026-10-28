@@ -2,15 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<link rel="icon" type="image/png" sizes="32x32" href="/family/icons/family-hub-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="/family/icons/family-hub-64.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/family/icons/family-hub-192.png">
+<link rel="apple-touch-icon" href="/family/icons/family-hub-apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>NGL Family Hub</title>
 <meta name="description" content="Results, league tables and your gymnast's NGL family apps in one place.">
 <meta name="theme-color" content="#C9142E">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="NGL Family">
-<link rel="icon" type="image/png" sizes="32x32" href="/icons/ngl-favicon-32.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/icons/ngl-favicon-192.png">
-<link rel="apple-touch-icon" href="/icons/ngl-apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -231,7 +232,7 @@ render();
 <script>
 (function(){
   if(window.self !== window.top) return;
-  var NAME = 'NGL Family Hub', ICON = '/icons/ngl-favicon-192.png', KEY = 'a2hs-family';
+  var NAME = 'NGL Family Hub', ICON = '/family/icons/family-hub-192.png', KEY = 'a2hs-family';
   var standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
   if(standalone) return;
   try{ var t = +localStorage.getItem(KEY) || 0; if(Date.now() - t < 14 * 86400000) return; }catch(e){}

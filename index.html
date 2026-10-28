@@ -2,12 +2,12 @@
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/club-hub-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="/icons/club-hub-64.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/club-hub-192.png">
+<link rel="apple-touch-icon" href="/icons/club-hub-apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>NGL Club Hub</title>
-<link rel="icon" type="image/png" sizes="32x32" href="icons/ngl-favicon-32.png">
-<link rel="icon" type="image/png" sizes="64x64" href="icons/ngl-favicon-64.png">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/ngl-favicon-192.png">
-<link rel="apple-touch-icon" href="icons/ngl-apple-touch-icon.png">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -1964,7 +1964,7 @@ async function start(){
 <div class="a2hs" id="a2hs" role="dialog" aria-label="Add NGL Club Hub to your Home Screen"></div>
 <script>
 (function(){
-  var NAME = 'NGL Club Hub', ICON = 'icons/ngl-favicon-192.png', KEY = 'a2hs-' + 'clubhub';
+  var NAME = 'NGL Club Hub', ICON = '/icons/club-hub-192.png', KEY = 'a2hs-' + 'clubhub';
   var standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
   if(standalone) return;
   try{ var t = +localStorage.getItem(KEY) || 0; if(Date.now() - t < 14 * 86400000) return; }catch(e){}
