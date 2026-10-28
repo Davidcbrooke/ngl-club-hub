@@ -119,12 +119,16 @@ textarea.msg{width:100%;min-height:150px;font:15px/1.5 var(--body);padding:10px 
 .spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite;vertical-align:-2px;margin-right:8px}@keyframes sp{to{transform:rotate(360deg)}}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:999px;font-weight:700;z-index:99;box-shadow:0 8px 24px rgba(0,0,0,.3)}
 footer{text-align:center;color:#b9bbdc;font-size:14px;padding:10px 16px 30px}footer a{color:#fff}
+.nglhome{display:inline-flex;align-items:center;gap:4px;color:#fff;text-decoration:none;font:700 13.5px/1 Roboto,system-ui,sans-serif;padding:8px 12px 8px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.1);white-space:nowrap;flex:none}.nglhome svg{width:15px;height:15px;flex:none}.nglhome:hover{background:rgba(255,255,255,.2)}
+@media(max-width:420px){.nglhome{padding:7px 10px 7px 7px;font-size:13px}}
 </style>
+
 </head>
 <body>
 <div class="top"><div class="strap">NGL General League · Club Hub</div><div class="band"><div class="wrap row">
   <a class="logo" href="./" aria-label="NGL General League Club Hub"><img src="https://davidcbrooke.github.io/GYMNASTICS-RESULTS/brand/ngl-logo-full.png" alt="NGL"></a>
   <div class="who hidden" id="who"></div>
+  <a class="nglhome" href="https://www.nationalgymnasticsleague.co.uk/" target="_top" aria-label="Back to the NGL website home page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>NGL Home</a>
   <a class="tbtn" href="../#overview">NGL Club Hub</a>
   <button class="tbtn hidden" id="signOut">Log out</button>
 </div></div></div>
