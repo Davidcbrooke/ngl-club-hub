@@ -432,7 +432,7 @@ body.reg-dark footer{color:#aeb3d6}body.reg-dark footer a{color:#fff}
     <nav class="tabs hidden" id="tabs"><div class="wrap" role="tablist"></div></nav>
   </div>
 </header>
-<main><div class="wrap" id="view"><p class="muted"><span class="spin"></span>Loading…</p></div><div class="wrap" id="bookHost" hidden></div></main>
+<main><div class="wrap" id="view"><p class="muted"><span class="spin"></span>Loading…</p></div><div class="wrap" id="bookHost" hidden></div><div class="wrap" id="merchHost" hidden></div></main>
 <footer>National Gymnastics League · 66 Waveney Road, Harpenden, Herts AL5 4QZ · <a href="mailto:admin@nationalgymnasticsleague.co.uk">admin@nationalgymnasticsleague.co.uk</a></footer>
 
 <script>
@@ -481,6 +481,7 @@ const LINKS = {
   recHub:     'https://nglrecreational.co.uk/',
   preschoolHub: 'https://club.nationalgymnasticsleague.co.uk/preschool/club/',
   reserve:    'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-booking-system.html',
+  merch:      'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-group-order.html',
   justgo:     '',     // paste the NGL JustGo page here to show an "Enter on JustGo" button
   website:    'https://www.nationalgymnasticsleague.co.uk'
 };
@@ -885,9 +886,9 @@ function demoAdmin(){
 /* =====================================================================
    SCREENS
    ===================================================================== */
-const TABS = [['overview','Overview'], ['licences','Awards Scheme Licences'], ['competitions','Competitions'], ['support','Club Support'], ['orders','Orders'], ['club','Club'], ['discover','Discover NGL']];
+const TABS = [['overview','Overview'], ['licences','Awards Scheme Licences'], ['competitions','Competitions'], ['support','Club Support'], ['orders','Orders'], ['merch','Group Buying'], ['club','Club'], ['discover','Discover NGL']];
 /* Short labels and line icons for the tab bar (full names stay as the accessible label) */
-const TAB_SHORT = {discover:'Discover', overview:'Home', licences:'Licences', competitions:'Competitions', support:'Support', orders:'Orders', club:'Club', admin:'All clubs'};
+const TAB_SHORT = {discover:'Discover', overview:'Home', licences:'Licences', competitions:'Competitions', support:'Support', orders:'Orders', merch:'Group Buying', club:'Club', admin:'All clubs'};
 const TI = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
 const TAB_ICON = {
   discover: TI('<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>'),
@@ -896,6 +897,7 @@ const TAB_ICON = {
   competitions: TI('<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4"/><path d="M12 13v4M8.5 20h7M10 20l.5-3h3l.5 3"/>'),
   support: TI('<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>'),
   orders: TI('<path d="M4 7l8-4 8 4v10l-8 4-8-4z"/><path d="M4 7l8 4 8-4M12 11v10"/>'),
+  merch: TI('<path d="M8.5 3.5L4 5.5 2.5 10l3 1.2V20.5h13V11.2l3-1.2L20 5.5l-4.5-2a3.5 3.5 0 0 1-7 0z"/>'),
   club: TI('<path d="M3 21h18M5 21V9l7-5 7 5v12"/><path d="M9 21v-6h6v6"/>'),
   admin: TI('<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>')
 };
@@ -922,12 +924,12 @@ function render(){
   setChrome(true);
   const v = $('#view');
   const demo = PREVIEW ? `<div class="demo">Preview mode: sample data for ${S.club ? esc(S.club.name) : 'SAADI Gymnastics'}. Nothing is saved.</div>` : '';
-  const screens = {discover:screenDiscover, overview:screenOverview, licences:screenLicences, orders:screenOrders, competitions:screenCompetitions, comps:screenCompetitions, general:screenCompetitions, music:screenCompetitions, reservations:screenCompetitions, calendar:screenCompetitions, league:screenCompetitions, support:screenSupport, club:screenClub, admin:screenAdmin};
+  const screens = {discover:screenDiscover, overview:screenOverview, licences:screenLicences, orders:screenOrders, competitions:screenCompetitions, comps:screenCompetitions, general:screenCompetitions, music:screenCompetitions, reservations:screenCompetitions, calendar:screenCompetitions, league:screenCompetitions, support:screenSupport, merch:screenMerch, club:screenClub, admin:screenAdmin};
   Object.keys(COMP_ALIAS).forEach(k => { screens[k] = screenCompetitions; });
   document.body.classList.toggle('disc-on', S.tab === 'discover');
   v.innerHTML = demo + (screens[S.tab] || screenOverview)();
   labelTables(v);
-  syncBook();
+  syncBook(); syncMerch();
   if(S.tab === 'admin' && S.isAdmin) loadAdmin();
 }
 /* Phones show tables as stacked cards: each cell gets its column name as a label */
@@ -1355,6 +1357,22 @@ function syncBook(){
   if(f.dataset.url !== url){ f.dataset.url = url; f.style.height = '900px'; f.src = url; }
 }
 window.addEventListener('message', e => { const h = e.data && e.data.nglBookingHeight; const f = document.getElementById('bookFrame'); if(h && f && e.source === f.contentWindow) f.style.height = (h + 4) + 'px'; });
+/* Group Buying: the quarterly group order page (staff t-shirts, quarter zips) opens inside the hub */
+function screenMerch(){
+  return `<h1 class="page">Group Buying</h1>
+    <p class="lead">Club staff kit with your logo, ordered together every quarter. The more clubs order, the lower the price for everyone.</p>`;
+}
+function syncMerch(){
+  const host = $('#merchHost'); if(!host) return;
+  const on = !!(S.club || S.isAdmin) && S.tab === 'merch';
+  host.hidden = !on; if(!on) return;
+  const c = S.club || {};
+  const url = LINKS.merch + '?embed=1' + (c.name ? '&club=' + encodeURIComponent(c.name) : '') + (c.email ? '&email=' + encodeURIComponent(c.email) : '') + (c.contact ? '&contact=' + encodeURIComponent(c.contact) : '');
+  let f = $('#merchFrame');
+  if(!f){ host.innerHTML = '<iframe id="merchFrame" class="book-frame" title="NGL group order"></iframe>'; f = $('#merchFrame'); }
+  if(f.dataset.url !== url){ f.dataset.url = url; f.style.height = '1600px'; f.src = url; }
+}
+window.addEventListener('message', e => { const h = e.data && e.data.nglMerchHeight; const f = document.getElementById('merchFrame'); if(h && f && e.source === f.contentWindow) f.style.height = (h + 4) + 'px'; });
 /* Competitions overview: one row per pathway, like Awards Scheme Licences */
 function compsOverview(){
   const em = S.club && S.club.email ? encodeURIComponent(S.club.email) : '';
