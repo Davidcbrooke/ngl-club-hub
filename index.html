@@ -433,7 +433,7 @@ body.reg-dark footer{color:#aeb3d6}body.reg-dark footer a{color:#fff}
   </div>
 </header>
 <main><div class="wrap" id="view"><p class="muted"><span class="spin"></span>Loading…</p></div><div class="wrap" id="bookHost" hidden></div><div class="wrap" id="merchHost" hidden></div></main>
-<footer>National Gymnastics League · 66 Waveney Road, Harpenden, Herts AL5 4QZ · <a href="mailto:admin@nationalgymnasticsleague.co.uk">admin@nationalgymnasticsleague.co.uk</a></footer>
+<footer>National Gymnastics League · 66 Waveney Road, Harpenden, Herts AL5 4QZ · <a href="mailto:admin@nationalgymnasticsleague.co.uk">admin@nationalgymnasticsleague.co.uk</a> · <a href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1pa5emRK483nT6yVVO9pG6v13zlrOaVoitoINi0GNLdXv6FkVn97TjfmYGduvNPOcocQLt6F8B" target="_blank" rel="noopener">Book a call with Dave</a></footer>
 
 <script>
 /* =====================================================================
@@ -483,7 +483,8 @@ const LINKS = {
   reserve:    'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-booking-system.html',
   merch:      'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-group-order.html',
   justgo:     '',     // paste the NGL JustGo page here to show an "Enter on JustGo" button
-  website:    'https://www.nationalgymnasticsleague.co.uk'
+  website:    'https://www.nationalgymnasticsleague.co.uk',
+  call:       'https://calendar.google.com/calendar/appointments/schedules/AcZssZ1pa5emRK483nT6yVVO9pG6v13zlrOaVoitoINi0GNLdXv6FkVn97TjfmYGduvNPOcocQLt6F8B'   // Google Calendar booking page: 20-min video call with Dave, Tuesdays 10am-1pm
 };
 const CONTACT_EMAIL = 'admin@nationalgymnasticsleague.co.uk';
 const LICENCE_FEES = 'licences.html';
@@ -1050,7 +1051,7 @@ function screenDiscover(){
         <div class="dots" aria-hidden="true">${dots}</div>
         <p>Training, awards, competitions and club support, across seven pathways for every age and ability. Built by a British Gymnastics club, for every club.</p>
         <p>This year we launched our first competition league. Next season is almost fully booked and twice the size. This is the bigger picture.</p>
-        <div class="btn-row"><a class="btn" href="#pathways" data-scroll="pathways">See what’s inside</a><a class="btn ghost" href="${talk}">Talk to Dave</a></div>
+        <div class="btn-row"><a class="btn" href="#pathways" data-scroll="pathways">See what’s inside</a><a class="btn ghost" href="${LINKS.call}" target="_blank" rel="noopener">Book a call with Dave</a></div>
       </div>
       <iframe class="disc-anim" src="${ANIM_URL}" title="NGL: It's All Connected" loading="lazy"></iframe>
     </section>
@@ -1078,8 +1079,8 @@ function screenDiscover(){
     </div>
 
     <div class="card disc-talk" style="margin-top:22px">
-      <div><h3>Want to talk it through?</h3><p class="muted" style="margin:0">We’re a British Gymnastics club too, and happy to show you how it would work for yours.</p></div>
-      <a class="btn red" href="${talk}">Talk to Dave</a>
+      <div><h3>Want to talk it through?</h3><p class="muted" style="margin:0">We’re a British Gymnastics club too, and happy to show you how it would work for yours. Book a free 20-minute video call with Dave on a Tuesday morning, or <a href="${talk}">email us</a>.</p></div>
+      <a class="btn red" href="${LINKS.call}" target="_blank" rel="noopener">Book a call with Dave</a>
     </div>`;
 }
 
@@ -1801,7 +1802,8 @@ function screenAuth(mode, msg){
         <label class="f" for="rPass">Password</label><input class="f" id="rPass" type="password" minlength="8" required autocomplete="new-password">
         <div class="btn-row"><button class="btn" type="submit">Create club account</button></div>
         <div class="err" id="authErr"></div></form>
-        <p class="small" style="margin-top:14px">Already registered for NGL Schools or Recreational? <button class="linkbtn" data-auth="login">Log in with the same details</button></p></div></div>
+        <p class="small" style="margin-top:14px">Already registered for NGL Schools or Recreational? <button class="linkbtn" data-auth="login">Log in with the same details</button></p>
+        <p class="small" style="margin-top:6px">Questions first? <a href="${LINKS.call}" target="_blank" rel="noopener" style="color:#fff;font-weight:700">Book a free 20-minute call with Dave</a> (Tuesday mornings).</p></div></div>
       <div class="reg-video"><video src="img/reg/ngl-what-is-the-ngl.mp4" poster="img/reg/ngl-what-is-the-ngl-poster.jpg" autoplay muted loop playsinline controls preload="metadata"></video><p>What is the NGL? <a href="img/reg/ngl-tour.mp4" target="_blank" rel="noopener" style="color:#fff">Watch the full 78-second tour</a></p></div>
       <div class="reg-gallery"><h2>Here’s what you’ll see when you register</h2>
         <div class="reg-grid">${G.map(([img, c, t, d]) => `<figure style="--c:${c}"><div class="ph"><img src="img/reg/${img}" alt="${t}" loading="lazy"></div><figcaption><b>${t}</b>${d}</figcaption></figure>`).join('')}</div>
