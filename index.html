@@ -568,6 +568,7 @@ function schoolsStatus(){
   const pending = S.schoolsOrders.find(o => o.type === 'club-licence' && (o.kind === 'start' || o.kind === 'renew') && o.status !== 'paid');
   if(s && s.status === 'active' && s.expires){
     const exp = toDate(s.expires), days = Math.ceil((exp - new Date()) / 86400000);
+    if(s.trial) return days > 0 ? {key:'active', trial:true, label:'Free trial', cls:'ok', exp, days, pending} : (pending ? {key:'awaiting', label:'Awaiting payment', cls:'warn', pending} : {key:'none', label:'Trial ended', cls:'off'});
     if(days > 0) return {key:'active', label: days <= 45 ? 'Renew soon' : 'Active', cls: days <= 45 ? 'warn' : 'ok', band:SCHOOLS_BANDS[s.band], exp, days, pending};
     return {key:'expired', label:'Expired', cls:'bad', band:SCHOOLS_BANDS[s.band], exp, days, pending};
   }
@@ -1102,7 +1103,7 @@ function screenOverview(){
     ${isNewClub() ? `<div class="card" style="border-left:5px solid var(--rec);margin-bottom:16px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap"><div><h3 style="margin:0">New to the NGL?</h3><p class="muted" style="margin:2px 0 0">See what’s inside every pathway, with samples, before you start.</p></div><button class="btn" data-tab="discover">Discover NGL →</button></div>` : ''}
     ${actions.length ? `<div class="card" style="border-left:5px solid var(--red);margin-bottom:16px"><h3>Needs your attention</h3>${actions.map(a => `<p>${a}</p>`).join('')}</div>` : ''}
     <div class="grid g4">
-      <div class="card stat"><div class="v">${[sch, rec].filter(s => s.key === 'active').length}</div><div class="l">Active licences</div><div class="s">${[sch.key === 'active' ? 'Schools' : '', rec.key === 'active' ? 'Recreational' : ''].filter(Boolean).join(' and ') || 'None yet'}</div></div>
+      <div class="card stat"><div class="v">${[sch, rec].filter(s => s.key === 'active' && !s.trial).length}</div><div class="l">Active licences</div><div class="s">${[sch.key === 'active' ? (sch.trial ? 'Schools (trial)' : 'Schools') : '', rec.key === 'active' ? 'Recreational' : ''].filter(Boolean).join(' and ') || 'None yet'}</div></div>
       <div class="card stat ${owed.length ? 'alert' : ''}"><div class="v">${gbp(owedTotal)}</div><div class="l">Awaiting payment</div><div class="s">${owed.length} order${owed.length === 1 ? '' : 's'}</div></div>
       <div class="card stat"><div class="v">${res.length}</div><div class="l">Upcoming reservations</div><div class="s">${places} gymnast place${places === 1 ? '' : 's'}</div></div>
       <div class="card stat"><div class="v" style="font-size:24px;padding-top:6px">${next ? fmt(next.date) : '–'}</div><div class="l">Next competition</div><div class="s">${next ? esc(next.compName) : (S.bookingsLoading ? 'Loading…' : 'No reservations yet')}</div></div>
@@ -1130,7 +1131,7 @@ function hubApps(){
   ];
   return apps.map(([k, name, href, lic, desc]) => {
     const soon = !href;
-    const status = soon ? (int[k] ? '✓ On the list' : desc) : lic === true ? 'Open' : lic === false ? 'Explore' : 'Open';
+    const status = soon ? (int[k] ? '✓ On the list' : desc) : k === 'schools' && lic === true && schoolsStatus().trial ? 'Open · trial to ' + schoolsStatus().exp.toLocaleDateString('en-GB', {day:'numeric', month:'short'}) : lic === true ? 'Open' : lic === false ? 'Explore' : 'Open';
     if(soon) desc = int[k] ? 'We’ll tell you first' : 'Tap to register interest';
     const inner = `<span class="ic${soon ? ' soon' : ''}"><img src="img/apps/${k}.png" alt="">${lic === true ? '<i class="dot" title="Licence live"></i>' : ''}</span>
       <b>${esc(name)}</b><small class="st${lic === true ? ' on' : ''}">${esc(status)}</small><small class="ds">${esc(desc)}</small>`;
@@ -1275,7 +1276,7 @@ function licenceCard(k, compact){
       <span class="pill ${s.cls}">${esc(s.label)}</span>
       <dl class="kv">
         ${s.band ? `<dt>Club Licence</dt><dd>${esc(s.band.short)} gymnasts</dd>` : ''}
-        ${s.exp ? `<dt>${s.key === 'expired' ? 'Ended' : 'Renews'}</dt><dd>${fmt(s.exp)}${s.key === 'active' ? ` <span class="muted small">(${s.days} day${s.days === 1 ? '' : 's'})</span>` : ''}</dd>` : ''}
+        ${s.exp ? `<dt>${s.key === 'expired' ? 'Ended' : s.trial ? 'Trial ends' : 'Renews'}</dt><dd>${fmt(s.exp)}${s.key === 'active' ? ` <span class="muted small">(${s.days} day${s.days === 1 ? '' : 's'})</span>` : ''}</dd>` : ''}
         ${s.pending ? `<dt>Awaiting payment</dt><dd class="mono">${esc(s.pending.id)}</dd>` : ''}
         ${compact ? '' : `<dt>Family code</dt><dd class="mono">${esc(S.club.accessCode || '–')} ${S.club.codeActive ? '<span class="pill ok">Live</span>' : '<span class="pill off">Off</span>'}</dd>`}
       </dl>
