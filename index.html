@@ -1001,7 +1001,7 @@ function pathwayExplorer(){
       ${gallery(st.imgs, st.small)}<ul>${st.points.map(x => `<li>${esc(x)}</li>`).join('')}</ul>${extra || ''}</details>`;
   return Object.keys(PATHWAY_INFO).map(k => {
     const p = PATHWAYS[k], info = PATHWAY_INFO[k];
-    const lic = info.licence ? (licOn(k) ? '<span class="pill ok">Licence live</span>' : '<span class="pill off">Not purchased</span>') : '';
+    const lic = info.licence ? (k === 'schools' && schoolsStatus().trial ? '<span class="pill ok">Free trial</span>' : licOn(k) ? '<span class="pill ok">Licence live</span>' : '<span class="pill off">Not purchased</span>') : '';
     let btn;
     if(info.interest) btn = ((S.club && S.club.interest) || {})[info.interest] ? '<span class="pw-on">✓ You’re on the list</span>' : `<button class="btn" data-act="interest" data-k="${info.interest}">Register interest</button>`;
     else if(k === 'general') btn = `<a class="btn" href="${esc(q(GL_HUB))}" target="_blank" rel="noopener">Explore this Club Hub</a>`;
@@ -1145,7 +1145,7 @@ function hubTiles(){
   const q = u => em ? u + (u.includes('?') ? '&' : '?') + 'email=' + em : u;
   const ps = (S.club && S.club.preschool) || {};
   const tile = (k, live, href, note) => `<div class="card accent hub" style="--c:${PATHWAYS[k].c}"><img class="logo" src="${LOGOS[k]}" alt="${esc(PATHWAYS[k].label)}">
-      ${live ? '<span class="pill ok">Live</span>' : '<span class="pill off">Not purchased</span>'}<p class="small muted">${note}</p>
+      ${k === 'schools' && live && schoolsStatus().trial ? `<span class="pill ok">Free trial · ends ${fmt(schoolsStatus().exp)}</span>` : live ? '<span class="pill ok">Live</span>' : '<span class="pill off">Not purchased</span>'}<p class="small muted">${note}</p>
       <div class="btn-row"><a class="btn${live ? '' : ' ghost'}" href="${esc(q(href))}" target="_blank" rel="noopener">${live ? 'Open ' + esc(PATHWAYS[k].short) + ' Hub' : 'Explore ' + esc(PATHWAYS[k].short)}</a></div></div>`;
   return [
     tile('preschool', ps.status === 'active', LINKS.preschoolHub, 'Lesson plans, term planner, passports and the family app.'),
@@ -1448,7 +1448,7 @@ function screenLicences(){
   const from = n => `from <b>${gbp(n)}</b> a year + VAT`;
   const rows = [
     row('preschool', ps.status === 'active' ? status(true) : status(false), from(PRESCHOOL_FROM), btnOpen(ps.status === 'active', 'preschool', LINKS.preschoolHub)),
-    row('schools', status(live(sch), live(sch) ? sch.exp : null), from(fromPrice(SCHOOLS_BANDS)), btnOpen(live(sch), 'schools', LINKS.schoolsHub)),
+    row('schools', sch.trial ? `<span class="pill ok">Free trial</span> <span class="small muted">ends ${fmt(sch.exp)}</span>` : status(live(sch), live(sch) ? sch.exp : null), from(fromPrice(SCHOOLS_BANDS)), btnOpen(live(sch), 'schools', LINKS.schoolsHub)),
     row('recreational', status(live(rec), live(rec) ? rec.exp : null), from(fromPrice(REC_BANDS)), btnOpen(live(rec), 'recreational', LINKS.recHub)),
     row('general', soon('Skills books live April 2027'), '<span class="muted">Price to follow</span>', `<button class="btn ghost" data-tab="competitions">Competitions</button>`),
     row('performance', soon('Coming 2027'), '<span class="muted">Price to follow</span>', interest('performance')),
