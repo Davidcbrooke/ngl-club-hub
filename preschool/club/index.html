@@ -712,17 +712,17 @@ function termCalHTML(ti){
   const bar = ['#E8559A','#F8D438','#E88230','#0071B3','#01AFB8','#3BAA4A','#7A4C9E'].map(x => `<i style="flex:1;background:${x}"></i>`).join('');
   const f = rows.find(r => !r.seasonal), l = [...rows].reverse().find(r => !r.seasonal);
   return `<style>@page{size:A4 landscape;margin:0}
-    .pc{width:297mm;height:209mm;position:relative;overflow:hidden;font-family:Roboto,Arial,sans-serif;color:#1c1f3a;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .pc{width:297mm;height:209mm;position:relative;overflow:hidden;break-after:page;font-family:Roboto,Arial,sans-serif;color:#1c1f3a;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
     .pc-bar{display:flex;height:2.4mm}.pc-head{background:#28225c;height:22mm;display:flex;align-items:center;gap:7mm;padding:0 9mm}
     .pc-head img{height:13mm}.pc-k{font:700 2.6mm Roboto,Arial;letter-spacing:.8mm;color:#E8559A;text-transform:uppercase}
     .pc-ti{font:800 7.6mm/1.05 'Roboto Condensed',Roboto,Arial;color:#fff;text-transform:uppercase}.pc-s{font:400 3mm Roboto,Arial;color:#c9cbee}
-    .pc-grid{position:absolute;left:8mm;right:8mm;top:28mm;display:grid;grid-template-columns:repeat(${cols},1fr);gap:2.4mm}
-    .pc-t{border:.35mm solid #e1e2ee;border-radius:2.4mm;height:${tileH}mm;overflow:hidden;font-size:${fs}pt;line-height:1.22;display:flex;flex-direction:column}
+    .pc-grid{position:absolute;left:8mm;right:8mm;top:28mm;display:grid;gap:2.4mm}
+    .pc-t{border:.35mm solid #e1e2ee;border-radius:2.4mm;overflow:hidden;line-height:1.22;display:flex;flex-direction:column}
     .pc-t.nl{border-color:#E8559A}
     .pc-h{display:flex;justify-content:space-between;background:#28225c;color:#fff;font-weight:800;padding:.8mm 2mm;font-size:1.05em}
-    .pc-th{display:flex;align-items:center;gap:1.6mm;padding:1.2mm 2mm .6mm}.pc-th img{width:${big ? 15 : 11}mm;height:${big ? 15 : 11}mm;object-fit:cover;border-radius:1.4mm;flex:none}
+    .pc-th{display:flex;align-items:center;gap:1.6mm;padding:1.2mm 2mm .6mm}.pc-th img{width:3.6em;height:3.6em;object-fit:cover;border-radius:1.4mm;flex:none}
     .pc-th b{font-size:1.2em;line-height:1.05;color:#28225c}.pc-th i{font-style:normal;font-size:.9em;color:#E8559A;font-weight:800;margin-left:auto}
-    .pc-b{display:flex;gap:1.4mm;padding:.5mm 2mm}.pc-b img{width:${big ? 7 : 5}mm;height:${big ? 7 : 5}mm;flex:none}.pc-b b{display:block}.pc-b span{color:#3a3d5c}
+    .pc-b{display:flex;gap:1.4mm;padding:.5mm 2mm}.pc-b img{width:1.8em;height:1.8em;flex:none}.pc-b b{display:block}.pc-b span{color:#3a3d5c}
     .pc-sea{padding:1mm 2mm;color:#6b6f8f}
     .pc-brk{background:#fde7f1;border-color:#f6bdd6;align-items:center;justify-content:center;text-align:center}.pc-brk b{font-size:1.4em;color:#c2185b}.pc-brk span{color:#6b6f8f}
     .pc-key{position:absolute;left:8mm;bottom:15.5mm;font-size:7pt;color:#6b6f8f}
@@ -732,7 +732,7 @@ function termCalHTML(ti){
   <div class="pc"><div class="pc-bar">${bar}</div>
     <div class="pc-head"><img src="${DIR}img/logo.png" alt="NGL Pre-School"><div><div class="pc-k">Around the World with Somi &amp; Flic · Term calendar</div>
       <div class="pc-ti">${esc(t.name || 'Term ' + (ti + 1))}</div><div class="pc-s">${esc(c.club || (S.club && S.club.name) || '')}${rows.length ? ` · ${dd(rows[0].date)} to ${dd(rows[rows.length - 1].date)}` : ''}${f ? ` · programme weeks ${f.w}–${l.w}` : ''}</div></div></div>
-    <div class="pc-grid">${tiles.map(tileHTML).join('')}</div>
+    <div class="pc-grid" style="grid-template-columns:repeat(${cols},1fr)">${tiles.map(t => tileHTML(t).replace('class="pc-t', `style="height:${tileH}mm;font-size:${fs}pt" class="pc-t`)).join('')}</div>
     <div class="pc-key">Each week: the lesson plan theme, then the two sticker skills for Book 1 and Book 2. A pink border marks the start of a new country.</div>
     <div class="pc-foot"><div class="l"><b>NGL Pre-School</b> · Exclusively for British Gymnastics Clubs</div><div class="r">OFFICIAL SPONSOR <img src="${DIR}img/justgo-logo-white.png" alt="JustGo"></div></div>
   </div>`;
@@ -916,6 +916,7 @@ function screenPlanner(){
         <label>Half-term after week<input class="input" type="number" min="0" max="19" data-f="half" value="${t.half || 0}"></label>
         <button class="btn ghost small" data-act="del" data-ti="${i}" type="button">Remove</button></div>`).join('')}
       <div class="btn-row"><button class="btn ghost small" data-act="add" type="button">+ Add a term</button><button class="btn small" data-act="save" type="button">Save plan</button><span id="psMsg" class="note" style="align-self:center"></span></div>
+      ${tables ? `<div class="btn-row" style="margin-top:6px"><button class="btn small" type="button" data-act="calyear">🖨 Print the whole year (${c.terms.filter(t => t.start && t.weeks > 0).length} pages)</button><span class="note" style="align-self:center">One page per term. Choose “Save as PDF” to download it.</span></div>` : ''}
       ${tables || '<p class="muted">Add a term to see the weekly plan.</p>'}
     </div>`);
 }
@@ -1117,6 +1118,7 @@ document.addEventListener('click', async e => {
     c.terms.push({name:'Term ' + (c.terms.length + 1), start, weeks:12, half:6}); screenPlanner(); scrollTo(0, y); }
   if(act === 'del'){ readForm(); cfg().terms.splice(+a.dataset.ti, 1); screenPlanner(); scrollTo(0, y); }
   if(act === 'save'){ readForm(); try{ localStorage.setItem(cfgKey(), JSON.stringify(cfg())); }catch(_){} const ok = await api.savePlan(cfg()); screenPlanner(); scrollTo(0, y); $('#psMsg').textContent = ok ? 'Saved.' : 'Saved on this device only. We couldn’t save it to your club account.'; }
+  if(act === 'calyear'){ readForm(); const c = cfg(), pa = $('#print-area'); pa.innerHTML = c.terms.map((t, i) => t.start && t.weeks > 0 ? termCalHTML(i) : '').join(''); printWhenReady(); return; }
   if(act === 'cal'){ readForm(); const pa = $('#print-area'); pa.innerHTML = termCalHTML(+a.dataset.ti); printWhenReady(); return; }
   if(act === 'caption'){ const k = a.dataset.n, t = k[0] === 's' ? P.SEASONAL.find(x => x.file === k.slice(1)) : P.THEMES.find(x => x.n === +k);
     const txt = captionFor(t); try{ await navigator.clipboard.writeText(txt); toast('Caption copied. Paste it into Instagram with the post.'); }catch(_){ modal(`<h2>Instagram caption</h2><textarea class="input" rows="12" style="width:100%">${esc(txt)}</textarea><div class="btn-row"><button class="btn" data-close>Done</button></div>`); } return; }
