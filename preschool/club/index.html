@@ -681,6 +681,75 @@ const unlocked = t => t.seasonal ? (lic().active && lic().seasonal) : (t.n === 1
 const planFile = t => (t.seasonal ? 'NGL_PreSchool_' : 'NGL_PreSchool_Week_') + t.file;
 const planHref = t => (t.n === 1 && !t.seasonal && !lic().active ? SAMPLE : PLANS) + planFile(t) + '.pdf';
 const postHref = t => (t.n === 1 && !t.seasonal && !lic().active ? SAMPLE : PLANS) + 'NGL_PreSchool_Post_' + t.file + '.jpg';
+const postName = (t, w) => `NGL_PreSchool_${w ? 'Week_' + w + '_' : ''}${t.file}_post.jpg`;
+function postBtns(t, wk){
+  return `<a class="btn small ghost" href="${postHref(t)}" download="${postName(t, wk)}">⬇ Instagram post</a><button class="btn small ghost" type="button" data-act="caption" data-n="${t.seasonal ? 's' + t.file : t.n}">Copy caption</button>`;
+}
+function captionFor(t){
+  const club = (cfg().club || (S.club && S.club.name) || '').trim();
+  const tag = '#NGLPreSchool #AroundTheWorldWithSomiAndFlic #PreSchoolGymnastics #ItsAllConnected #EverySportStartsHere';
+  if(t.seasonal) return `${t.name} week in Pre-School${club ? ' at ' + club : ''}! 🎉\n\nA special themed class this week with Somi and Flic. The passport journey carries on next week.\n\n${tag}`;
+  const w = P.weekInfo(t.n), home = (t.home || []).slice(0, 3);
+  return `This week in Pre-School${club ? ' at ' + club : ''}: ${t.name}! 🌍\n\nSomi and Flic are travelling to ${w.b1.country.name} (Book 1) and ${w.b2.country.name} (Book 2). This week’s sticker skills:\n${[...w.b1.skills, ...w.b2.skills].map(x => '⭐ ' + x).join('\n')}${home.length ? `\n\nTry at home:\n${home.map(x => '• ' + x).join('\n')}` : ''}\n\n${tag}`;
+}
+/* One-page term calendar (A4 landscape) in the NGL Pre-School frame */
+function termCalHTML(ti){
+  const c = cfg(), rows = P.plan(c).filter(r => r.termIndex === ti), t = c.terms[ti] || {};
+  const dd = d => new Date(d + 'T00:00:00Z').toLocaleDateString('en-GB', {day:'numeric', month:'short', timeZone:'UTC'});
+  const tiles = [];
+  rows.forEach((r, i) => {
+    if(i && (P.parse(r.date) - P.parse(rows[i - 1].date)) > 8 * 86400000) tiles.push({brk:true, from:rows[i - 1].date, to:r.date});
+    tiles.push(r);
+  });
+  const n = tiles.length, cols = n <= 8 ? 4 : n <= 12 ? 4 : 5, rws = Math.ceil(n / cols);
+  const tileH = Math.floor(152 / rws), big = rws <= 2;
+  const fs = big ? 10.5 : rws === 3 ? 8.6 : 7.6;
+  const book = (b, col) => `<div class="pc-b"><img src="${DIR}img/medal${P2(b.country.n)}.png" alt=""><div><b style="color:${col}">${esc(b.country.name)}</b><span>${b.skills.map(esc).join('<br>')}</span></div></div>`;
+  const tileHTML = r => r.brk ? `<div class="pc-t pc-brk"><b>Half term</b><span>No classes</span></div>`
+    : `<div class="pc-t${r.newLevel ? ' nl' : ''}"><div class="pc-h"><span>Week ${r.week}</span><span>${dd(r.date)}</span></div>
+      <div class="pc-th"><img src="${DIR}img/post_${r.theme.file}.jpg" alt=""><b>${esc(r.theme.name)}</b>${r.seasonal ? '<i>Seasonal</i>' : ''}</div>
+      ${r.seasonal ? '<div class="pc-sea">A themed class. No new passport skills.</div>' : book(r.b1, '#c2185b') + book(r.b2, '#28225c')}</div>`;
+  const bar = ['#E8559A','#F8D438','#E88230','#0071B3','#01AFB8','#3BAA4A','#7A4C9E'].map(x => `<i style="flex:1;background:${x}"></i>`).join('');
+  const f = rows.find(r => !r.seasonal), l = [...rows].reverse().find(r => !r.seasonal);
+  return `<style>@page{size:A4 landscape;margin:0}
+    .pc{width:297mm;height:209mm;position:relative;overflow:hidden;font-family:Roboto,Arial,sans-serif;color:#1c1f3a;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .pc-bar{display:flex;height:2.4mm}.pc-head{background:#28225c;height:22mm;display:flex;align-items:center;gap:7mm;padding:0 9mm}
+    .pc-head img{height:13mm}.pc-k{font:700 2.6mm Roboto,Arial;letter-spacing:.8mm;color:#E8559A;text-transform:uppercase}
+    .pc-ti{font:800 7.6mm/1.05 'Roboto Condensed',Roboto,Arial;color:#fff;text-transform:uppercase}.pc-s{font:400 3mm Roboto,Arial;color:#c9cbee}
+    .pc-grid{position:absolute;left:8mm;right:8mm;top:28mm;display:grid;grid-template-columns:repeat(${cols},1fr);gap:2.4mm}
+    .pc-t{border:.35mm solid #e1e2ee;border-radius:2.4mm;height:${tileH}mm;overflow:hidden;font-size:${fs}pt;line-height:1.22;display:flex;flex-direction:column}
+    .pc-t.nl{border-color:#E8559A}
+    .pc-h{display:flex;justify-content:space-between;background:#28225c;color:#fff;font-weight:800;padding:.8mm 2mm;font-size:1.05em}
+    .pc-th{display:flex;align-items:center;gap:1.6mm;padding:1.2mm 2mm .6mm}.pc-th img{width:${big ? 15 : 11}mm;height:${big ? 15 : 11}mm;object-fit:cover;border-radius:1.4mm;flex:none}
+    .pc-th b{font-size:1.2em;line-height:1.05;color:#28225c}.pc-th i{font-style:normal;font-size:.9em;color:#E8559A;font-weight:800;margin-left:auto}
+    .pc-b{display:flex;gap:1.4mm;padding:.5mm 2mm}.pc-b img{width:${big ? 7 : 5}mm;height:${big ? 7 : 5}mm;flex:none}.pc-b b{display:block}.pc-b span{color:#3a3d5c}
+    .pc-sea{padding:1mm 2mm;color:#6b6f8f}
+    .pc-brk{background:#fde7f1;border-color:#f6bdd6;align-items:center;justify-content:center;text-align:center}.pc-brk b{font-size:1.4em;color:#c2185b}.pc-brk span{color:#6b6f8f}
+    .pc-key{position:absolute;left:8mm;bottom:15.5mm;font-size:7pt;color:#6b6f8f}
+    .pc-foot{position:absolute;left:0;right:0;bottom:0;height:12mm;background:#E8559A;border-top-left-radius:14mm 9mm;display:flex;align-items:center;justify-content:space-between;padding:0 9mm 0 16mm;color:#fff}
+    .pc-foot .l{font:400 8pt Roboto,Arial}.pc-foot .r{display:flex;align-items:center;gap:3mm;font:700 6pt Roboto,Arial;letter-spacing:.6mm}.pc-foot img{height:4.4mm}
+  </style>
+  <div class="pc"><div class="pc-bar">${bar}</div>
+    <div class="pc-head"><img src="${DIR}img/logo.png" alt="NGL Pre-School"><div><div class="pc-k">Around the World with Somi &amp; Flic · Term calendar</div>
+      <div class="pc-ti">${esc(t.name || 'Term ' + (ti + 1))}</div><div class="pc-s">${esc(c.club || (S.club && S.club.name) || '')}${rows.length ? ` · ${dd(rows[0].date)} to ${dd(rows[rows.length - 1].date)}` : ''}${f ? ` · programme weeks ${f.w}–${l.w}` : ''}</div></div></div>
+    <div class="pc-grid">${tiles.map(tileHTML).join('')}</div>
+    <div class="pc-key">Each week: the lesson plan theme, then the two sticker skills for Book 1 and Book 2. A pink border marks the start of a new country.</div>
+    <div class="pc-foot"><div class="l"><b>NGL Pre-School</b> · Exclusively for British Gymnastics Clubs</div><div class="r">OFFICIAL SPONSOR <img src="${DIR}img/justgo-logo-white.png" alt="JustGo"></div></div>
+  </div>`;
+}
+// shrink the text in any calendar tile that would overflow, so the term always fits on one page
+function fitTiles(){
+  const pa = $('#print-area'), tiles = pa.querySelectorAll('.pc-t'); if(!tiles.length) return;
+  pa.style.cssText = 'display:block;position:absolute;left:-10000px;top:0';
+  tiles.forEach(t => { let f = parseFloat(getComputedStyle(t).fontSize), k = 0; while(t.scrollHeight > t.clientHeight + 1 && k++ < 14){ f *= .94; t.style.fontSize = f + 'px'; } });
+  pa.style.cssText = '';
+}
+function printWhenReady(){
+  const imgs = [...document.querySelectorAll('#print-area img')].filter(i => !i.complete);
+  let done = false; const go = () => { if(!done){ done = true; fitTiles(); window.print(); } };
+  if(!imgs.length) return go();
+  Promise.all(imgs.map(i => new Promise(r => { i.onload = i.onerror = r; }))).then(go); setTimeout(go, 4000);
+}
 function cfgKey(){ return 'ngl-ps-plan-' + (S.uid || 'demo'); }
 function defaultCfg(){ const y = new Date().getFullYear(), sy = new Date().getMonth() >= 7 ? y : y - 1;
   return {club:(S.club && S.club.name) || '', startWeek:1, seasonal:false, terms:[{name:`Autumn ${sy}`, start:`${sy}-09-07`, weeks:14, half:7}, {name:`Spring ${sy + 1}`, start:`${sy + 1}-01-04`, weeks:12, half:6}, {name:`Summer ${sy + 1}`, start:`${sy + 1}-04-19`, weeks:13, half:6}]}; }
@@ -767,12 +836,12 @@ function thisWeek(){ const rows = P.plan(cfg()), today = P.iso(new Date()); let 
 function weekCard(r){
   if(!r) return '';
   if(r.seasonal) return `<div class="card ps-week"><img src="${DIR}img/post_${r.theme.file}.jpg" alt=""><div><p class="eyebrow">${esc(r.term)} · week ${r.week}</p><h2>${esc(r.theme.name)} (Seasonal)</h2><p class="muted">No new passport skills this week. The journey carries on next week.</p>
-    ${unlocked(r.theme) ? `<div class="btn-row"><a class="btn small" href="${planHref(r.theme)}" target="_blank" rel="noopener">Lesson plan</a></div>` : ''}</div></div>`;
+    ${unlocked(r.theme) ? `<div class="btn-row"><a class="btn small" href="${planHref(r.theme)}" target="_blank" rel="noopener">Lesson plan</a>${postBtns(r.theme, r.week)}</div>` : ''}</div></div>`;
   const t = r.theme;
   return `<div class="card ps-week"><img src="${DIR}img/post_${t.file}.jpg" alt=""><div class="ps-book"><p class="eyebrow">${esc(r.term)} · week ${r.week} · programme week ${r.w} of 40</p><h2>${esc(t.name)}</h2>
     <h4>Book 1 · ${esc(r.b1.country.name)} · skills ${r.b1.nos.join(' & ')}</h4><ul>${r.b1.skills.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
     <h4>Book 2 · ${esc(r.b2.country.name)} · skills ${r.b2.nos.join(' & ')}</h4><ul>${r.b2.skills.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
-    <div class="btn-row">${unlocked(t) ? `<a class="btn small" href="${planHref(t)}" target="_blank" rel="noopener">Lesson plan</a><a class="btn small ghost" href="${postHref(t)}" target="_blank" rel="noopener" download>Social post</a>` : `<span class="note">${packOf(t.n) === 1 ? 'Unlocks with the Pre-School licence.' : 'This plan is in ' + PACKS[packOf(t.n)] + '.'}</span>`}</div></div></div>`;
+    <div class="btn-row">${unlocked(t) ? `<a class="btn small" href="${planHref(t)}" target="_blank" rel="noopener">Lesson plan</a>${postBtns(t, r.week)}` : `<span class="note">${packOf(t.n) === 1 ? 'Unlocks with the Pre-School licence.' : 'This plan is in ' + PACKS[packOf(t.n)] + '.'}</span>`}</div></div></div>`;
 }
 function licenceCard(){
   const L = lic(), club = S.club ? S.club.name : 'our club';
@@ -811,7 +880,7 @@ function planCard(t){
     <b>${t.seasonal ? '' : 'Week ' + t.n + ': '}${esc(t.name)}</b>
     <span class="s">${t.seasonal ? 'Seasonal Pack' : `${esc(wk.b1.country.name)} ${wk.b1.nos.join('&')} · ${esc(wk.b2.country.name)} ${wk.b2.nos.join('&')}`}</span>
     ${t.seasonal ? '' : `<span class="s">${PACKS[packOf(t.n)]}</span>`}
-    ${open ? `<a class="btn small" href="${planHref(t)}" target="_blank" rel="noopener">Plan PDF</a><a class="btn small ghost" href="${postHref(t)}" target="_blank" rel="noopener" download>Social post</a>` : '<span class="note">Locked</span>'}</div>`;
+    ${open ? `<a class="btn small" href="${planHref(t)}" target="_blank" rel="noopener">Plan PDF</a>${postBtns(t)}` : '<span class="note">Locked</span>'}</div>`;
 }
 function screenPlans(){
   render(`<h1>Lesson plans</h1><p class="lead">One plan for every week of the passport. Each teaches that week’s two Book 1 and two Book 2 sticker skills inside its theme.</p>
@@ -828,9 +897,10 @@ function screenPlanner(){
     const f = tr.find(r => !r.seasonal), l = [...tr].reverse().find(r => !r.seasonal);
     const open = tr.some(r => rows.indexOf(r) === cur) || (ti === 0 && !rows.some(r => r.date <= today));
     return `<details class="ps-det"${open ? ' open' : ''}><summary>${esc(t.name || 'Term ' + (ti + 1))} <span class="note">· ${tr.length} weeks${f ? ` · programme weeks ${f.w}–${l.w}` : ''}</span></summary>
-      <div class="ps-tbl"><table><thead><tr><th>Wk</th><th>Week of</th><th>Lesson plan</th><th>Book 1 sticker skills</th><th>Book 2 sticker skills</th></tr></thead><tbody>
-      ${tr.map(r => r.seasonal ? `<tr class="sea ${rows.indexOf(r) === cur ? 'now' : ''}"><td>${r.week}</td><td>${dd(r.date)}</td><td><b>${esc(r.theme.name)}</b> <span class="note">Seasonal</span></td><td colspan="2" class="note">Seasonal week: no new passport skills.</td></tr>`
-        : `<tr class="${rows.indexOf(r) === cur ? 'now' : ''}${r.newLevel ? ' nl' : ''}"><td>${r.week}</td><td>${dd(r.date)}</td><td><b>${esc(r.theme.name)}</b><br><span class="note">Week ${r.w}</span></td><td>${cc(r.b1, '')}</td><td>${cc(r.b2, 'b2')}</td></tr>`).join('')}
+      <div class="btn-row" style="margin:4px 0 10px"><button class="btn small" type="button" data-act="cal" data-ti="${ti}">🖨 Print term calendar</button><span class="note" style="align-self:center">One A4 landscape page for the gym wall</span></div>
+      <div class="ps-tbl"><table><thead><tr><th>Wk</th><th>Week of</th><th>Lesson plan</th><th>Book 1 sticker skills</th><th>Book 2 sticker skills</th><th>Instagram</th></tr></thead><tbody>
+      ${tr.map(r => r.seasonal ? `<tr class="sea ${rows.indexOf(r) === cur ? 'now' : ''}"><td>${r.week}</td><td>${dd(r.date)}</td><td><b>${esc(r.theme.name)}</b> <span class="note">Seasonal</span></td><td colspan="2" class="note">Seasonal week: no new passport skills.</td><td>${postCell(r.theme, r.week)}</td></tr>`
+        : `<tr class="${rows.indexOf(r) === cur ? 'now' : ''}${r.newLevel ? ' nl' : ''}"><td>${r.week}</td><td>${dd(r.date)}</td><td><b>${esc(r.theme.name)}</b><br><span class="note">Week ${r.w}</span></td><td>${cc(r.b1, '')}</td><td>${cc(r.b2, 'b2')}</td><td>${postCell(r.theme, r.week)}</td></tr>`).join('')}
       </tbody></table></div></details>`; }).join('');
   render(`<h1>Term planner</h1><p class="lead">Enter your term dates. The planner follows the 40 weeks of the passport and sets out the lesson plan and the Book 1 and Book 2 sticker skills for every week. Each term carries on from the last.</p>
     <div class="card">
@@ -848,6 +918,9 @@ function screenPlanner(){
       <div class="btn-row"><button class="btn ghost small" data-act="add" type="button">+ Add a term</button><button class="btn small" data-act="save" type="button">Save plan</button><span id="psMsg" class="note" style="align-self:center"></span></div>
       ${tables || '<p class="muted">Add a term to see the weekly plan.</p>'}
     </div>`);
+}
+function postCell(t, wk){
+  return unlocked(t) ? `<a class="btn small ghost" href="${postHref(t)}" download="${postName(t, wk)}" title="Download the Instagram post">⬇ Post</a><br><button class="btn small ghost" type="button" style="margin-top:4px" data-act="caption" data-n="${t.seasonal ? 's' + t.file : t.n}">Caption</button>` : '<span class="note">🔒</span>';
 }
 function readForm(){
   const c = cfg(); if(!$('#psStart')) return;
@@ -1044,6 +1117,9 @@ document.addEventListener('click', async e => {
     c.terms.push({name:'Term ' + (c.terms.length + 1), start, weeks:12, half:6}); screenPlanner(); scrollTo(0, y); }
   if(act === 'del'){ readForm(); cfg().terms.splice(+a.dataset.ti, 1); screenPlanner(); scrollTo(0, y); }
   if(act === 'save'){ readForm(); try{ localStorage.setItem(cfgKey(), JSON.stringify(cfg())); }catch(_){} const ok = await api.savePlan(cfg()); screenPlanner(); scrollTo(0, y); $('#psMsg').textContent = ok ? 'Saved.' : 'Saved on this device only. We couldn’t save it to your club account.'; }
+  if(act === 'cal'){ readForm(); const pa = $('#print-area'); pa.innerHTML = termCalHTML(+a.dataset.ti); printWhenReady(); return; }
+  if(act === 'caption'){ const k = a.dataset.n, t = k[0] === 's' ? P.SEASONAL.find(x => x.file === k.slice(1)) : P.THEMES.find(x => x.n === +k);
+    const txt = captionFor(t); try{ await navigator.clipboard.writeText(txt); toast('Caption copied. Paste it into Instagram with the post.'); }catch(_){ modal(`<h2>Instagram caption</h2><textarea class="input" rows="12" style="width:100%">${esc(txt)}</textarea><div class="btn-row"><button class="btn" data-close>Done</button></div>`); } return; }
   if(act === 'copy'){ try{ await navigator.clipboard.writeText(familyLink()); toast('Family link copied.'); }catch(_){ $('#psLink').select(); toast('Press Ctrl+C to copy.'); } }
   if(act === 'lic-order') return licenceOrderModal(a.dataset.band);
   if(act === 'pack-order') return packOrder(a.dataset.pack, a);
