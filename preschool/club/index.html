@@ -377,7 +377,7 @@
   .qposter{-webkit-print-color-adjust:exact;print-color-adjust:exact;font-family:Roboto,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;color:#0a1440;}
   .qp{background:#fff;border:3px solid #0a1440;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;}
   .qp.a4{height:270mm;}
-  .qp.a5{height:132mm;}
+  .qp.a5{height:124mm;}
   .qp-head{display:flex;align-items:center;gap:12px;background:#0a1440;padding:10px 16px;border-bottom:6px solid #E84187;}
   .qp-head img{height:44px;width:auto;}
   .qp-brand{color:#fff;font-weight:900;font-size:18px;margin-left:auto;}
@@ -931,7 +931,29 @@ function readForm(){
 function screenFamily(){
   render(`<h1>Family app</h1><p class="lead">Share one link with your Pre-School parents, by email, on your website or as a QR code by the poster. Parents choose Book 1 or Book 2 and see this week’s theme, their child’s two sticker skills, ideas to try at home and the journey so far. No child details are stored.</p>
     <div class="card"><div class="copy"><input class="input" id="psLink" readonly value="${esc(familyLink())}"><button class="btn" data-act="copy">Copy link</button><a class="btn ghost" href="${esc(familyLink())}" target="_blank" rel="noopener">Open ↗</a></div>
-    <p class="note" style="margin-top:10px">The link holds your term plan. If you change your term dates or add a term in the Term planner, share the new link.</p></div>`);
+    <div class="btn-row" style="margin-top:14px"><button class="btn" data-act="qr-poster" data-kind="poster">Print QR poster (A4)</button><button class="btn ghost" data-act="qr-poster" data-kind="flyer">Print flyers (2 per A4 page)</button></div>
+    <p class="note" style="margin-top:10px">The link holds your term plan. If you change your term dates or add a term in the Term planner, share the new link and print a new QR poster.</p></div>`);
+}
+/* ---------- QR poster and flyers for parents ---------- */
+let QRLIB = null;
+function loadQR(){ return QRLIB || (QRLIB = new Promise((res, rej) => { if(window.qrcode) return res(window.qrcode);
+  const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
+  s.onload = () => res(window.qrcode); s.onerror = () => { QRLIB = null; rej(new Error('QR library')); }; document.head.appendChild(s); })); }
+function qrSVG(text){ const q = window.qrcode(0, 'M'); q.addData(text); q.make(); return q.createSvgTag({cellSize:4, margin:2, scalable:true}); }
+function qrPosterHTML(kind){
+  const club = esc(cfg().club || (S.club && S.club.name) || 'our club'), qr = qrSVG(familyLink());
+  const one = size => `<div class="qp ${size}">
+    <div class="qp-head"><img src="${DIR}img/logo.png" alt="NGL Pre-School"><div class="qp-brand">Around the World with Somi &amp; Flic</div></div>
+    <div class="qp-body">
+      <div class="qp-club">${club}</div>
+      <h1>Follow your child’s journey around the world</h1>
+      <p class="qp-lead">This week’s country and theme, their two sticker skills and fun ideas to try at home, on your phone.</p>
+      <div class="qp-qr">${qr}</div>
+      <ol class="qp-steps"><li><b>Scan</b> with your phone camera</li><li><b>Pick</b> Book 1 or Book 2</li><li><b>Add</b> it to your home screen</li></ol>
+      <p class="qp-alt">No camera? Ask a coach for the family link.</p>
+    </div>
+    <div class="qp-foot">We don’t ask for, or store, any details about you or your child.</div></div>`;
+  return `<style>@page{size:A4 portrait;margin:10mm}</style>` + (kind === 'flyer' ? `<div class="qposter flyers">${one('a5')}<div class="qp-cut">✂ cut here</div>${one('a5')}</div>` : `<div class="qposter">${one('a4')}</div>`);
 }
 function screenLicence(){
   const L = lic(), club = S.club ? S.club.name : 'our club';
@@ -1122,6 +1144,8 @@ document.addEventListener('click', async e => {
   if(act === 'cal'){ readForm(); const pa = $('#print-area'); pa.innerHTML = termCalHTML(+a.dataset.ti); printWhenReady(); return; }
   if(act === 'caption'){ const k = a.dataset.n, t = k[0] === 's' ? P.SEASONAL.find(x => x.file === k.slice(1)) : P.THEMES.find(x => x.n === +k);
     const txt = captionFor(t); try{ await navigator.clipboard.writeText(txt); toast('Caption copied. Paste it into Instagram with the post.'); }catch(_){ modal(`<h2>Instagram caption</h2><textarea class="input" rows="12" style="width:100%">${esc(txt)}</textarea><div class="btn-row"><button class="btn" data-close>Done</button></div>`); } return; }
+  if(act === 'qr-poster'){ try{ await loadQR(); }catch(_){ toast('Couldn’t make the QR code. Please check your connection and try again.'); return; }
+    $('#print-area').innerHTML = qrPosterHTML(a.dataset.kind); printWhenReady(); return; }
   if(act === 'copy'){ try{ await navigator.clipboard.writeText(familyLink()); toast('Family link copied.'); }catch(_){ $('#psLink').select(); toast('Press Ctrl+C to copy.'); } }
   if(act === 'lic-order') return licenceOrderModal(a.dataset.band);
   if(act === 'pack-order') return packOrder(a.dataset.pack, a);

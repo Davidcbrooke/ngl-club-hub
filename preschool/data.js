@@ -96,7 +96,9 @@
     let g = Math.max(0, (cfg.startWeek || 1) - 1);
     const used = {}, rows = [];
     (cfg.terms || []).filter(t => t.start && t.weeks > 0).forEach((t, ti) => {
-      const s = parse(t.start), seas = season(t.start);
+      // Teaching weeks run Monday to Sunday: a term that starts mid-week (e.g. Tuesday 1 September)
+      // still counts the following Monday as its next week.
+      const s0 = parse(t.start), s = new Date(s0.getTime() - ((s0.getUTCDay() + 6) % 7) * DAY), seas = season(t.start);
       for(let i = 0; i < t.weeks; i++){
         const date = new Date(s.getTime() + (i + (t.half && i >= t.half ? 1 : 0)) * 7 * DAY);
         const d = iso(date), md = d.slice(5), y = d.slice(0, 4);
