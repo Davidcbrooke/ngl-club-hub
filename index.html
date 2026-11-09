@@ -1966,7 +1966,15 @@ async function start(){
 }
 (async () => {
   try{
+    // If Firebase stalls (e.g. the app was left open while the laptop slept or went offline),
+    // don't sit on "Loading…" for ever: offer a retry after 15 seconds.
+    const slow = setTimeout(() => {
+      $('#view').innerHTML = '<div class="empty"><b>The NGL Club Hub is taking longer than usual to open</b>Your connection may have dropped for a moment.<div style="margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn" onclick="location.reload()">Try again</button><button class="btn ghost" id="slowLogin">Log in again</button></div></div>';
+      const b = document.getElementById('slowLogin');
+      if(b) b.onclick = async () => { try{ const {auth, A} = await fb(); await auth.signOut(A); }catch(e){} location.reload(); };
+    }, 15000);
     const ok = await api.restore();
+    clearTimeout(slow);
     if(ok) start(); else screenAuth(['#register', '#discover'].includes(location.hash || '') || ENTRY_INTEREST ? 'register' : 'login');
   }catch(e){
     console.error(e);
