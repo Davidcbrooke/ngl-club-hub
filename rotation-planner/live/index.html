@@ -1,16 +1,11 @@
 <!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NGL Live Rotations</title>
-<meta name="theme-color" content="#1e1a4c">
-<meta name="apple-mobile-web-app-title" content="Rotations">
-<link rel="icon" type="image/png" sizes="32x32" href="/icons/ngl-favicon-32.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/icons/ngl-favicon-192.png">
-<link rel="apple-touch-icon" href="/icons/ngl-apple-touch-icon.png">
-<style>html,body{margin:0;height:100%;background:#1e1a4c}iframe{position:fixed;inset:0;width:100%;height:100%;border:0;display:block}</style>
-</head><body>
-<!-- NGL Rotation Planner lives in the GYMNASTICS-RESULTS repo; this page shows it at a club.nationalgymnasticsleague.co.uk address. -->
-<iframe id="app" title="NGL Live Rotations" allow="clipboard-read; clipboard-write; fullscreen; screen-wake-lock" allowfullscreen></iframe>
-<script>document.getElementById('app').src='https://davidcbrooke.github.io/GYMNASTICS-RESULTS/NGL_Live.html'+location.search+location.hash;</script>
-</body></html>
+<meta name="robots" content="noindex">
+<!-- Old live screen: the Rotation Planner now uses the stream screen, which reads the current rota. -->
+<script>location.replace('../stream/'+location.search+location.hash);</script>
+<noscript><meta http-equiv="refresh" content="0; url=../stream/"></noscript>
+<style>body{font-family:Roboto,Arial,sans-serif;background:#1e1a4c;color:#fff;display:grid;place-items:center;height:100vh;margin:0}a{color:#f7c928}</style>
+</head><body><p>Moving you to the current page&hellip; <a href="../stream/">Continue</a></p></body></html>
