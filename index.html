@@ -1426,7 +1426,9 @@ const GL = {
   table:   'https://www.nationalgymnasticsleague.co.uk/2027-season-results-and-league-table',
   power:   'https://www.nationalgymnasticsleague.co.uk/training-league',
   wag:     'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-rules-2027-numbered-update/NGL_General_League_WAG_Rules_2027.pdf',
-  mag:     'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-rules-2027-numbered-update/NGL_General_League_MAG_Rules_2027.pdf'
+  mag:     'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-rules-2027-numbered-update/NGL_General_League_MAG_Rules_2027.pdf',
+  elem:    'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-rules-2027-numbered-update/NGL_General_League_WAG_Element_Guide_2027.pdf',
+  cop:     'https://davidcbrooke.github.io/GYMNASTICS-RESULTS/ngl-rules-2027-numbered-update/FIG_WAG_Code_of_Points_2025-2028.pdf'
 };
 function screenGeneral(){
   const club = S.club ? S.club.name : 'your club';
@@ -1438,7 +1440,7 @@ function screenGeneral(){
     <div class="grid g3">
       ${tile('League table', 'Live results, the National League Table and regional qualification for National Finals.', ext(GL.table, 'See the league table'))}
       ${tile('Training League · Boys &amp; Girls', '13 strength, speed and power challenges filmed in training. Send us the videos and every valid result goes into the table and onto the gymnast’s NGL Profile Card.', ext(GL.power, 'Training League table') + `<a class="btn ghost" href="${videoMail}">Email videos to NGL</a>`)}
-      ${tile('Rules 2027', 'General League rules and common deductions: girls Levels 1–4, boys Levels 1–4.', ext(GL.wag, 'Girls rules (PDF)') + ext(GL.mag, 'Boys rules (PDF)', true))}
+      ${tile('Rules 2027', 'General League rules and common deductions: girls Levels 1–4, boys Levels 1–4. For girls, the element guide lists common Floor and Beam elements with their FIG values; the full FIG Code of Points has every element table.', ext(GL.wag, 'Girls rules (PDF)') + ext(GL.mag, 'Boys rules (PDF)', true) + ext(GL.elem, 'Girls element guide (PDF)', true) + ext(GL.cop, 'FIG Code of Points (PDF)', true))}
     </div>`;
 }
 function screenLicences(){
