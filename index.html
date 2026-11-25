@@ -499,6 +499,15 @@ const GB_POSTAGE = [{upTo:20, price:4}, {upTo:100, price:8}, {upTo:Infinity, pri
 const gbPostage = n => n > 0 ? GB_POSTAGE.find(p => n <= p.upTo).price : 0;
 const INVOICE_FROM = {name:'SAADI Gymnastics Ltd trading as National Gymnastics League', address:['66 Waveney Road', 'Harpenden', 'Hertfordshire', 'AL5 4QZ'], termsDays:14};
 const EMAILJS = {serviceId:'service_3qlufgh', templateId:'template_8i40iia', publicKey:'ZSjEpECoOMHkWNB1D'};
+/* New sign-ups -> Brevo list 4 "NGL Club Hub: registered clubs" (Brevo then sends the welcome email an hour later).
+   Apps Script "NGL Club Hub to Brevo sign-ups" (bookingoffice account) holds the Brevo key and checks the club's
+   sign-in token against Firestore before adding anyone. Source: areas/ngl/club-hub-licensing/scripts/brevo-signup.gs */
+const BREVO_SIGNUP_URL = 'https://script.google.com/macros/s/AKfycbznS0LdsczWgS7poUlevqgDobziGY6CSSU3vjiYk43w0zoX0y_y4tTWeLTZPcQ1aRrA/exec';
+function brevoSignup(user, uid){
+  if(!BREVO_SIGNUP_URL || PREVIEW || !user) return;
+  user.getIdToken().then(t => fetch(BREVO_SIGNUP_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body:JSON.stringify({uid, idToken:t})}))
+    .catch(e => console.warn('Brevo sign-up not sent', e));
+}
 const PAYMENT_DUE_MONTHS = 3;   // matches the booking system: payment due 3 months before each event
 
 /* Schools Club Licence bands (must match nglschools.co.uk/club) */
@@ -796,6 +805,7 @@ const api = {
       }catch(e){ console.warn('Schools code not created', e); }
       await fs.setDoc(fs.doc(D, 'clubs', uid), {name:d.name, bgNumber:d.bgNumber, contact:d.contact, email:d.email, accessCode:code, source:(ENTRY_HASH === '#discover' || location.hash === '#discover') ? 'email-campaign' : 'clubhub', ...(ENTRY_INTEREST ? {interest:{[ENTRY_INTEREST]: fs.serverTimestamp()}} : {}), createdAt:fs.serverTimestamp()});
       await loadClub(uid);
+      brevoSignup(cred.user, uid);
       return {ok:true};
     }catch(e){ return {ok:false, reason:friendlyAuthError(e)}; }
   },
