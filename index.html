@@ -2185,5 +2185,9 @@ async function start(){
 </script>
 
 <script src="/chat.js?v=1"></script>
+<script>/* NGL card payments (kit/card-pay.js) */
+if(!PREVIEW) window.NGL_PAY={coll:()=>'recOrders',status:id=>((S.recOrders||[]).find(o=>o.id===id)||{}).status,uid:()=>S.uid,token:async()=>{const f=await fb();return f.A.currentUser&&f.A.currentUser.getIdToken();}};
+</script>
+<script src="kit/card-pay.js"></script>
 </body>
 </html>
