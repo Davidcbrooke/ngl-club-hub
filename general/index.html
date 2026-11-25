@@ -534,7 +534,7 @@ function drawQR(){
 /* Skills Book: buy online (Stripe Payment Link) or by invoice in the Club Hub.
    BOOK_BUY_URL = the live Stripe Payment Link (adjustable quantity + delivery address). While it is
    empty, Buy now opens the invoice order form in the Club Hub (../#general). */
-const BOOK_BUY_URL = '';
+const BOOK_BUY_URL = 'https://buy.stripe.com/14AbJ14kN0xGbJBf7xb3q00';   // Stripe Payment Link (NGL account): £4, quantity set at checkout, postage options £4/£8/£12
 const BOOK = {price:4, rrp:8};
 const ic = d => `<div class="ic"><svg viewBox="0 0 24 24">${d}</svg></div>`;
 function screenLicence(){
@@ -553,7 +553,7 @@ function screenLicence(){
           <button class="btn buy-now" data-act="buy">Buy now</button>
         </div>
         <p class="total" id="bookTotal">${bookTotal(q)}</p>
-        <p class="alt">${BOOK_BUY_URL ? 'Secure card payment by Stripe. Need an invoice instead? <a href="../#general">Pay by bank transfer</a>.' : 'You’ll get an invoice by email and pay by bank transfer. We post your books as soon as payment arrives.'}</p>
+        <p class="alt">${BOOK_BUY_URL ? 'Secure card or Apple Pay checkout by Stripe; your receipt and invoice are emailed to you. Prefer to pay by bank transfer? <a href="../#general">Order by invoice</a>.' : 'You’ll get an invoice by email and pay by bank transfer. We post your books as soon as payment arrives.'}</p>
       </div>
     </div>
     <div class="benefits">
@@ -569,7 +569,7 @@ function screenLicence(){
 }
 function bookTotal(q){
   const post = q <= 20 ? 4 : q <= 100 ? 8 : 12;
-  return BOOK_BUY_URL ? `${q} × £${BOOK.price} = <b>£${q * BOOK.price}</b>, plus postage at checkout.`
+  return BOOK_BUY_URL ? `${q} × £${BOOK.price} = £${q * BOOK.price} + £${post} postage &middot; <b>Total £${q * BOOK.price + post}</b> &middot; choose ${q} books and ${q <= 20 ? 'up to 20' : q <= 100 ? '21 to 100' : 'over 100'} postage at checkout`
     : `${q} × £${BOOK.price} = £${q * BOOK.price} + £${post} postage &middot; <b>Total £${q * BOOK.price + post}</b>`;
 }
 function buyBooks(){
