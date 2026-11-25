@@ -12,6 +12,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../kit/ngl-hub.css">
 <style>
 :root{--gl:#0071B3;--navy:#14254a;--ink:#16213a;--muted:#5d6782;--line:#e3e6ef;--red:#C9142E;--ok:#1f8a4c;--bad:#C9142E;--cond:'Roboto Condensed','Arial Narrow',sans-serif;--body:'Roboto',system-ui,sans-serif}
 *{box-sizing:border-box}
@@ -148,15 +149,34 @@ textarea.msg{width:100%;min-height:150px;font:15px/1.5 var(--body);padding:10px 
 .demo{background:#fff7e0;color:#5a4300;border-radius:10px;padding:9px 14px;margin:0 0 14px;font-size:14px}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite;vertical-align:-2px;margin-right:8px}@keyframes sp{to{transform:rotate(360deg)}}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:999px;font-weight:700;z-index:99;box-shadow:0 8px 24px rgba(0,0,0,.3)}
-footer{text-align:center;color:#b9bbdc;font-size:14px;padding:10px 16px 30px}footer a{color:#fff}
+footer:not(.k-foot){text-align:center;color:#b9bbdc;font-size:14px;padding:10px 16px 30px}footer:not(.k-foot) a{color:#fff}
 .nglhome{display:inline-flex;align-items:center;gap:4px;color:#fff;text-decoration:none;font:700 13.5px/1 Roboto,system-ui,sans-serif;padding:8px 12px 8px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.1);white-space:nowrap;flex:none}.nglhome svg{width:15px;height:15px;flex:none}.nglhome:hover{background:rgba(255,255,255,.2)}
 @media(max-width:420px){.nglhome{padding:7px 10px 7px 7px;font-size:13px}}
+/* ===== NGL Hub Kit alignment (kit/DESIGN.md) ===== */
+:root{--gl:#0073b3;--navy:#28225c;--red:#c6152e;--bad:#c6152e;--ink:#1b1840;--muted:#5f5b80;--line:#e4e3ee}
+body{background:linear-gradient(180deg,#28225c 0,#1e1a4c 640px,#15123a 100%) #15123a;color:var(--ink)}
+.strap{text-transform:uppercase;letter-spacing:.06em}
+.band{background:linear-gradient(180deg,#28225c 0%,#1e1a4c 100%)}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.logo .pw{color:#fff;font:800 15px/1.1 var(--cond);letter-spacing:.06em;text-transform:uppercase;border-left:2px solid var(--gl);padding-left:12px}
+@media(max-width:640px){.logo .pw{display:none}}
+h1.page{font:900 44px/1.02 var(--cond);text-transform:uppercase;letter-spacing:.005em}
+@media(max-width:640px){h1.page{font-size:34px}}
+.lead{color:#d6d4ee;font-size:18px}
+h2.sec{font:900 26px/1.1 var(--cond);text-transform:uppercase}
+.card{box-shadow:0 6px 16px rgba(6,10,40,.14)}
+.card h3,.benefit h3{font-weight:800}
+.btn{border-width:2px;transition:filter .12s}.btn:hover{filter:brightness(1.07)}
+.btn.ghost{border-color:var(--line)}
+.prod .price b{color:var(--gl)}
+@media(max-width:640px){nav.tabs .wrap{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}nav.tabs button{flex:none;white-space:nowrap}}
 </style>
 
 </head>
-<body>
+<body data-pathway="general">
+<div class="k-bar"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 <div class="top"><div class="strap">NGL General League · Club Hub</div><div class="band"><div class="wrap row">
-  <a class="logo" href="./" aria-label="NGL General League Club Hub"><img src="https://davidcbrooke.github.io/GYMNASTICS-RESULTS/brand/ngl-logo-full.png" alt="NGL"></a>
+  <a class="logo" href="./" aria-label="NGL General League Club Hub"><img src="https://davidcbrooke.github.io/GYMNASTICS-RESULTS/brand/ngl-logo-full.png" alt="NGL"><span class="pw">General League<br>Hub</span></a>
   <div class="who hidden" id="who"></div>
   <a class="nglhome" href="https://www.nationalgymnasticsleague.co.uk/" target="_top" aria-label="Back to the NGL website home page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>NGL Home</a>
   <a class="tbtn" href="../#overview">NGL Club Hub</a>
@@ -164,7 +184,11 @@ footer{text-align:center;color:#b9bbdc;font-size:14px;padding:10px 16px 30px}foo
 </div></div></div>
 <nav class="tabs hidden" id="tabs"><div class="wrap"></div></nav>
 <main><div class="wrap" id="view"><p style="color:#fff"><span class="spin"></span>Loading…</p></div><div class="wrap" id="bookHost" hidden></div></main>
-<footer>National Gymnastics League · 66 Waveney Road, Harpenden, Herts AL5 4QZ · <a href="mailto:admin@nationalgymnasticsleague.co.uk">admin@nationalgymnasticsleague.co.uk</a></footer>
+<footer class="k-foot"><div class="in">
+  <img src="https://davidcbrooke.github.io/GYMNASTICS-RESULTS/brand/ngl-logo-full.png" alt="National Gymnastics League">
+  <div class="sp"><small>OFFICIAL SPONSOR</small><img src="https://davidcbrooke.github.io/GYMNASTICS-RESULTS/brand/justgo-logo-white.png" alt="JustGo"></div>
+  <div>Exclusively for British Gymnastics Clubs<br>66 Waveney Road, Harpenden AL5 4QZ · <a href="mailto:admin@nationalgymnasticsleague.co.uk">admin@nationalgymnasticsleague.co.uk</a></div>
+</div></footer>
 
 <script src="qrcode.js"></script>
 <script type="module">
