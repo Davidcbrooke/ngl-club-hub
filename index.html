@@ -1323,7 +1323,7 @@ function pathwayCards(){
     : card('schools', 'Live now', 'ok', `<p class="small muted">Awards, assessments and graduations in your local schools.</p>${price(fromPrice(SCHOOLS_BANDS))}`, a(q(LINKS.schoolsHub), 'Open Schools Hub') + a(LICENCE_FEES, 'Licence fees', true)));
   out.push(recStatus().key !== 'none' ? licenceCard('recreational', true)
     : card('recreational', 'Live January 2027', 'soon', `<p class="small muted">Four award levels, Ruby to Indigo, with the lesson planner, assessments and competitions.</p>${price(fromPrice(REC_BANDS))}`, a(q(LINKS.recHub), 'Open Recreational Hub') + a(LICENCE_FEES, 'Licence fees', true)));
-  out.push(card('general', 'Competitions live now', 'ok', `<p class="small muted">Compete locally, score nationally. Booking, floor music, league tables, the Training League and the 2027 rules in one place.</p><p class="pw-price">Award books <b>live April 2027</b></p>`, `<a class="btn" href="general/">Open General League Hub</a><button class="btn ghost" data-book="general">Reserve places</button>`));
+  out.push(card('general', 'Competitions live now', 'ok', `<p class="small muted">Compete locally, score nationally. Booking, floor music, league tables, the Training League and the 2027 rules in one place.</p><p class="pw-price">Licence fee <b>waived for 2027</b> · Skills Books <b>£4</b> each (RRP £8)</p>`, `<a class="btn" href="general/">Open General League Hub</a><button class="btn ghost" data-book="general">Reserve places</button>`));
   out.push(card('performance', 'Coming 2027', 'soon', `<p class="small muted">Awards, assessments and competitions for your performance squads.</p>`, interest('performance')));
   out.push(card('university', 'Coming soon', 'off', `<p class="small muted">Awards, assessments and competitions that keep students in the sport.</p>`, interest('university')));
   out.push(card('masters', 'Coming soon', 'off', `<p class="small muted">Awards, assessments and competitions for adult gymnasts.</p>`, interest('masters')));
@@ -1441,6 +1441,18 @@ function screenGeneral(){
       ${tile('League table', 'Live results, the National League Table and regional qualification for National Finals.', ext(GL.table, 'See the league table'))}
       ${tile('Training League · Boys &amp; Girls', '13 strength, speed and power challenges filmed in training. Send us the videos and every valid result goes into the table and onto the gymnast’s NGL Profile Card.', ext(GL.power, 'Training League table') + `<a class="btn ghost" href="${videoMail}">Email videos to NGL</a>`)}
       ${tile('Rules 2027', 'General League rules and common deductions: girls Levels 1–4, boys Levels 1–4. For girls, the element guide lists common Floor and Beam elements with their FIG values; the full FIG Code of Points has every element table.', ext(GL.wag, 'Girls rules (PDF)') + ext(GL.mag, 'Boys rules (PDF)', true) + ext(GL.elem, 'Girls element guide (PDF)', true) + ext(GL.cop, 'FIG Code of Points (PDF)', true))}
+    </div>
+    <div class="card" style="margin-top:16px;border-left:6px solid #0073B3">
+      <h3>NGL General Skills Book · £4 a book (RRP £8)</h3>
+      <p class="small"><b>Your General League licence fee is waived for 2027</b> because your club is registered on the NGL Club Hub. Skills Books are £4 each to your club (live April 2027), with a recommended retail price of £8 if you choose to sell them on.</p>
+      <ul class="small" style="margin:8px 0 0;padding-left:18px;line-height:1.55">
+        <li><b>Aligned to the NGL competitions.</b> The skills in each level match what gymnasts compete at that level.</li>
+        <li><b>The right level to compete.</b> Gymnasts can see which level to enter from the skills they can already do.</li>
+        <li><b>Clear for parents.</b> Parents can see the level their child is at and how they are progressing.</li>
+        <li><b>Focus for coaches.</b> Development areas are set out openly, so gymnast, parent and coach all see the same picture.</li>
+        <li><b>Bronze, Silver and Gold execution.</b> Being able to do a skill is different from doing it perfectly 10 times out of 10. This helps everyone decide when a gymnast is ready to enter a competition.</li>
+        <li><b>Working With Parents In Sport.</b> A section from our key partner backs our holistic approach to competitive sport, centred on the gymnast and the parent.</li>
+      </ul>
     </div>`;
 }
 function screenLicences(){
@@ -1459,7 +1471,7 @@ function screenLicences(){
     row('preschool', ps.status === 'active' ? status(true) : status(false), from(PRESCHOOL_FROM), btnOpen(ps.status === 'active', 'preschool', LINKS.preschoolHub)),
     row('schools', sch.trial ? `<span class="pill ok">Free trial</span> <span class="small muted">ends ${fmt(sch.exp)}</span>` : status(live(sch), live(sch) ? sch.exp : null), from(fromPrice(SCHOOLS_BANDS)), btnOpen(live(sch), 'schools', LINKS.schoolsHub)),
     row('recreational', status(live(rec), live(rec) ? rec.exp : null), from(fromPrice(REC_BANDS)), btnOpen(live(rec), 'recreational', LINKS.recHub)),
-    row('general', soon('Skills books live April 2027'), '<span class="muted">Price to follow</span>', `<button class="btn ghost" data-tab="competitions">Competitions</button>`),
+    row('general', soon('Skills books live April 2027'), 'Licence fee <b>waived for 2027</b> · Skills Books <b>£4</b> each (RRP £8)', `<button class="btn ghost" data-tab="competitions">Competitions</button>`),
     row('performance', soon('Coming 2027'), '<span class="muted">Price to follow</span>', interest('performance')),
     row('university', soon('Coming soon'), '<span class="muted">Price to follow</span>', interest('university')),
     row('masters', soon('Coming soon'), '<span class="muted">Price to follow</span>', interest('masters'))
