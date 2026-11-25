@@ -11,6 +11,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/ngl-hub.css">
 <style>
 :root{
   --navy:#14254a; --ngl-red:#C9142E; --navy-2:#223a70; --navy-3:#e8ecf5; --red:#c8202f; --gold:#d9a521; --gold-soft:#fbf1d6;
@@ -416,10 +417,27 @@ body.reg-dark footer{color:#aeb3d6}body.reg-dark footer a{color:#fff}
 .rsteps li::before{content:counter(rs);position:absolute;left:16px;top:16px;width:34px;height:34px;border-radius:50%;background:var(--ngl-red);color:#fff;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center}
 .rsteps b{display:block;font-size:17px;margin-bottom:4px;color:var(--navy)}.rsteps span{font-size:14.5px;color:#4a5370}
 @media (max-width:900px){.rsteps{grid-template-columns:1fr}}
+
+/* ===== NGL Hub Kit alignment (kit/DESIGN.md) — the Club Hub's accent is NGL red ===== */
+:root{--navy:#28225c;--ngl-red:#c6152e;--red:#c6152e;--bad:#c6152e;--ink:#1b1840;--muted:#5f5b80;--line:#e4e3ee}
+html{background:#15123a}
+body{background:linear-gradient(180deg,#28225c 0,#1e1a4c 640px,#15123a 100%) #15123a}
+.topbar-strap{text-transform:uppercase;letter-spacing:.06em}
+.topbar-in{background:linear-gradient(180deg,#28225c 0%,#1e1a4c 100%)}
+h1.page{font:900 44px/1.02 var(--cond);text-transform:uppercase;letter-spacing:.005em}
+@media(max-width:640px){h1.page{font-size:34px}}
+h2.sec{font-weight:900;text-transform:uppercase}
+#view .card{border-radius:14px;border-top:5px solid var(--ngl-red)}
+#view .card.stat,#view .card.accent{border-top-color:var(--c,var(--ngl-red))}
+#view .app{border-radius:14px}
+.btn{border-radius:999px}
+footer.k-foot{color:#fff;text-align:left;padding:0;font-size:14px}
+footer.k-foot a{color:#fff}
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 </head>
-<body>
+<body data-pathway="ngl">
+<div class="k-bar"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 <header class="top">
   <div class="topbar-strap">NGL Club Hub</div>
   <div class="topbar-in">
@@ -433,7 +451,11 @@ body.reg-dark footer{color:#aeb3d6}body.reg-dark footer a{color:#fff}
   </div>
 </header>
 <main><div class="wrap" id="view"><p class="muted"><span class="spin"></span>Loading…</p></div><div class="wrap" id="bookHost" hidden></div><div class="wrap" id="merchHost" hidden></div></main>
-<footer>National Gymnastics League · 66 Waveney Road, Harpenden, Herts AL5 4QZ · <a href="mailto:admin@nationalgymnasticsleague.co.uk">admin@nationalgymnasticsleague.co.uk</a> · <a href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1pa5emRK483nT6yVVO9pG6v13zlrOaVoitoINi0GNLdXv6FkVn97TjfmYGduvNPOcocQLt6F8B" target="_blank" rel="noopener">Book a call with Dave</a></footer>
+<footer class="k-foot"><div class="in">
+  <img src="https://davidcbrooke.github.io/GYMNASTICS-RESULTS/brand/ngl-logo-full.png" alt="National Gymnastics League">
+  <div class="sp"><small>OFFICIAL SPONSOR</small><img src="https://davidcbrooke.github.io/GYMNASTICS-RESULTS/brand/justgo-logo-white.png" alt="JustGo"></div>
+  <div>Exclusively for British Gymnastics Clubs<br>66 Waveney Road, Harpenden AL5 4QZ · <a href="mailto:admin@nationalgymnasticsleague.co.uk">admin@nationalgymnasticsleague.co.uk</a> · <a href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1pa5emRK483nT6yVVO9pG6v13zlrOaVoitoINi0GNLdXv6FkVn97TjfmYGduvNPOcocQLt6F8B" target="_blank" rel="noopener">Book a call with Dave</a></div>
+</div></footer>
 
 <script>
 /* =====================================================================
