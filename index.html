@@ -491,6 +491,14 @@ const LICENCE_FEES = 'licences.html';
 const GL_HUB = 'general/';
 window.addEventListener('message', e => { const h = e.data && e.data.nglLicencesHeight; const f = document.getElementById('licFrame'); if(h && f && e.source === f.contentWindow) f.style.height = (h + 4) + 'px'; });
 const BANK = { accountName:'National Gymnastics League', sortCode:'60-84-64', accountNumber:'93416867' };
+/* NGL General Skills Book (one book covers Levels 1-4). Ordered here; the order is saved in
+   recOrders with pathway:'general', so it shows in the NGL Recreational admin (Mark paid / Mark sent).
+   Postage matches the Recreational shop. Invoices use the same EmailJS template as Schools and Recreational. */
+const GBOOK = {price:4, rrp:8, desc:'NGL General Skills Book (Levels 1–4)'};
+const GB_POSTAGE = [{upTo:20, price:4}, {upTo:100, price:8}, {upTo:Infinity, price:12}];
+const gbPostage = n => n > 0 ? GB_POSTAGE.find(p => n <= p.upTo).price : 0;
+const INVOICE_FROM = {name:'SAADI Gymnastics Ltd trading as National Gymnastics League', address:['66 Waveney Road', 'Harpenden', 'Hertfordshire', 'AL5 4QZ'], termsDays:14};
+const EMAILJS = {serviceId:'service_3qlufgh', templateId:'template_8i40iia', publicKey:'ZSjEpECoOMHkWNB1D'};
 const PAYMENT_DUE_MONTHS = 3;   // matches the booking system: payment due 3 months before each event
 
 /* Schools Club Licence bands (must match nglschools.co.uk/club) */
@@ -600,6 +608,11 @@ function allOrders(){
   }));
   const rec = S.recOrders.map(o => {
     const lines = o.lines || [];
+    if(o.pathway === 'general'){
+      const n = lines.filter(l => l.kind === 'gbook').reduce((a, l) => a + l.qty, 0);
+      return {ref:o.id, pathway:'general', date:toDate(o.createdAt), status:o.status || 'awaiting-payment', paidAt:toDate(o.paidAt),
+        desc:`${n} General Skills Book${n === 1 ? '' : 's'}`, total: lines.reduce((a, l) => a + (l.qty || 0) * (l.unit || 0), 0), season:o.season, hub:null, raw:o};
+    }
     if(o.pathway === 'preschool'){
       const n = k => lines.filter(l => l.kind === k).reduce((a, l) => a + l.qty, 0);
       const d = o.kind === 'ps-licence' ? 'New Pre-School Club Licence' + (o.psBandLabel ? ' (' + o.psBandLabel.replace(' Pre-School gymnasts', '') + ' gymnasts)' : '')
@@ -792,6 +805,20 @@ const api = {
     try{ const {fs, D} = await fb(); await fs.updateDoc(fs.doc(D, 'clubs', S.uid), {calendar: list}); return true; }
     catch(e){ console.warn('Calendar not saved', e); return false; }
   },
+  async placeGeneralOrder(qty, address){
+    const lines = [{kind:'gbook', desc:GBOOK.desc, qty, unit:GBOOK.price}, {kind:'postage', desc:'Postage', qty:1, unit:gbPostage(qty)}];
+    const r = new Uint32Array(5); crypto.getRandomValues(r);
+    const id = 'ORD-' + Array.from(r, x => '23456789ABCDEFGHJKMNPQRSTUVWXYZ'[x % 31]).join('');
+    const data = {kind:'supplies', pathway:'general', season, lines, total:lines.reduce((a, l) => a + l.qty * l.unit, 0), delivery:address,
+      clubId:S.uid, clubName:S.club.name, status:'awaiting-payment'};
+    if(!PREVIEW){
+      const {fs, D} = await fb();
+      await fs.setDoc(fs.doc(D, 'recOrders', id), {...data, createdAt:fs.serverTimestamp()});
+      fs.updateDoc(fs.doc(D, 'clubs', S.uid), {deliveryAddress:address}).catch(e => console.warn('Address not saved', e));
+    }
+    S.club.deliveryAddress = address;
+    const o = {id, ...data, createdAt:new Date()}; S.recOrders.push(o); return o;
+  },
   async registerInterest(k){
     S.club.interest = {...(S.club.interest || {}), [k]: new Date()};
     if(PREVIEW) return true;
@@ -975,7 +1002,7 @@ const PATHWAY_INFO = {
       points:['Club competitions at the same four levels as the award books','2-piece or 4-piece, scored positively out of 10.0','Every gymnast gets a medal','Routine videos for every level in the coach and family apps']}},
   general: {who:'2–10 hours a week', status:['Competitions live now','ok'],
     awards:{title:'Skills Books', imgs:[PW_IMG + 'general-cover.jpg', PW_IMG + 'general-book-1.jpg', PW_IMG + 'general-book-2.jpg'],
-      points:['A skills book for every General League level, aligned to the competition','Bronze, Silver and Gold ticks for every skill','Live April 2027']},
+      points:['A skills book for every General League level, aligned to the competition','Bronze, Silver and Gold ticks for every skill','Available to order now in the Club Hub']},
     comps:{title:'Competitions', imgs:[PW_IMG + 'comp-hero.jpg', PW_IMG + 'comp-judges.jpg', PW_IMG + 'comp-spectators.jpg'],
       points:['Local competitions across four regional venues, 24 clubs in 2027','Girls Levels 1–4 and boys Levels 1–4','Live scores and a National League Table, building to the NGL National Finals','The Training League for boys and girls: challenges filmed in training, with an NGL Profile Card']}},
   performance: {who:'11+ hours a week', status:['Coming 2027','soon'], interest:'performance',
@@ -1323,7 +1350,7 @@ function pathwayCards(){
     : card('schools', 'Live now', 'ok', `<p class="small muted">Awards, assessments and graduations in your local schools.</p>${price(fromPrice(SCHOOLS_BANDS))}`, a(q(LINKS.schoolsHub), 'Open Schools Hub') + a(LICENCE_FEES, 'Licence fees', true)));
   out.push(recStatus().key !== 'none' ? licenceCard('recreational', true)
     : card('recreational', 'Live January 2027', 'soon', `<p class="small muted">Four award levels, Ruby to Indigo, with the lesson planner, assessments and competitions.</p>${price(fromPrice(REC_BANDS))}`, a(q(LINKS.recHub), 'Open Recreational Hub') + a(LICENCE_FEES, 'Licence fees', true)));
-  out.push(card('general', 'Competitions live now', 'ok', `<p class="small muted">Compete locally, score nationally. Booking, floor music, league tables, the Training League and the 2027 rules in one place.</p><p class="pw-price">Licence fee <b>waived for 2027</b> · Skills Books <b>£4</b> each (RRP £8)</p>`, `<a class="btn" href="general/">Open General League Hub</a><button class="btn ghost" data-book="general">Reserve places</button>`));
+  out.push(card('general', 'Competitions live now', 'ok', `<p class="small muted">Compete locally, score nationally. Booking, floor music, league tables, the Training League and the 2027 rules in one place.</p><p class="pw-price">Licence fee <b>waived for 2027</b> · Skills Books <b>£4</b> each (RRP £8), <b>order now</b></p>`, `<a class="btn" href="general/">Open General League Hub</a><button class="btn ghost" data-tab="general">Order Skills Books</button><button class="btn ghost" data-book="general">Reserve places</button>`));
   out.push(card('performance', 'Coming 2027', 'soon', `<p class="small muted">Awards, assessments and competitions for your performance squads.</p>`, interest('performance')));
   out.push(card('university', 'Coming soon', 'off', `<p class="small muted">Awards, assessments and competitions that keep students in the sport.</p>`, interest('university')));
   out.push(card('masters', 'Coming soon', 'off', `<p class="small muted">Awards, assessments and competitions for adult gymnasts.</p>`, interest('masters')));
@@ -1443,8 +1470,8 @@ function screenGeneral(){
       ${tile('Rules 2027', 'General League rules and common deductions: girls Levels 1–4, boys Levels 1–4. For girls, the element guide lists common Floor and Beam elements with their FIG values; the full FIG Code of Points has every element table.', ext(GL.wag, 'Girls rules (PDF)') + ext(GL.mag, 'Boys rules (PDF)', true) + ext(GL.elem, 'Girls element guide (PDF)', true) + ext(GL.cop, 'FIG Code of Points (PDF)', true))}
     </div>
     <div class="card" style="margin-top:16px;border-left:6px solid #0073B3">
-      <h3>NGL General Skills Book · £4 a book (RRP £8)</h3>
-      <p class="small"><b>Your General League licence fee is waived for 2027</b> because your club is registered on the NGL Club Hub. Skills Books are £4 each to your club (live April 2027), with a recommended retail price of £8 if you choose to sell them on.</p>
+      <h3>NGL General Skills Book · order now</h3>
+      <p class="small"><b>Your General League licence fee is waived for 2027</b> because your club is registered on the NGL Club Hub. The Skills Book is <b>£4 a book</b> to your club, with a recommended retail price of <b>£8</b> if you choose to sell them on. One book covers Levels 1–4. Launched six months early, printed and ready to post.</p>
       <ul class="small" style="margin:8px 0 0;padding-left:18px;line-height:1.55">
         <li><b>Aligned to the NGL competitions.</b> The skills in each level match what gymnasts compete at that level.</li>
         <li><b>The right level to compete.</b> Gymnasts can see which level to enter from the skills they can already do.</li>
@@ -1453,7 +1480,57 @@ function screenGeneral(){
         <li><b>Bronze, Silver and Gold execution.</b> Being able to do a skill is different from doing it perfectly 10 times out of 10. This helps everyone decide when a gymnast is ready to enter a competition.</li>
         <li><b>Working With Parents In Sport.</b> A section from our key partner backs our holistic approach to competitive sport, centred on the gymnast and the parent.</li>
       </ul>
+      ${S.club ? `<div id="gbOrder" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line);max-width:560px">
+        <label class="f" for="gbQty">How many books?</label><input class="f" id="gbQty" type="number" min="1" step="1" inputmode="numeric" value="${esc(S.gbQty || '')}" placeholder="e.g. 40" style="max-width:180px">
+        <label class="f" for="gbAddr">Deliver to</label><textarea class="f" id="gbAddr" rows="4" style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:5px;font:inherit;font-size:15px" placeholder="Club name, address and postcode">${esc(S.gbAddr ?? (S.club.deliveryAddress || ''))}</textarea>
+        <div id="gbSum" class="small" style="margin:10px 0">${gbSummary(S.gbQty)}</div>
+        <button class="btn" data-act="gb-order">Place order and get invoice</button>
+        <div class="err" id="gbErr"></div>
+        <p class="small muted" style="margin:8px 0 0">Pay by bank transfer when you receive the invoice. We post your books as soon as payment arrives.</p>
+      </div>` : ''}
     </div>`;
+}
+function gbSummary(q){
+  const n = parseInt(q, 10);
+  if(!(n > 0)) return '<span class="muted">£4 a book, plus postage (£4 up to 20 books, £8 up to 100, £12 over 100).</span>';
+  const post = gbPostage(n);
+  return `${n} × ${gbp(GBOOK.price)} = <b>${gbp(n * GBOOK.price)}</b> + postage ${gbp(post)} · <b>Total ${gbp(n * GBOOK.price + post)}</b>`;
+}
+function gbInvoiceHTML(o){
+  const club = S.club || {}, issued = toDate(o.createdAt) || new Date(), due = new Date(issued.getTime() + INVOICE_FROM.termsDays * 86400000);
+  const paid = o.status === 'paid' || o.status === 'sent', total = (o.lines || []).reduce((a, l) => a + l.qty * l.unit, 0);
+  const td = 'padding:8px 10px;border-bottom:1px solid #e3e4ee;font-size:14px';
+  return `<div style="font-family:Arial,Helvetica,sans-serif;color:#1c1f3a;max-width:720px;margin:0 auto;padding:24px">
+    <div style="height:8px;display:flex"><i style="flex:1;background:#E84187"></i><i style="flex:1;background:#FBD43A"></i><i style="flex:1;background:#E8822F"></i><i style="flex:1;background:#0073B3"></i><i style="flex:1;background:#00AEB7"></i><i style="flex:1;background:#6BA526"></i><i style="flex:1;background:#8F286B"></i></div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;background:#28225C;color:#fff;padding:16px 20px">
+      <div style="font-size:22px;font-weight:bold">National Gymnastics League<div style="font-size:12px;letter-spacing:2px;color:#9fd3f5">NGL GENERAL LEAGUE</div></div>
+      <div style="text-align:right"><div style="font-size:20px;font-weight:bold">INVOICE</div><div style="font-family:Consolas,monospace">${esc(o.id)}</div>${paid ? '<div style="color:#7ee2a8;font-weight:bold">PAID</div>' : ''}</div></div>
+    <table style="width:100%;margin:18px 0;font-size:14px;line-height:1.5"><tr style="vertical-align:top">
+      <td><b style="font-size:11px;color:#6b6f8f">FROM</b><br><b>${esc(INVOICE_FROM.name)}</b><br>${INVOICE_FROM.address.map(esc).join('<br>')}<br>${esc(CONTACT_EMAIL)}</td>
+      <td><b style="font-size:11px;color:#6b6f8f">BILL TO</b><br><b>${esc(club.name || o.clubName || '')}</b><br>${club.contact ? esc(club.contact) + '<br>' : ''}${club.email ? esc(club.email) + '<br>' : ''}${club.bgNumber ? 'BG club no. ' + esc(club.bgNumber) : ''}</td>
+      <td><b style="font-size:11px;color:#6b6f8f">DELIVER TO</b><br>${esc(o.delivery || '').replace(/\n/g, '<br>')}</td>
+      <td><b style="font-size:11px;color:#6b6f8f">INVOICE DATE</b><br>${fmt(issued)}<br><b style="font-size:11px;color:#6b6f8f">PAYMENT DUE</b><br>${fmt(due)}</td></tr></table>
+    <table style="width:100%;border-collapse:collapse"><tr style="background:#28225C;color:#fff;font-size:11px"><td style="padding:8px 10px">DESCRIPTION</td><td align="right" style="padding:8px 10px">QTY</td><td align="right" style="padding:8px 10px">UNIT</td><td align="right" style="padding:8px 10px">AMOUNT</td></tr>
+      ${(o.lines || []).map(l => `<tr><td style="${td}">${esc(l.desc)}</td><td align="right" style="${td}">${l.qty}</td><td align="right" style="${td}">${gbp(l.unit)}</td><td align="right" style="${td}">${gbp(l.qty * l.unit)}</td></tr>`).join('')}
+      <tr style="background:#e3f1fa;font-weight:bold;font-size:16px"><td colspan="3" align="right" style="padding:10px">Total due</td><td align="right" style="padding:10px">${gbp(total)}</td></tr></table>
+    <div style="margin-top:18px;background:#f4f5fa;border-left:4px solid #0073B3;padding:12px 14px;font-size:14px;line-height:1.6">
+      <b>Pay by bank transfer within ${INVOICE_FROM.termsDays} days</b><br>Account name: ${esc(BANK.accountName)}<br>Sort code: ${esc(BANK.sortCode)}<br>Account number: ${esc(BANK.accountNumber)}<br>Reference: <b style="font-family:Consolas,monospace">${esc(o.id)}</b><br>Please use the reference exactly as shown so we can match your payment. We post your books as soon as payment arrives.</div>
+    <p style="margin-top:18px;font-size:11px;color:#6b6f8f;text-align:center">${esc(INVOICE_FROM.name)} · ${esc(CONTACT_EMAIL)} · You can open this invoice at any time from the Orders tab of the NGL Club Hub.</p></div>`;
+}
+function gbOpenInvoice(o){
+  const w = window.open('', '_blank');
+  if(!w){ toast('Please allow pop-ups to open the invoice.'); return; }
+  w.document.write(`<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title>Invoice ${esc(o.id)}</title></head><body style="margin:0">${gbInvoiceHTML(o)}<p style="text-align:center"><button onclick="print()" style="padding:10px 18px;font-size:15px">Download / print PDF</button></p></body></html>`);
+  w.document.close();
+}
+async function gbEmailInvoice(o){
+  const club = S.club || {};
+  if(!club.email) throw new Error('No email address for this club');
+  const total = (o.lines || []).reduce((a, l) => a + l.qty * l.unit, 0);
+  const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({service_id:EMAILJS.serviceId, template_id:EMAILJS.templateId, user_id:EMAILJS.publicKey,
+      template_params:{to_email:club.email, to_name:club.contact || club.name || '', subject:`NGL General Skills Book invoice ${o.id} – ${gbp(total)}`, invoice_html:gbInvoiceHTML(o)}})});
+  if(!res.ok) throw new Error('Email failed: ' + res.status);
 }
 function screenLicences(){
   const em = S.club && S.club.email ? encodeURIComponent(S.club.email) : '';
@@ -1471,7 +1548,7 @@ function screenLicences(){
     row('preschool', ps.status === 'active' ? status(true) : status(false), from(PRESCHOOL_FROM), btnOpen(ps.status === 'active', 'preschool', LINKS.preschoolHub)),
     row('schools', sch.trial ? `<span class="pill ok">Free trial</span> <span class="small muted">ends ${fmt(sch.exp)}</span>` : status(live(sch), live(sch) ? sch.exp : null), from(fromPrice(SCHOOLS_BANDS)), btnOpen(live(sch), 'schools', LINKS.schoolsHub)),
     row('recreational', status(live(rec), live(rec) ? rec.exp : null), from(fromPrice(REC_BANDS)), btnOpen(live(rec), 'recreational', LINKS.recHub)),
-    row('general', soon('Skills books live April 2027'), 'Licence fee <b>waived for 2027</b> · Skills Books <b>£4</b> each (RRP £8)', `<button class="btn ghost" data-tab="competitions">Competitions</button>`),
+    row('general', '<span class="pill ok">Skills Books available now</span>', 'Licence fee <b>waived for 2027</b> · Skills Books <b>£4</b> each (RRP £8)', `<button class="btn ghost" data-tab="competitions">Competitions</button>`),
     row('performance', soon('Coming 2027'), '<span class="muted">Price to follow</span>', interest('performance')),
     row('university', soon('Coming soon'), '<span class="muted">Price to follow</span>', interest('university')),
     row('masters', soon('Coming soon'), '<span class="muted">Price to follow</span>', interest('masters'))
@@ -1494,21 +1571,21 @@ function screenLicences(){
 /* ----- Orders ----- */
 function screenOrders(){
   const all = allOrders(), f = S.orderFilter;
-  const list = all.filter(o => f === 'all' || (f === 'unpaid' ? o.status !== 'paid' : o.pathway === f));
-  const owed = all.filter(o => o.status !== 'paid'), owedTotal = owed.reduce((a, o) => a + o.total, 0);
+  const list = all.filter(o => f === 'all' || (f === 'unpaid' ? o.status !== 'paid' && o.status !== 'sent' : o.pathway === f));
+  const owed = all.filter(o => o.status !== 'paid' && o.status !== 'sent'), owedTotal = owed.reduce((a, o) => a + o.total, 0);
   const paidYear = all.filter(o => o.status === 'paid' && o.season === season).reduce((a, o) => a + o.total, 0);
   const btn = (k, l) => `<button data-of="${k}" aria-pressed="${f === k}">${l}</button>`;
   return `<h1 class="page">Orders and invoices</h1>
-    <p class="lead">Every NGL Schools and Recreational order your club has placed.</p>
+    <p class="lead">Every NGL order your club has placed: Schools, Recreational, Pre-School and General Skills Books.</p>
     <div class="grid g4" style="margin-bottom:16px">
       <div class="card stat ${owed.length ? 'alert' : ''}"><div class="v">${gbp(owedTotal)}</div><div class="l">Awaiting payment</div><div class="s">${owed.length} order${owed.length === 1 ? '' : 's'}</div></div>
       <div class="card stat"><div class="v">${gbp(paidYear)}</div><div class="l">Paid in ${season}</div></div>
     </div>
     ${owed.length ? `<div class="note"><b>How to pay:</b> bank transfer to ${esc(BANK.accountName)}, sort code <span class="mono">${BANK.sortCode}</span>, account <span class="mono">${BANK.accountNumber}</span>. Use the order reference as your payment reference so we can match it. Invoices can be opened and re-sent from the programme’s hub.</div>` : ''}
-    <div class="filters">${btn('all', 'All')}${btn('unpaid', 'Awaiting payment')}${btn('schools', 'Schools')}${btn('recreational', 'Recreational')}</div>
+    <div class="filters">${btn('all', 'All')}${btn('unpaid', 'Awaiting payment')}${btn('schools', 'Schools')}${btn('recreational', 'Recreational')}${S.recOrders.some(o => o.pathway === 'general') ? btn('general', 'General') : ''}</div>
     ${list.length ? `<div class="tablewrap"><table class="list"><thead><tr><th>Date</th><th>Reference</th><th>Programme</th><th>Details</th><th class="num">Total</th><th>Status</th><th></th></tr></thead><tbody>
       ${list.map(o => `<tr><td>${fmt(o.date)}</td><td class="mono">${esc(o.ref)}</td><td>${pathTag(o.pathway)}</td><td>${esc(o.desc)}</td><td class="num">${gbp(o.total)}</td><td>${statusPill(o.status)}${o.paidAt ? `<div class="small muted">${fmt(o.paidAt)}</div>` : ''}</td>
-        <td><a class="btn ghost small" href="${o.hub}" target="_blank" rel="noopener">Invoice</a></td></tr>`).join('')}
+        <td>${o.hub ? `<a class="btn ghost small" href="${o.hub}" target="_blank" rel="noopener">Invoice</a>` : `<button class="btn ghost small" data-act="gb-invoice" data-order="${esc(o.ref)}">Invoice</button>`}</td></tr>`).join('')}
       </tbody></table></div>`
     : `<div class="empty"><b>${all.length ? 'Nothing here' : 'No orders yet'}</b>${all.length ? 'Try another filter.' : 'Orders you place in the NGL Schools or Recreational hubs will appear here.'}</div>`}`;
 }
@@ -1853,6 +1930,10 @@ function screenAuth(mode, msg){
 /* =====================================================================
    EVENTS
    ===================================================================== */
+document.addEventListener('input', e => {
+  if(e.target.id === 'gbQty'){ S.gbQty = e.target.value; const el = $('#gbSum'); if(el) el.innerHTML = gbSummary(S.gbQty); }
+  if(e.target.id === 'gbAddr') S.gbAddr = e.target.value;
+});
 document.addEventListener('click', async e => {
   const j = e.target.closest('[data-jump]');
   if(j){ const el = document.getElementById(j.dataset.jump); if(el) el.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'}); return; }
@@ -1892,6 +1973,29 @@ document.addEventListener('click', async e => {
       .concat((S.adminMailRows || []).filter(r => (r.c.email || '').includes('@')).map(r => [lc(r.c.email), r.c.name, r.c.contact, r.c.bgNumber, r.joined ? r.joined.toISOString().slice(0, 10) : '', r.c.source || '', r.schOn ? 'active' : '', r.recOn ? 'active' : '', Object.keys(r.c.interest || {}).map(k => (INTEREST[k] || k).replace('NGL ', '')).join('; ')].map(q).join(',')));
     const el = document.createElement('a'); el.href = URL.createObjectURL(new Blob([lines.join('\r\n')], {type:'text/csv'})); el.download = 'NGL-Club-Hub-clubs-' + new Date().toISOString().slice(0, 10) + '.csv'; el.click();
   }
+  if(a === 'gb-order'){
+    const qty = parseInt(($('#gbQty') || {}).value, 10), addr = (($('#gbAddr') || {}).value || '').trim(), err = $('#gbErr');
+    if(!(qty > 0)){ err.textContent = 'Please enter how many books you need.'; $('#gbQty').focus(); return; }
+    if(qty > 2000){ err.textContent = 'For more than 2,000 books please email us.'; return; }
+    if(!addr){ err.textContent = 'Please add a delivery address.'; $('#gbAddr').focus(); return; }
+    t.disabled = true; t.textContent = 'Placing order…';
+    let o;
+    try{ o = await api.placeGeneralOrder(qty, addr); }
+    catch(e2){ console.error(e2); t.disabled = false; t.textContent = 'Place order and get invoice'; err.textContent = 'Couldn’t place the order. Please try again, or email ' + CONTACT_EMAIL + '.'; return; }
+    S.gbQty = ''; S.gbAddr = undefined; render();
+    const total = o.lines.reduce((x, l) => x + l.qty * l.unit, 0);
+    const bg = document.createElement('div'); bg.className = 'dlg-bg'; bg.id = 'gbDlg';
+    bg.innerHTML = `<div class="dlg"><h3>Order ${esc(o.id)} placed</h3><p>${qty} General Skills Book${qty === 1 ? '' : 's'} · <b>${gbp(total)}</b> including postage.</p>
+      <p class="small">Pay by bank transfer within ${INVOICE_FROM.termsDays} days to ${esc(BANK.accountName)}, sort code <span class="mono">${BANK.sortCode}</span>, account <span class="mono">${BANK.accountNumber}</span>, quoting <b class="mono">${esc(o.id)}</b>. We’ll post your books as soon as payment arrives.</p>
+      <p class="small muted" id="gbMail">${PREVIEW ? 'Preview: no email sent.' : 'Emailing your invoice to ' + esc(S.club.email || '') + '…'}</p>
+      <div class="btn-row"><button class="btn" data-act="gb-invoice" data-order="${esc(o.id)}">View invoice</button><button class="btn ghost" data-act="gb-close">Done</button></div></div>`;
+    document.body.appendChild(bg);
+    if(!PREVIEW) gbEmailInvoice(o).then(() => { const n = $('#gbMail'); if(n){ n.className = 'small ok-msg'; n.textContent = '✓ Invoice emailed to ' + S.club.email + '.'; } })
+      .catch(e3 => { console.error(e3); const n = $('#gbMail'); if(n) n.textContent = 'We couldn’t email the invoice just now. Open it from the Orders tab at any time.'; });
+    return;
+  }
+  if(a === 'gb-invoice'){ const o = S.recOrders.find(x => x.id === t.dataset.order); if(o) gbOpenInvoice(o); return; }
+  if(a === 'gb-close'){ const d = $('#gbDlg'); if(d) d.remove(); return; }
   if(a === 'cal-add'){ calDialog(); return; }
   if(a === 'cal-close'){ const d = $('#calDlg'); if(d) d.remove(); return; }
   if(a === 'cal-del'){ if(!confirm('Delete this competition from your calendar?')) return; const ok = await api.saveCalendar((S.club.calendar || []).filter(x => x.id !== t.dataset.id)); const d = $('#calDlg'); if(d) d.remove(); render(); toast(ok ? 'Deleted.' : 'Sorry, that didn’t save. Please try again.'); return; }
