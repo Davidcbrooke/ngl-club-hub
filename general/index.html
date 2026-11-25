@@ -66,6 +66,36 @@ h2.sec{font:700 26px/1.1 var(--cond);color:#fff;margin:30px 0 10px}
 .muted{color:var(--muted)}.small{font-size:14px}
 .gal{display:flex;gap:10px;overflow-x:auto;padding:4px 0 8px}
 .gal img{height:200px;border-radius:6px;box-shadow:0 3px 10px rgba(0,0,0,.18);flex:none}
+/* Skills Book product page */
+.prod{display:grid;grid-template-columns:minmax(220px,340px) 1fr;gap:34px;align-items:center;background:#fff;border-radius:20px;padding:30px 34px;border-top:6px solid var(--gl);box-shadow:0 18px 40px rgba(6,10,40,.25)}
+.prod .cover{position:relative}
+.prod .cover img{width:100%;border-radius:10px;box-shadow:0 16px 34px rgba(10,20,60,.35);transform:rotate(-2deg)}
+.prod .cover .tag{position:absolute;top:-12px;right:-12px;background:var(--red);color:#fff;font:900 15px/1.05 var(--cond);text-transform:uppercase;text-align:center;width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:4px solid #fff;transform:rotate(8deg);box-shadow:0 8px 18px rgba(0,0,0,.25)}
+.prod .eyebrow{display:inline-flex;align-items:center;gap:7px;background:#e4f4ea;color:var(--ok);font:800 13px var(--body);letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:999px}
+.prod .eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px rgba(31,138,76,.18)}
+.prod h1{font:900 46px/1 var(--cond);color:var(--navy);text-transform:uppercase;margin:12px 0 10px}
+.prod .sub{font-size:19px;line-height:1.45;color:var(--ink);margin:0 0 18px;max-width:560px}
+.prod .price{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 0 6px}
+.prod .price b{font:900 50px/1 var(--cond);color:var(--gl)}
+.prod .price span{color:var(--muted);font-size:15px}
+.prod .waive{display:inline-block;background:#e8f1f8;color:var(--navy);border-radius:10px;padding:8px 12px;font-size:15px;margin:6px 0 18px}
+.prod .buy{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.qty{display:inline-flex;align-items:center;border:2px solid var(--line);border-radius:999px;overflow:hidden;height:52px}
+.qty button{width:46px;height:100%;border:0;background:#f4f6fb;font:700 22px var(--body);color:var(--navy);cursor:pointer}
+.qty input{width:70px;height:100%;border:0;text-align:center;font:700 20px var(--body);color:var(--navy)}
+.btn.buy-now{background:var(--gl);border-color:var(--gl);font-size:19px;padding:14px 30px;box-shadow:0 8px 18px rgba(0,113,179,.35)}
+.btn.buy-now:hover{filter:brightness(1.08)}
+.prod .total{font-size:15px;color:var(--muted);margin:10px 0 0}
+.prod .alt{font-size:14px;margin:8px 0 0;color:var(--muted)}.prod .alt a{color:var(--gl);font-weight:700}
+.benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0 0}
+.benefit{background:#fff;border-radius:16px;padding:18px 18px 16px;display:flex;gap:14px;align-items:flex-start}
+.benefit .ic{flex:none;width:52px;height:52px;border-radius:14px;background:var(--gl);display:flex;align-items:center;justify-content:center}
+.benefit .ic svg{width:28px;height:28px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.benefit h3{margin:0 0 4px;font:700 19px/1.15 var(--cond);color:var(--navy)}
+.benefit p{margin:0;color:var(--muted);font-size:15px;line-height:1.45}
+.inside{background:#fff;border-radius:16px;padding:18px 20px;margin-top:14px}
+.inside .gal img{height:230px}
+@media(max-width:860px){.prod{grid-template-columns:1fr;padding:22px}.prod .cover{max-width:260px;margin:0 auto}.prod h1{font-size:36px}.benefits{grid-template-columns:1fr}}
 /* competition list */
 .comp{display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:center;background:#fff;border-radius:14px;padding:12px 16px;margin-bottom:10px;border-left:6px solid var(--gl)}
 .comp.past{opacity:.6}
@@ -178,7 +208,7 @@ const RULES = {
 const PAYMENT_DUE_MONTHS = 3;
 const MUSIC_MAX_MB = 15;
 const PREVIEW = /[?&]demo\b/.test(location.search);
-const TABS = [['dashboard','Dashboard'], ['league','League competitions'], ['power','Training League'], ['book','Reserve places'], ['reserved','Your reserved places'], ['music','Floor music'], ['family','Family Hub'], ['licence','Skills book licence']];
+const TABS = [['dashboard','Dashboard'], ['league','League competitions'], ['power','Training League'], ['book','Reserve places'], ['reserved','Your reserved places'], ['music','Floor music'], ['family','Family Hub'], ['licence','Skills Book']];
 
 const S = {tab:'dashboard', club:null, uid:null, comps:{}, bookings:[], music:[], pl:[], gender:'girls', level:'1', resFilter:'upcoming', loading:true};
 window.nglChatClub = () => S.club && S.club.name;
@@ -477,14 +507,54 @@ function drawQR(){
   el.innerHTML = q.createImgTag(6, 8);
 }
 
+/* Skills Book: buy online (Stripe Payment Link) or by invoice in the Club Hub.
+   BOOK_BUY_URL = the live Stripe Payment Link (adjustable quantity + delivery address). While it is
+   empty, Buy now opens the invoice order form in the Club Hub (../#general). */
+const BOOK_BUY_URL = '';
+const BOOK = {price:4, rrp:8};
+const ic = d => `<div class="ic"><svg viewBox="0 0 24 24">${d}</svg></div>`;
 function screenLicence(){
-  const on = ((S.club.interest || {}).generalBooks);
-  return `<h1 class="page">Skills book licence</h1>
-    <p class="lead">A skills book for every General League level, aligned to the competition, with Bronze, Silver and Gold ticks for every skill.</p>
-    <div class="card"><span class="soon">Live April 2027</span>
-      <div class="gal"><img src="../img/pathways/general-cover.jpg" alt="General League Skills Book cover"><img src="../img/pathways/general-book-1.jpg" alt=""><img src="../img/pathways/general-book-2.jpg" alt=""></div>
-      <ul style="margin:6px 0 12px;padding-left:20px;color:var(--muted)"><li>Levels 1 to 4 for girls and boys</li><li>Every skill in the competition, broken into Bronze, Silver and Gold</li><li>A yearly club licence, like the other NGL Awards Schemes</li></ul>
-      <div class="btns">${on ? '<span class="ok-pill">✓ You’re on the list</span>' : '<button class="btn blue" data-act="interest">Register interest</button>'}<a class="btn ghost" href="../licences.html" target="_blank" rel="noopener">How NGL licences work</a></div></div>`;
+  const q = Math.max(1, parseInt(S.bookQty || 20, 10) || 1);
+  const benefit = (icon, h, p) => `<div class="benefit">${ic(icon)}<div><h3>${h}</h3><p>${p}</p></div></div>`;
+  return `<div class="prod">
+      <div class="cover"><img src="../img/pathways/general-cover.jpg" alt="NGL General Skills Book cover"><span class="tag">Out now<br>6 months<br>early</span></div>
+      <div>
+        <span class="eyebrow"><i></i>Available to buy now</span>
+        <h1>NGL General Skills Book</h1>
+        <p class="sub">Support your gymnasts’ progression in alignment with the NGL competitions. One book covers Levels 1–4, for girls and boys.</p>
+        <div class="price"><b>£${BOOK.price}</b><span>per book &middot; RRP £${BOOK.rrp} if you sell them on &middot; printed and ready to post</span></div>
+        <div class="waive">Your <b>2027 General League licence fee is waived</b> because your club is on the NGL Club Hub.</div>
+        <div class="buy">
+          <div class="qty" role="group" aria-label="Number of books"><button type="button" data-act="bq" data-d="-1" aria-label="One fewer">&minus;</button><input id="bookQty" type="number" min="1" step="1" inputmode="numeric" value="${q}" aria-label="Number of books"><button type="button" data-act="bq" data-d="1" aria-label="One more">+</button></div>
+          <button class="btn buy-now" data-act="buy">Buy now</button>
+        </div>
+        <p class="total" id="bookTotal">${bookTotal(q)}</p>
+        <p class="alt">${BOOK_BUY_URL ? 'Secure card payment by Stripe. Need an invoice instead? <a href="../#general">Pay by bank transfer</a>.' : 'You’ll get an invoice by email and pay by bank transfer. We post your books as soon as payment arrives.'}</p>
+      </div>
+    </div>
+    <div class="benefits">
+      ${benefit('<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8M9 17h6"/>', 'Aligned to NGL competitions', 'The skills in each level match what gymnasts compete at that level.')}
+      ${benefit('<path d="M3 20h5v-5h5v-5h5V5h3"/><path d="M17 3l4 2-4 2"/>', 'The right level to enter', 'Gymnasts can see which level to compete in from the skills they can already do.')}
+      ${benefit('<circle cx="9" cy="7" r="3"/><circle cx="17" cy="9" r="2.3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M14.5 14.6c.8-.4 1.6-.6 2.5-.6 2.2 0 4 1.8 4 4.5"/>', 'Clear for parents', 'Parents can see the level their child is at and how they are progressing.')}
+      ${benefit('<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>', 'Focus for coaches', 'Development areas set out openly, so gymnast, parent and coach all see the same picture.')}
+      ${benefit('<circle cx="12" cy="15" r="5"/><path d="M9 3l3 7 3-7M12 13v4"/>', 'Bronze, Silver and Gold', 'Doing a skill is different from doing it 10 out of 10. Know when a gymnast is ready to compete.')}
+      ${benefit('<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>', 'Working With Parents In Sport', 'A section from our key partner: competitive sport centred on the gymnast and the parent.')}
+    </div>
+    <div class="inside"><h3 style="margin:0 0 8px;font:700 21px var(--cond);color:var(--navy)">Inside the book</h3>
+      <div class="gal"><img src="../img/pathways/general-cover.jpg" alt="Cover"><img src="../img/pathways/general-book-1.jpg" alt="Level 1: vault, bars, beam and floor"><img src="../img/pathways/general-book-2.jpg" alt="Welcome page and awards record"></div></div>`;
+}
+function bookTotal(q){
+  const post = q <= 20 ? 4 : q <= 100 ? 8 : 12;
+  return BOOK_BUY_URL ? `${q} × £${BOOK.price} = <b>£${q * BOOK.price}</b>, plus postage at checkout.`
+    : `${q} × £${BOOK.price} = £${q * BOOK.price} + £${post} postage &middot; <b>Total £${q * BOOK.price + post}</b>`;
+}
+function buyBooks(){
+  const q = Math.max(1, parseInt(($('#bookQty') || {}).value, 10) || 1);
+  if(!BOOK_BUY_URL){ location.href = '../#general'; return; }
+  const u = new URL(BOOK_BUY_URL);
+  if(S.club && S.club.email) u.searchParams.set('prefilled_email', S.club.email);
+  if(S.uid) u.searchParams.set('client_reference_id', S.uid);
+  window.open(u.toString(), '_blank', 'noopener');
 }
 
 /* ---------- sign in ---------- */
@@ -543,6 +613,8 @@ document.addEventListener('click', async e => {
   if(a === 'copy-link' || a === 'copy-msg'){ const v = a === 'copy-link' ? $('#pLink').value : $('#pMsg').value;
     try{ await navigator.clipboard.writeText(v); toast('Copied'); }catch(_){ (a === 'copy-link' ? $('#pLink') : $('#pMsg')).select(); toast('Press Ctrl+C to copy'); } return; }
   if(a === 'dl-qr'){ const img = $('#qr img'); if(!img) return; const l = document.createElement('a'); l.href = img.src; l.download = 'NGL-parents-QR.gif'; l.click(); return; }
+  if(a === 'buy'){ buyBooks(); return; }
+  if(a === 'bq'){ const i = $('#bookQty'); if(i){ i.value = Math.max(1, (parseInt(i.value, 10) || 1) + (+t.dataset.d)); S.bookQty = i.value; const el = $('#bookTotal'); if(el) el.innerHTML = bookTotal(+i.value); } return; }
   if(a === 'interest'){ t.disabled = true; const ok = await registerInterest('generalBooks'); render(); toast(ok ? 'You’re on the list for the General League skills books.' : 'Sorry, that didn’t save. Please try again.'); return; }
   if(a === 'forgot'){ const email = ($('#lEmail').value || '').trim(), err = $('#authErr');
     if(!email){ err.className = 'err'; err.textContent = 'Enter your club email first, then press “Forgotten password?”.'; return; }
@@ -628,5 +700,6 @@ window.addEventListener('message', e => {
 </script>
 
 <script src="/chat.js?v=1"></script>
+<script>document.addEventListener('input', e => { if(e.target.id === 'bookQty'){ S.bookQty = e.target.value; const el = document.getElementById('bookTotal'); if(el) el.innerHTML = bookTotal(Math.max(1, parseInt(e.target.value, 10) || 1)); } });</script>
 </body>
 </html>
