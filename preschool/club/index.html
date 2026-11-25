@@ -1065,7 +1065,7 @@ function shopSummary(){
   const L = shopLines(), total = L.reduce((a, l) => a + l.qty * l.unit, 0), goods = L.some(l => l.kind !== 'postage');
   el.innerHTML = `<h2>Your order</h2>${goods ? `<div class="table-wrap"><table><tbody>${L.map(l => `<tr><td>${esc(l.desc)}</td><td class="num">${l.qty} × ${money(l.unit)}</td><td class="num">${money(l.qty * l.unit)}</td></tr>`).join('')}
     <tr><td colspan="2" class="num"><b>Total</b></td><td class="num"><b>${money(total)}</b></td></tr></tbody></table></div>` : '<p class="muted">Add quantities above to build your order.</p>'}
-    <p class="error" id="shopErr"></p><button class="btn" data-act="shop-place" ${goods ? '' : 'disabled'}>Place order and get invoice</button>`;
+    <p class="error" id="shopErr"></p><button class="btn" data-act="shop-place" ${goods ? '' : 'disabled'}>Place order: pay by card or bank transfer</button>`;
 }
 function screenOrders(){
   const rows = S.orders.slice().reverse();
@@ -1125,7 +1125,7 @@ async function placeAndConfirm(order, btn){
   if(btn){ btn.disabled = true; btn.textContent = 'Placing order…'; }
   order = Object.assign({}, order, {lines: withVat(order.lines || [])});
   let o; try{ o = await api.placeOrder(order); }catch(e){ console.error(e); if(btn){ btn.disabled = false; btn.textContent = 'Try again'; } toast('Couldn’t place the order. Please try again.'); return null; }
-  const m = modal(`<h2>Order ${esc(o.id)} placed</h2><p class="muted">${money(orderTotal(o))}. Pay by bank transfer within ${INVOICE.termsDays} days quoting <b class="mono">${esc(o.id)}</b>. ${o.kind === 'supplies' ? 'We’ll post it to you as soon as payment arrives.' : 'It unlocks as soon as payment arrives.'}</p>
+  const m = modal(`<h2>Order ${esc(o.id)} placed</h2><p class="muted">${money(orderTotal(o))}. Pay now by card using the button below, or by bank transfer within ${INVOICE.termsDays} days quoting <b class="mono">${esc(o.id)}</b>. ${o.kind === 'supplies' ? 'We’ll post it to you as soon as payment arrives.' : 'It unlocks as soon as payment arrives.'}</p>
     <div class="btn-row"><button class="btn" data-act="invoice" data-order="${esc(o.id)}">View invoice</button><button class="btn ghost" data-close>Done</button></div>
     <p class="note" id="mailNote" style="margin:12px 0 0">${DEMO ? 'Preview mode: no email sent.' : 'Emailing your invoice to ' + esc(S.club.email || '') + '…'}</p>`);
   m.querySelector('[data-close]').addEventListener('click', () => { tab = 'orders'; show(); });
@@ -1141,7 +1141,7 @@ function licenceOrderModal(bandKey){
     <div class="field" style="margin-top:14px"><label for="licAddr">Where should we post your poster?</label><textarea class="input" id="licAddr" rows="3" required placeholder="Club name, street, town, postcode">${esc(S.club.deliveryAddress || '')}</textarea></div>
     <label style="display:flex;gap:8px;align-items:flex-start;margin:0 0 12px"><input type="checkbox" required style="width:auto;margin-top:3px"><span>I confirm we have ${esc(b.label.replace(' Pre-School gymnasts', ''))} Pre-School gymnasts. We’ll move up a band if that changes.</span></label>
     <p class="note">Passports and medals are ordered from <b>Order supplies</b> once your licence is paid.</p>
-    <div class="btn-row"><button class="btn" type="submit">Place order and get invoice</button><button class="btn ghost" type="button" data-close>Cancel</button></div></form>`);
+    <div class="btn-row"><button class="btn" type="submit">Place order: pay by card or bank transfer</button><button class="btn ghost" type="button" data-close>Cancel</button></div></form>`);
   m.querySelector('#licForm').addEventListener('submit', async e => { e.preventDefault(); const addr = m.querySelector('#licAddr').value.trim();
     api.saveDelivery(addr).catch(() => {}); m.remove();
     await placeAndConfirm({kind:'ps-licence', psBand:b.k, psBandLabel:b.label, delivery:addr,

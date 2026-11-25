@@ -1516,7 +1516,7 @@ function screenGeneral(){
         <label class="f" for="gbQty">How many books?</label><input class="f" id="gbQty" type="number" min="1" step="1" inputmode="numeric" value="${esc(S.gbQty || '')}" placeholder="e.g. 40" style="max-width:180px">
         <label class="f" for="gbAddr">Deliver to</label><textarea class="f" id="gbAddr" rows="4" style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:5px;font:inherit;font-size:15px" placeholder="Club name, address and postcode">${esc(S.gbAddr ?? (S.club.deliveryAddress || ''))}</textarea>
         <div id="gbSum" class="small" style="margin:10px 0">${gbSummary(S.gbQty)}</div>
-        <button class="btn" data-act="gb-order">Place order and get invoice</button>
+        <button class="btn" data-act="gb-order">Place order: pay by card or bank transfer</button>
         <div class="err" id="gbErr"></div>
         <p class="small muted" style="margin:8px 0 0">Pay by bank transfer when you receive the invoice. We post your books as soon as payment arrives.</p>
       </div>` : ''}
@@ -2013,12 +2013,12 @@ document.addEventListener('click', async e => {
     t.disabled = true; t.textContent = 'Placing order…';
     let o;
     try{ o = await api.placeGeneralOrder(qty, addr); }
-    catch(e2){ console.error(e2); t.disabled = false; t.textContent = 'Place order and get invoice'; err.textContent = 'Couldn’t place the order. Please try again, or email ' + CONTACT_EMAIL + '.'; return; }
+    catch(e2){ console.error(e2); t.disabled = false; t.textContent = 'Place order: pay by card or bank transfer'; err.textContent = 'Couldn’t place the order. Please try again, or email ' + CONTACT_EMAIL + '.'; return; }
     S.gbQty = ''; S.gbAddr = undefined; render();
     const total = o.lines.reduce((x, l) => x + l.qty * l.unit, 0);
     const bg = document.createElement('div'); bg.className = 'dlg-bg'; bg.id = 'gbDlg';
     bg.innerHTML = `<div class="dlg"><h3>Order ${esc(o.id)} placed</h3><p>${qty} General Skills Book${qty === 1 ? '' : 's'} · <b>${gbp(total)}</b> including postage.</p>
-      <p class="small">Pay by bank transfer within ${INVOICE_FROM.termsDays} days to ${esc(BANK.accountName)}, sort code <span class="mono">${BANK.sortCode}</span>, account <span class="mono">${BANK.accountNumber}</span>, quoting <b class="mono">${esc(o.id)}</b>. We’ll post your books as soon as payment arrives.</p>
+      <p class="small">Pay now by card using the button below, or by bank transfer within ${INVOICE_FROM.termsDays} days to ${esc(BANK.accountName)}, sort code <span class="mono">${BANK.sortCode}</span>, account <span class="mono">${BANK.accountNumber}</span>, quoting <b class="mono">${esc(o.id)}</b>. We’ll post your books as soon as payment arrives.</p>
       <p class="small muted" id="gbMail">${PREVIEW ? 'Preview: no email sent.' : 'Emailing your invoice to ' + esc(S.club.email || '') + '…'}</p>
       <div class="btn-row"><button class="btn" data-act="gb-invoice" data-order="${esc(o.id)}">View invoice</button><button class="btn ghost" data-act="gb-close">Done</button></div></div>`;
     document.body.appendChild(bg);
