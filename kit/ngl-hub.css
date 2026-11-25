@@ -1,0 +1,154 @@
+/* =====================================================================
+   NGL HUB KIT  ·  one look for every NGL hub
+   Use:  <link rel="stylesheet" href="https://club.nationalgymnasticsleague.co.uk/kit/ngl-hub.css">
+         <body data-pathway="recreational">   (preschool | schools | recreational | general |
+                                                performance | university | masters | ngl)
+   Everything is driven by --accent; a hub never hard-codes its own colours.
+   Spec and rules: kit/DESIGN.md · live showcase: kit/index.html
+   ===================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Condensed:wght@700;800;900&display=swap');
+
+:root{
+  /* brand (2026 NGL Brand Guide) */
+  --navy:#28225c; --navy-2:#1e1a4c; --navy-3:#15123a; --red:#c6152e;
+  --blue-2:#1960ab; --grey:#e3e3e3;
+  /* pathways, in order */
+  --p-preschool:#e84187; --p-schools:#fbd43a; --p-recreational:#e8822f; --p-general:#0073b3;
+  --p-performance:#00aeb7; --p-university:#6ba526; --p-masters:#8f286b;
+  /* the hub's accent (set by data-pathway) */
+  --accent:var(--red); --on-accent:#fff; --accent-soft:#fbe7ea;
+  /* neutrals */
+  --ink:#1b1840; --muted:#5f5b80; --line:#e4e3ee; --paper:#fff; --wash:#f5f5fa;
+  --ok:#1f8a4c; --ok-soft:#e4f4ea; --warn:#a65a00; --warn-soft:#fff3e0; --bad:#c6152e;
+  /* type */
+  --cond:'Roboto Condensed',Arial,sans-serif; --body:'Roboto',Arial,sans-serif;
+  /* shape */
+  --r-lg:20px; --r:14px; --r-sm:10px; --pill:999px;
+  --shadow:0 18px 40px rgba(6,10,40,.25); --shadow-sm:0 6px 16px rgba(6,10,40,.14);
+}
+[data-pathway="preschool"]{--accent:var(--p-preschool);--accent-soft:#fde7f0}
+[data-pathway="schools"]{--accent:var(--p-schools);--on-accent:var(--navy);--accent-soft:#fff7d6}
+[data-pathway="recreational"]{--accent:var(--p-recreational);--accent-soft:#fdeedf}
+[data-pathway="general"]{--accent:var(--p-general);--accent-soft:#e3f0f8}
+[data-pathway="performance"]{--accent:var(--p-performance);--accent-soft:#dff5f6}
+[data-pathway="university"]{--accent:var(--p-university);--accent-soft:#ecf5e1}
+[data-pathway="masters"]{--accent:var(--p-masters);--accent-soft:#f5e4ef}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font:16px/1.55 var(--body);color:var(--ink);min-height:100vh;
+  background:linear-gradient(180deg,var(--navy) 0,var(--navy-2) 640px,var(--navy-3) 100%) var(--navy-3)}
+a{color:var(--accent)} [data-pathway="schools"] a{color:var(--navy)}
+img{max-width:100%}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+.muted{color:var(--muted)} .small{font-size:14px} .hidden{display:none!important}
+
+/* ---------- 1. Header: 7-colour bar, accent strap, navy band with the Sweep ---------- */
+.k-bar{display:flex;height:5px}.k-bar i{flex:1}
+.k-bar i:nth-child(1){background:var(--p-preschool)}.k-bar i:nth-child(2){background:var(--p-schools)}
+.k-bar i:nth-child(3){background:var(--p-recreational)}.k-bar i:nth-child(4){background:var(--p-general)}
+.k-bar i:nth-child(5){background:var(--p-performance)}.k-bar i:nth-child(6){background:var(--p-university)}
+.k-bar i:nth-child(7){background:var(--p-masters)}
+.k-top{background:var(--accent)}
+.k-strap{text-align:center;color:var(--on-accent);font:800 13px var(--body);letter-spacing:.06em;text-transform:uppercase;padding:7px 16px}
+.k-band{background:linear-gradient(180deg,var(--navy) 0%,var(--navy-2) 100%);border-top-right-radius:220px 46px}
+@media(max-width:700px){.k-band{border-top-right-radius:120px 34px}}
+.k-head{display:flex;align-items:center;gap:10px;min-height:80px;padding:12px 18px;flex-wrap:wrap;max-width:1120px;margin:0 auto}
+.k-logo{margin-right:auto;display:flex;align-items:center;gap:12px;text-decoration:none}
+.k-logo img{height:56px;display:block}
+.k-logo span{color:#fff;font:800 15px var(--cond);letter-spacing:.06em;text-transform:uppercase;border-left:2px solid var(--accent);padding-left:12px;line-height:1.1}
+.k-who{color:#fff;text-align:right;font-size:13px;line-height:1.3}.k-who b{display:block;font-size:15px}
+@media(max-width:640px){.k-logo img{height:44px}.k-logo span{display:none}.k-who{display:none}}
+.k-hbtn{display:inline-flex;align-items:center;gap:6px;color:#fff;text-decoration:none;font:700 14px var(--body);padding:8px 14px;border-radius:var(--pill);border:1px solid rgba(255,255,255,.35);background:transparent;cursor:pointer}
+.k-hbtn:hover{background:rgba(255,255,255,.08)}
+
+/* ---------- 2. Tabs ---------- */
+.k-tabs{max-width:1120px;margin:0 auto;padding:2px 18px 10px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+.k-tabs::-webkit-scrollbar{display:none}
+.k-tabs button,.k-tabs a{flex:none;font:700 15px var(--body);color:#fff;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.22);border-radius:var(--pill);padding:9px 16px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.k-tabs [aria-selected="true"],.k-tabs .on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.k-count{display:inline-block;min-width:20px;padding:0 6px;margin-left:6px;border-radius:10px;background:var(--red);color:#fff;font-size:12px;line-height:20px;text-align:center}
+
+/* ---------- 3. Page type ---------- */
+main.k-main{padding:22px 0 48px}
+.k-eyebrow{display:inline-block;color:var(--accent);font:800 13px var(--body);letter-spacing:.12em;text-transform:uppercase;margin:0 0 6px}
+[data-pathway="schools"] .k-main>.wrap>.k-eyebrow{color:var(--p-schools)}
+.k-h1{font:900 44px/1.02 var(--cond);color:#fff;margin:0 0 10px;text-transform:uppercase;letter-spacing:.005em}
+.k-lead{color:#d6d4ee;max-width:760px;margin:0 0 22px;font-size:18px}
+.k-h2{font:900 26px/1.1 var(--cond);color:#fff;margin:34px 0 12px;text-transform:uppercase}
+.k-card .k-h2,.k-h2.dark{color:var(--navy)}
+@media(max-width:640px){.k-h1{font-size:34px}}
+
+/* ---------- 4. Cards and grids ---------- */
+.k-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.k-grid.k-3{grid-template-columns:repeat(3,1fr)} .k-grid.k-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.k-grid.k-3,.k-grid.k-4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.k-grid.k-3,.k-grid.k-4{grid-template-columns:1fr}}
+.k-card{background:var(--paper);border-radius:var(--r);padding:20px 22px;border-top:5px solid var(--accent);display:flex;flex-direction:column;box-shadow:var(--shadow-sm)}
+.k-card h3{margin:0 0 6px;color:var(--navy);font:800 21px/1.15 var(--cond)}
+.k-card p{margin:0 0 12px;color:var(--muted);font-size:15px}
+.k-card .k-actions{margin-top:auto}
+.k-card.plain{border-top:0}
+.k-stat .v{font:900 42px/1 var(--cond);color:var(--navy)} .k-stat .l{font-weight:700;margin-top:4px} .k-stat .s{font-size:14px;color:var(--muted)}
+.k-stat.alert .v{color:var(--red)}
+
+/* ---------- 5. Buttons and pills ---------- */
+.k-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.k-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:700 15px var(--body);text-decoration:none;cursor:pointer;
+  padding:10px 18px;border-radius:var(--pill);border:2px solid var(--accent);background:var(--accent);color:var(--on-accent);transition:filter .12s,transform .12s}
+.k-btn:hover{filter:brightness(1.07)} .k-btn:active{transform:translateY(1px)}
+.k-btn.navy{background:var(--navy);border-color:var(--navy);color:#fff}
+.k-btn.ghost{background:#fff;color:var(--navy);border-color:var(--line)}
+.k-btn.on-dark{background:transparent;color:#fff;border-color:rgba(255,255,255,.4)}
+.k-btn.big{font-size:19px;padding:14px 30px;box-shadow:0 8px 18px rgba(0,0,0,.18)}
+.k-btn[disabled]{opacity:.5;cursor:default}
+.k-pill{display:inline-flex;align-items:center;gap:7px;font:800 12.5px var(--body);letter-spacing:.07em;text-transform:uppercase;padding:5px 12px;border-radius:var(--pill);background:var(--accent-soft);color:var(--navy)}
+.k-pill.ok{background:var(--ok-soft);color:var(--ok)} .k-pill.ok::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px rgba(31,138,76,.18)}
+.k-pill.soon{background:#eceaf6;color:var(--muted)} .k-pill.warn{background:var(--warn-soft);color:var(--warn)}
+.k-pill.red{background:var(--red);color:#fff}
+
+/* ---------- 6. Notes ---------- */
+.k-note{background:#fff;border-left:6px solid var(--accent);border-radius:var(--r-sm);padding:13px 16px;margin:0 0 16px;color:var(--ink)}
+.k-note.warn{background:#fff7e0;border-color:#e0a800;color:#4a3b00}
+.k-note.preview{background:#fff7e0;border-color:#e0a800;color:#5a4300;font-size:14px}
+
+/* ---------- 7. Product page (books, medals, passports) ---------- */
+.k-product{display:grid;grid-template-columns:minmax(220px,340px) 1fr;gap:36px;align-items:center;background:#fff;border-radius:var(--r-lg);padding:30px 34px;border-top:6px solid var(--accent);box-shadow:var(--shadow)}
+.k-product .cover{position:relative}
+.k-product .cover img{width:100%;border-radius:10px;box-shadow:0 16px 34px rgba(10,20,60,.35);transform:rotate(-2deg)}
+.k-badge{position:absolute;top:-12px;right:-12px;background:var(--red);color:#fff;font:900 15px/1.05 var(--cond);text-transform:uppercase;text-align:center;width:98px;height:98px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:4px solid #fff;transform:rotate(8deg);box-shadow:0 8px 18px rgba(0,0,0,.25)}
+.k-product h1{font:900 46px/1 var(--cond);color:var(--navy);text-transform:uppercase;margin:12px 0 10px}
+.k-product .sub{font-size:19px;line-height:1.45;margin:0 0 18px;max-width:560px}
+.k-price{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 0 8px}
+.k-price b{font:900 50px/1 var(--cond);color:var(--accent)} [data-pathway="schools"] .k-price b{color:var(--navy)}
+.k-price span{color:var(--muted);font-size:15px}
+.k-callout{display:inline-block;background:var(--accent-soft);color:var(--navy);border-radius:var(--r-sm);padding:9px 13px;font-size:15px;margin:4px 0 18px}
+.k-qty{display:inline-flex;align-items:center;border:2px solid var(--line);border-radius:var(--pill);overflow:hidden;height:52px}
+.k-qty button{width:46px;height:100%;border:0;background:var(--wash);font:700 22px var(--body);color:var(--navy);cursor:pointer}
+.k-qty input{width:70px;height:100%;border:0;text-align:center;font:700 20px var(--body);color:var(--navy)}
+@media(max-width:860px){.k-product{grid-template-columns:1fr;padding:22px}.k-product .cover{max-width:260px;margin:0 auto}.k-product h1{font-size:36px}}
+
+/* ---------- 8. Feature tiles (benefits, app icons) ---------- */
+.k-feature{background:#fff;border-radius:16px;padding:18px;display:flex;gap:14px;align-items:flex-start}
+.k-ic{flex:none;width:52px;height:52px;border-radius:14px;background:var(--accent);display:flex;align-items:center;justify-content:center}
+.k-ic svg{width:28px;height:28px;fill:none;stroke:var(--on-accent);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.k-feature h3{margin:0 0 4px;font:800 19px/1.15 var(--cond);color:var(--navy)}
+.k-feature p{margin:0;color:var(--muted);font-size:15px;line-height:1.45}
+
+/* ---------- 9. Gallery, tables, forms ---------- */
+.k-gal{display:flex;gap:12px;overflow-x:auto;padding:4px 0 8px}
+.k-gal img{height:220px;width:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.18);flex:none}
+.k-table{width:100%;border-collapse:collapse;background:#fff;border-radius:var(--r);overflow:hidden}
+.k-table th{background:var(--navy);color:#fff;text-align:left;font:700 13px var(--body);letter-spacing:.04em;text-transform:uppercase;padding:11px 14px}
+.k-table td{padding:12px 14px;border-top:1px solid var(--line)} .k-table tr:hover td{background:var(--wash)}
+.k-field{display:block;margin:0 0 14px} .k-field span{display:block;font-weight:700;font-size:14px;margin:0 0 5px;color:var(--navy)}
+.k-input{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:var(--r-sm);font:16px var(--body);color:var(--ink);background:#fff}
+.k-input:focus{outline:3px solid var(--accent-soft);border-color:var(--accent)}
+
+/* ---------- 10. Footer ---------- */
+.k-foot{margin-top:40px;background:var(--red);border-top-left-radius:220px 46px;color:#fff}
+.k-foot .in{max-width:1120px;margin:0 auto;padding:22px 18px;display:flex;align-items:center;gap:22px;flex-wrap:wrap;justify-content:space-between;font-size:14px}
+.k-foot img{height:46px;display:block} .k-foot a{color:#fff}
+.k-foot .sp{display:flex;align-items:center;gap:10px}.k-foot .sp small{font:700 10px var(--body);letter-spacing:.14em}
+.k-foot .sp img{height:24px}
+@media(max-width:640px){.k-foot{border-top-left-radius:120px 34px}.k-foot .in{flex-direction:column;text-align:center}}

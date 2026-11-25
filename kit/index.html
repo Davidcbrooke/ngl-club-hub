@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NGL Hub Kit</title>
+<link rel="stylesheet" href="ngl-hub.css">
+<style>
+.switch{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 22px}
+.switch button{border:0;border-radius:999px;padding:8px 14px;font:700 14px var(--body);color:#fff;cursor:pointer;opacity:.75}
+.switch button.on{opacity:1;outline:3px solid #fff}
+.sw{display:flex;gap:10px;flex-wrap:wrap}.sw div{width:120px;border-radius:12px;overflow:hidden;background:#fff;font-size:13px}.sw i{display:block;height:54px}.sw b,.sw span{display:block;padding:0 10px}.sw b{padding-top:8px;color:var(--navy)}.sw span{padding-bottom:8px;color:var(--muted)}
+</style>
+</head>
+<body data-pathway="recreational">
+<div class="k-bar"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<div class="k-top"><div class="k-strap" id="strap">NGL Recreational · Club Hub</div>
+  <div class="k-band"><div class="k-head">
+    <a class="k-logo" href="#"><img src="https://davidcbrooke.github.io/GYMNASTICS-RESULTS/brand/ngl-logo-full.png" alt="NGL"><span id="lname">Recreational<br>Hub</span></a>
+    <div class="k-who"><b>SAADI Gymnastics</b>bookingoffice@saadigymnastics.co.uk</div>
+    <a class="k-hbtn" href="#">‹ NGL Home</a><a class="k-hbtn" href="#">NGL Club Hub</a>
+  </div>
+  <nav class="k-tabs" aria-label="Sections"><button aria-selected="true">Dashboard</button><button>Lesson plans</button><button>Award books</button><button>Competitions <span class="k-count">2</span></button><button>Family Hub</button><button>Orders</button></nav>
+  </div></div>
+
+<main class="k-main"><div class="wrap">
+  <span class="k-eyebrow">NGL Hub Kit · design system</span>
+  <h1 class="k-h1">One look for every hub</h1>
+  <p class="k-lead">Every NGL hub uses this one stylesheet. A hub only says which pathway it is, and the accent colour follows. Pick a pathway to see it change.</p>
+  <div class="switch" id="sw"></div>
+
+  <h2 class="k-h2">Colour</h2>
+  <div class="sw">
+    <div><i style="background:#28225c"></i><b>Navy</b><span>#28225c · backgrounds</span></div>
+    <div><i style="background:#c6152e"></i><b>NGL Red</b><span>#c6152e · alerts, footer</span></div>
+    <div><i style="background:var(--accent)"></i><b>Accent</b><span>the pathway colour</span></div>
+    <div><i style="background:#e84187"></i><b>Pre-School</b><span>#e84187</span></div>
+    <div><i style="background:#fbd43a"></i><b>Schools</b><span>#fbd43a · navy text</span></div>
+    <div><i style="background:#e8822f"></i><b>Recreational</b><span>#e8822f</span></div>
+    <div><i style="background:#0073b3"></i><b>General</b><span>#0073b3</span></div>
+    <div><i style="background:#00aeb7"></i><b>Performance</b><span>#00aeb7</span></div>
+    <div><i style="background:#6ba526"></i><b>University</b><span>#6ba526</span></div>
+    <div><i style="background:#8f286b"></i><b>Masters</b><span>#8f286b</span></div>
+  </div>
+
+  <h2 class="k-h2">Dashboard tiles</h2>
+  <div class="k-grid k-4">
+    <div class="k-card k-stat"><div class="v">146</div><div class="l">Gymnasts</div><div class="s">on the programme</div></div>
+    <div class="k-card k-stat alert"><div class="v">£84</div><div class="l">Awaiting payment</div><div class="s">1 order</div></div>
+    <div class="k-card k-stat"><div class="v">3</div><div class="l">Competitions</div><div class="s">places reserved</div></div>
+    <div class="k-card k-stat"><div class="v">12 Feb</div><div class="l">Next competition</div><div class="s">Level 2</div></div>
+  </div>
+
+  <h2 class="k-h2">Product page</h2>
+  <div class="k-product">
+    <div class="cover"><img src="../img/pathways/general-cover.jpg" alt=""><span class="k-badge">Out now</span></div>
+    <div>
+      <span class="k-pill ok">Available to buy now</span>
+      <h1>NGL Award Book</h1>
+      <p class="sub">Every product in every hub uses this layout: cover, one-line promise, price, a callout, quantity and one clear Buy now.</p>
+      <div class="k-price"><b>£5</b><span>per book · RRP £10 · printed and ready to post</span></div>
+      <div class="k-callout">Included with your <b>Club Licence</b>.</div>
+      <div class="k-actions"><div class="k-qty"><button>−</button><input value="20" aria-label="Quantity"><button>+</button></div><button class="k-btn big">Buy now</button></div>
+    </div>
+  </div>
+
+  <h2 class="k-h2">Feature tiles</h2>
+  <div class="k-grid k-3">
+    <div class="k-feature"><div class="k-ic"><svg viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8"/></svg></div><div><h3>Aligned to competitions</h3><p>Short title, one or two lines of benefit.</p></div></div>
+    <div class="k-feature"><div class="k-ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg></div><div><h3>Clear for parents</h3><p>White line icons on the accent square, never emoji.</p></div></div>
+    <div class="k-feature"><div class="k-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/></svg></div><div><h3>Focus for coaches</h3><p>Three across on desktop, one on a phone.</p></div></div>
+  </div>
+
+  <h2 class="k-h2">Cards, buttons and pills</h2>
+  <div class="k-grid k-3">
+    <div class="k-card"><span class="k-pill ok" style="align-self:flex-start;margin-bottom:8px">Live</span><h3>Lesson plans</h3><p>Every card has a title, a sentence and its actions at the bottom.</p><div class="k-actions"><a class="k-btn" href="#">Open</a><a class="k-btn ghost" href="#">How it works</a></div></div>
+    <div class="k-card"><span class="k-pill soon" style="align-self:flex-start;margin-bottom:8px">Coming 2027</span><h3>Family Hub</h3><p>Soon items use the grey pill and a ghost button.</p><div class="k-actions"><a class="k-btn ghost" href="#">Register interest</a></div></div>
+    <div class="k-card"><span class="k-pill warn" style="align-self:flex-start;margin-bottom:8px">Action needed</span><h3>Awaiting payment</h3><p>Warnings are amber; money owed uses NGL red.</p><div class="k-actions"><a class="k-btn navy" href="#">View invoice</a></div></div>
+  </div>
+  <div class="k-note" style="margin-top:16px"><b>Note style.</b> Use for tips and next steps inside a page.</div>
+
+  <h2 class="k-h2">Tables and forms</h2>
+  <div class="k-grid" style="grid-template-columns:2fr 1fr">
+    <table class="k-table"><thead><tr><th>Date</th><th>Reference</th><th>Details</th><th>Total</th></tr></thead>
+      <tbody><tr><td>25 Nov</td><td>ORD-6FMGP</td><td>40 Award Books</td><td>£168</td></tr><tr><td>12 Nov</td><td>ORD-R7Y3J</td><td>190 medals</td><td>£619</td></tr></tbody></table>
+    <div class="k-card plain"><label class="k-field"><span>Club email</span><input class="k-input" placeholder="you@club.co.uk"></label><button class="k-btn">Log in</button></div>
+  </div>
+</div></main>
+
+<footer class="k-foot"><div class="in">
+  <img src="https://davidcbrooke.github.io/GYMNASTICS-RESULTS/brand/ngl-logo-full.png" alt="NGL">
+  <div class="sp"><small>OFFICIAL SPONSOR</small><img src="https://davidcbrooke.github.io/GYMNASTICS-RESULTS/brand/justgo-logo-white.png" alt="JustGo"></div>
+  <div>Exclusively for British Gymnastics Clubs<br><a href="mailto:admin@nationalgymnasticsleague.co.uk">admin@nationalgymnasticsleague.co.uk</a></div>
+</div></footer>
+<script>
+const P=[['preschool','Pre-School','#e84187'],['schools','Schools','#fbd43a'],['recreational','Recreational','#e8822f'],['general','General League','#0073b3'],['performance','Performance League','#00aeb7'],['university','University League','#6ba526'],['masters','Masters','#8f286b']];
+const sw=document.getElementById('sw');
+sw.innerHTML=P.map(p=>`<button data-p="${p[0]}" style="background:${p[2]};${p[0]==='schools'?'color:#28225c':''}">${p[1]}</button>`).join('');
+function set(k){document.body.dataset.pathway=k;const p=P.find(x=>x[0]===k);document.getElementById('strap').textContent='NGL '+p[1]+' · Club Hub';document.getElementById('lname').innerHTML=p[1]+'<br>Hub';sw.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.p===k));}
+sw.onclick=e=>{const b=e.target.closest('button');if(b)set(b.dataset.p)};set(new URLSearchParams(location.search).get('p')||'recreational');
+</script>
+</body>
+</html>
