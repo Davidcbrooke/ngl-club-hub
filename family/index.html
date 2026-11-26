@@ -1,6 +1,18 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>/* NGL switch-over: this family app now lives in the one NGL app. Forward the family there with their code(s)
+   and what this page saved on the phone (progress and choices only, nothing else). NEW = the one app's address. */
+(function(){var NEW='https://davidcbrooke.github.io/ngl-app/';
+function g(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function j(k){var v=g(k);try{return v?JSON.parse(v):null}catch(e){return v}}
+function b64(o){return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+var q=new URLSearchParams(location.search),o=new URLSearchParams(),codes=[],carry={};
+var h=j('ngl-family-hub')||{},ps=j('ngl-family-ps')||{};if(q.get('code'))codes.push(q.get('code'));if(h.schools&&h.schools.code)codes.push(h.schools.code);if(h.recreational&&h.recreational.code)codes.push(h.recreational.code);var L=(h.preschool&&h.preschool.link)||ps.link||'';var m=/#p=([A-Za-z0-9_-]+)/.exec(L);if(m)o.set('p',m[1]);var b=g('ngl-ps-book');if(b!=null)carry['ngl-ps-book']=b;['nglrec-progress','nglrec-book','nglrec-level','nglrec-colour','nglrec-tab'].forEach(function(k){var v=g(k);if(v!=null)carry[k]=v});
+if(codes.length)o.set('codes',codes.filter(Boolean).join(','));
+if(Object.keys(carry).length)o.set('carry',b64(carry));
+location.replace(NEW+(o.toString()?'?'+o:''));})();</script>
+
 <meta charset="utf-8">
 <link rel="icon" type="image/png" sizes="32x32" href="/family/icons/family-hub-32.png">
 <link rel="icon" type="image/png" sizes="64x64" href="/family/icons/family-hub-64.png">
